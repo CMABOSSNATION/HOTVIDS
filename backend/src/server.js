@@ -15,6 +15,7 @@ app.use(express.json());
 app.use('/api/auth', require('./modules/auth/auth.routes'));
 app.use('/api/users', require('./modules/users/users.routes'));
 app.use('/api/videos', require('./modules/videos/videos.routes'));
+app.use('/api/live', require('./modules/tv/live.routes'));
 app.use('/api/search', require('./modules/feed/search.routes'));
 app.use('/api/notifications', require('./modules/notifications/notifications.routes'));
 app.use('/api/gifts', require('./modules/money/gifts.routes'));
