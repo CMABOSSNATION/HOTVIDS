@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOTVID - Upload</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;}
+.header{background:#111;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:2px solid #e50000;}
+.header .logo{color:#e50000;font-size:22px;font-weight:900;letter-spacing:2px;}
+.header .back{color:#fff;text-decoration:none;font-size:20px;}
+.container{padding:20px;max-width:600px;margin:0 auto;}
+.drop-zone{border:2px dashed #e50000;border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:.3s;background:#111;margin-bottom:20px;position:relative;}
+.drop-zone:active{background:#1a0000;border-color:#ff4444;}
+.drop-zone .icon{font-size:48px;margin-bottom:12px;}
+.drop-zone h3{color:#e50000;font-size:18px;margin-bottom:8px;}
+.drop-zone p{color:#888;font-size:13px;}
+#fileInput{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.preview{display:none;margin-bottom:20px;border-radius:12px;overflow:hidden;background:#111;border:1px solid #333;}
+.preview video{width:100%;max-height:200px;object-fit:cover;}
+.preview-info{padding:12px;display:flex;justify-content:space-between;align-items:center;}
+.preview-info span{color:#888;font-size:12px;}
+.preview-info .remove{color:#e50000;background:none;border:none;font-size:18px;cursor:pointer;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;color:#aaa;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.form-group input,.form-group textarea{width:100%;background:#111;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;transition:.3s;}
+.form-group input:focus,.form-group textarea:focus{border-color:#e50000;}
+.form-group textarea{resize:vertical;min-height:80px;}
+.hashtag-input{display:flex;flex-wrap:wrap;gap:8px;background:#111;border:1px solid #333;border-radius:10px;padding:10px;min-height:50px;}
+.hashtag-input input{flex:1;background:none;border:none;color:#fff;font-size:15px;outline:none;min-width:100px;}
+.tag{background:#1a0000;color:#e50000;border:1px solid #e50000;border-radius:20px;padding:4px 10px;font-size:12px;display:flex;align-items:center;gap:6px;}
+.tag button{background:none;border:none;color:#e50000;cursor:pointer;font-size:14px;padding:0;}
+.progress-wrap{display:none;margin-bottom:20px;}
+.progress-bar-bg{background:#222;border-radius:10px;height:8px;overflow:hidden;}
+.progress-bar{background:linear-gradient(90deg,#e50000,#ff4444);height:100%;width:0%;transition:width .3s;border-radius:10px;}
+.progress-text{color:#aaa;font-size:13px;margin-top:8px;text-align:center;}
+.upload-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:16px;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:.2s;margin-bottom:30px;}
+.upload-btn:disabled{background:#444;cursor:not-allowed;}
+.upload-btn:active:not(:disabled){background:#c00;}
+.status{text-align:center;padding:12px;border-radius:10px;margin-bottom:16px;display:none;}
+.status.success{background:#0a2a0a;color:#4caf50;border:1px solid #4caf50;}
+.status.error{background:#1a0000;color:#ff4444;border:1px solid #ff4444;}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="/" class="back">&#8592;</a>
+  <span class="logo">&#128293; HOTVID</span>
+  <span style="margin-left:auto;color:#aaa;font-size:14px;">Upload Video</span>
+</div>
+<div class="container">
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="video/*">
+    <div class="icon">&#127916;</div>
+    <h3>Tap to select video</h3>
+    <p>MP4, MOV, AVI up to 300 seconds</p>
+  </div>
+  <div class="preview" id="preview">
+    <video id="previewVideo" controls playsinline></video>
+    <div class="preview-info">
+      <span id="fileInfo">-</span>
+      <button class="remove" id="removeFile">&#10005;</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Title *</label>
+    <input type="text" id="title" placeholder="Give your video a title..." maxlength="100">
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea id="description" placeholder="Tell viewers about your video..."></textarea>
+  </div>
+  <div class="form-group">
+    <label>Hashtags</label>
+    <div class="hashtag-input" id="hashtagWrap">
+      <input type="text" id="hashtagInput" placeholder="#uganda #hotvid ...">
+    </div>
+  </div>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">Uploading... 0%</div>
+  </div>
+  <div class="status" id="status"></div>
+  <button class="upload-btn" id="uploadBtn" disabled>SELECT A VIDEO FIRST</button>
+</div>
+<script>
+const API = window.location.origin.includes('localhost') ? 'http://localhost:3000' : '';
+const token = localStorage.getItem('hotvid_token');
+if(!token){ window.location.href='/index.html'; }
+
+let selectedFile = null;
+let tags = [];
+
+// File select
+document.getElementById('fileInput').addEventListener('change', function(){
+  const file = this.files[0];
+  if(!file) return;
+  if(file.size > 500*1024*1024){ showStatus('File too large. Max 500MB','error'); return; }
+  selectedFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById('previewVideo').src = url;
+  document.getElementById('preview').style.display='block';
+  document.getElementById('dropZone').style.display='none';
+  const mb = (file.size/1024/1024).toFixed(1);
+  document.getElementById('fileInfo').textContent = file.name + ' (' + mb + ' MB)';
+  document.getElementById('uploadBtn').disabled = false;
+  document.getElementById('uploadBtn').textContent = 'UPLOAD TO HOTVID 🔥';
+});
+
+document.getElementById('removeFile').addEventListener('click', function(){
+  selectedFile = null;
+  document.getElementById('preview').style.display='none';
+  document.getElementById('dropZone').style.display='block';
+  document.getElementById('fileInput').value='';
+  document.getElementById('uploadBtn').disabled=true;
+  document.getElementById('uploadBtn').textContent='SELECT A VIDEO FIRST';
+});
+
+// Hashtags
+document.getElementById('hashtagInput').addEventListener('keydown', function(e){
+  if(e.key===' '||e.key==='Enter'){
+    e.preventDefault();
+    const val = this.value.trim().replace(/^#*/,'');
+    if(val && !tags.includes(val)){
+      tags.push(val);
+      renderTags();
+    }
+    this.value='';
+  }
+});
+
+function renderTags(){
+  const wrap = document.getElementById('hashtagWrap');
+  wrap.querySelectorAll('.tag').forEach(t=>t.remove());
+  const input = document.getElementById('hashtagInput');
+  tags.forEach((t,i)=>{
+    const el = document.createElement('div');
+    el.className='tag';
+    el.innerHTML='#'+t+' <button onclick="removeTag('+i+')">&#10005;</button>';
+    wrap.insertBefore(el, input);
+  });
+}
+function removeTag(i){ tags.splice(i,1); renderTags(); }
+
+// Upload
+document.getElementById('uploadBtn').addEventListener('click', async function(){
+  if(!selectedFile) return;
+  const title = document.getElementById('title').value.trim();
+  if(!title){ showStatus('Please enter a title','error'); return; }
+
+  this.disabled = true;
+  this.textContent = 'UPLOADING...';
+  document.getElementById('progressWrap').style.display='block';
+  setProgress(5, 'Getting upload URL...');
+
+  try {
+    // Step 1: Get Cloudflare direct upload URL
+    const urlRes = await fetch(API+'/api/upload/upload-url', {
+      headers:{ Authorization: 'Bearer '+token }
+    });
+    if(!urlRes.ok) throw new Error('Failed to get upload URL');
+    const {uploadURL, uid} = await urlRes.json();
+    setProgress(15, 'Starting upload to Cloudflare...');
+
+    // Step 2: Upload directly to Cloudflare Stream
+    await uploadToCloudflare(uploadURL, selectedFile);
+    setProgress(90, 'Saving video...');
+
+    // Step 3: Save to HOTVID database
+    const saveRes = await fetch(API+'/api/upload/save', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+token },
+      body: JSON.stringify({
+        title,
+        description: document.getElementById('description').value.trim(),
+        cloudflare_video_id: uid,
+        hashtags: tags.map(t=>'#'+t).join(' ')
+      })
+    });
+    if(!saveRes.ok) throw new Error('Failed to save video');
+    setProgress(100, 'Upload complete!');
+    showStatus('🔥 Video uploaded successfully! It will be live shortly.','success');
+    this.textContent = 'UPLOAD ANOTHER';
+    this.disabled = false;
+    this.onclick = ()=>{ window.location.reload(); };
+  } catch(err){
+    showStatus('Upload failed: '+err.message,'error');
+    this.disabled=false;
+    this.textContent='RETRY UPLOAD 🔥';
+  }
+});
+
+function uploadToCloudflare(uploadURL, file){
+  return new Promise((resolve, reject)=>{
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    fd.append('file', file);
+    xhr.open('POST', uploadURL);
+    xhr.upload.onprogress = function(e){
+      if(e.lengthComputable){
+        const pct = Math.round((e.loaded/e.total)*70)+15;
+        setProgress(pct, 'Uploading... '+Math.round((e.loaded/e.total)*100)+'%');
+      }
+    };
+    xhr.onload = ()=> xhr.status===200||xhr.status===204 ? resolve() : reject(new Error('CF upload failed: '+xhr.status));
+    xhr.onerror = ()=> reject(new Error('Network error during upload'));
+    xhr.send(fd);
+  });
+}
+
+function setProgress(pct, text){
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressText').textContent = text;
+}
+
+function showStatus(msg, type){
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status '+type;
+  el.style.display='block';
+  if(type==='success') setTimeout(()=>el.style.display='none', 5000);
+}
+</script>
+</body>
+</html>
