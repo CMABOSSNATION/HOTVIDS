@@ -14,6 +14,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', require('./modules/auth/auth.routes'));
 app.use('/api/users', require('./modules/users/users.routes'));
+app.use('/api/upload', require('./modules/videos/upload.routes'));
 app.use('/api/videos', require('./modules/videos/videos.routes'));
 app.use('/api/live', require('./modules/tv/live.routes'));
 app.use('/api/search', require('./modules/feed/search.routes'));
