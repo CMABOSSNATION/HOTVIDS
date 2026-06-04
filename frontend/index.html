@@ -152,8 +152,7 @@ body{background:var(--black);color:var(--text);font-family:DM Sans,sans-serif;he
 const API="http://178.105.190.123/api";
 let token=localStorage.getItem("ht"),user=JSON.parse(localStorage.getItem("hu")||"null"),isLogin=true;
 setTimeout(()=>{const s=document.getElementById("splash");s.classList.add("hide");setTimeout(()=>{s.style.display="none";if(token){try{const u=JSON.parse(localStorage.getItem("hu"));if(u&&u.id){showApp();}else{localStorage.removeItem("hu");localStorage.removeItem("ht");showAuth();}}catch(e){localStorage.removeItem("hu");localStorage.removeItem("ht");showAuth();}}else{showAuth();}},500);},2200);
-function showAuth(){document.getElementById("auth").classList.add("show");}
-function showApp(){document.getElementById("app").classList.add("show");loadFeed();}
+function showAuth(){const a=document.getElementById("auth");a.style.display="flex";a.style.zIndex="10";}function showApp(){const a=document.getElementById("app");a.style.display="flex";a.style.zIndex="10";loadFeed();}
 async function loadFeed(tr=false){document.getElementById("feed").innerHTML="<div class=loading><div class=spinner></div><div class=ltext>Loading...</div></div>";try{const r=await fetch(API+(tr?"/feed/trending":"/feed"));const d=await r.json();renderFeed(d.videos||[]);}catch(e){document.getElementById("feed").innerHTML="<div class=empty><div class=eicon>📡</div><div class=etext>Could not load videos</div></div>";}}
 function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":n;}
 function switchTab(el,tr){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));el.classList.add("active");loadFeed(tr);}
