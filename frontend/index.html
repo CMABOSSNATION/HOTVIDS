@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>HOTVID</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#FF0033;--black:#080808;--dark:#111;--gray:#1E1E1E;--border:#2A2A2A;--text:#fff;--muted:#666}
+body{background:var(--black);color:var(--text);font-family:DM Sans,sans-serif;height:100vh;overflow:hidden}
+#splash{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+#splash.hide{opacity:0;pointer-events:none}
+.logo{font-family:Syne,sans-serif;font-size:56px;font-weight:900;color:var(--red);letter-spacing:-3px}
+.tagline{color:var(--muted);font-size:13px;margin-top:8px;letter-spacing:2px;text-transform:uppercase}
+.dot{width:6px;height:6px;background:var(--red);border-radius:50%;margin-top:32px;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#auth{display:none;position:fixed;inset:0;background:var(--black);flex-direction:column;justify-content:center;padding:40px 28px}
+#auth.show{display:flex}
+#auth .logo{font-size:40px;margin-bottom:6px}
+#auth p{color:var(--muted);font-size:13px;margin-bottom:40px}
+#auth input{width:100%;padding:16px;background:#1a1a1a;border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-size:15px;margin-bottom:12px;outline:none;font-family:DM Sans,sans-serif}
+#auth input:focus{border-color:var(--red)}
+#auth button{width:100%;padding:16px;background:var(--red);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:16px;font-family:Syne,sans-serif}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-bottom:8px;text-align:center}
+.toggle{color:var(--muted);font-size:14px;text-align:center;cursor:pointer}
+.toggle b{color:var(--red)}
+#app{display:none;position:fixed;inset:0;flex-direction:column}
+#app.show{display:flex}
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--black)}
+#topbar .logo{font-size:22px}
+.tabs{display:flex;background:#1a1a1a;border-radius:20px;padding:3px;gap:2px}
+.tab{padding:6px 14px;border-radius:16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab.active{background:var(--red);color:#fff}
+#feed{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory}
+#feed::-webkit-scrollbar{display:none}
+.vcard{height:calc(100vh - 112px);scroll-snap-align:start;position:relative;background:var(--dark);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.vbg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.vbg .icon{font-size:64px;opacity:.15}
+.vbg .vtitle{color:var(--muted);font-size:13px}
+.vgrad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.95)100%)}
+.vinfo{position:absolute;bottom:20px;left:16px;right:72px}
+.vuser{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.vavatar{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.vname{font-weight:700;font-size:14px}
+.vfollow{color:var(--red);font-size:11px;font-weight:600;margin-left:4px}
+.vdesc{font-size:14px;color:rgba(255,255,255,.9);line-height:1.5}
+.vactions{position:absolute;right:12px;bottom:20px;display:flex;flex-direction:column;gap:18px;align-items:center}
+.vbtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.vbtn .ic{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:20px}
+.vbtn .ct{font-size:11px;color:rgba(255,255,255,.8);font-weight:600}
+.vbtn.liked .ic{background:rgba(255,0,51,.3)}
+#bottomnav{height:64px;display:flex;background:var(--black);border-top:1px solid var(--border)}
+.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.nbtn .ni{font-size:22px}
+.nbtn .nl{font-size:10px;color:var(--muted);font-weight:500}
+.nbtn.active .nl{color:var(--red)}
+.upbtn{flex:1;display:flex;align-items:center;justify-content:center}
+.uppill{width:52px;height:32px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+.page{display:none;position:fixed;inset:0;background:var(--black);z-index:200;flex-direction:column}
+.page.show{display:flex}
+.phdr{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--border)}
+.back{font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:#1a1a1a;border-radius:50%}
+.ptitle{font-family:Syne,sans-serif;font-size:20px;font-weight:700}
+.sinput{padding:12px 16px;border-bottom:1px solid var(--border)}
+.sinput input{width:100%;padding:13px 16px;background:#1a1a1a;border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-size:15px;outline:none;font-family:DM Sans,sans-serif}
+.sinput input:focus{border-color:var(--red)}
+.sresults{flex:1;overflow-y:auto}
+.sitem{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer}
+.savatar{width:48px;height:48px;border-radius:12px;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0}
+.sname{font-weight:600;font-size:15px;margin-bottom:2px}
+.smeta{color:var(--muted);font-size:13px}
+.trend{padding:16px}
+.ttitle{font-family:Syne,sans-serif;font-size:16px;font-weight:700;margin-bottom:12px;color:#999}
+.ttags{display:flex;flex-wrap:wrap;gap:8px}
+.ttag{padding:8px 16px;background:#1a1a1a;border-radius:20px;font-size:13px;font-weight:600;border:1px solid var(--border);cursor:pointer}
+.pcover{height:140px;background:linear-gradient(135deg,#1a0008,#2d0011,#0a0a0a);position:relative;flex-shrink:0}
+.pcoverlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,var(--black))}
+.pinfo{padding:0 16px 20px;margin-top:-40px}
+.ppic{width:80px;height:80px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;border:3px solid var(--black);margin-bottom:12px}
+.pname{font-family:Syne,sans-serif;font-size:22px;font-weight:900;margin-bottom:4px}
+.pbio{color:var(--muted);font-size:14px;margin-bottom:16px}
+.pstats{display:flex;gap:24px;margin-bottom:20px}
+.pstat .psn{font-family:Syne,sans-serif;font-size:20px;font-weight:700}
+.pstat .psl{color:var(--muted);font-size:12px}
+.pbtns{display:flex;gap:10px;margin-bottom:20px}
+.pedit{flex:1;padding:12px;background:#1a1a1a;border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.plogout{padding:12px 20px;background:transparent;border:1.5px solid rgba(255,0,51,.4);border-radius:12px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px}
+.ltext{color:var(--muted);font-size:13px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;padding:40px}
+.eicon{font-size:64px;opacity:.2}
+.etext{color:var(--muted);font-size:14px;text-align:center}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,30,30,.95);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;backdrop-filter:blur(10px)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="splash"><div class="logo">HOTVID</div><div class="tagline">Uganda s 1 Platform</div><div class="dot"></div></div>
+<div id="auth">
+<div class="logo">HOTVID</div>
+<p id="asub">Your world. Your videos.</p>
+<div class="err" id="aerr"></div>
+<input type="text" id="auser" placeholder="Username" style="display:none">
+<input type="email" id="aemail" placeholder="Email address">
+<input type="password" id="apass" placeholder="Password">
+<button id="abtn">Sign In</button>
+<div class="toggle" id="atoggle">New to HOTVID? <b>Create Account</b></div>
+</div>
+<div id="app">
+<div id="topbar">
+<div class="logo">HOTVID</div>
+<div class="tabs">
+<div class="tab active" onclick="switchTab(this,false)">For You</div>
+<div class="tab" onclick="switchTab(this,true)">Trending</div>
+</div>
+<div style="font-size:22px;cursor:pointer" onclick="openPage('search-page')">🔍</div>
+</div>
+<div id="feed"><div class="loading"><div class="spinner"></div><div class="ltext">Loading...</div></div></div>
+<div id="bottomnav">
+<div class="nbtn active" id="n0" onclick="nav(0)"><div class="ni">🏠</div><div class="nl">Home</div></div>
+<div class="nbtn" id="n1" onclick="nav(1)"><div class="ni">🔍</div><div class="nl">Discover</div></div>
+<div class="upbtn" onclick="nav(2)"><div class="uppill">+</div></div>
+<div class="nbtn" id="n3" onclick="nav(3)"><div class="ni">🔔</div><div class="nl">Inbox</div></div>
+<div class="nbtn" id="n4" onclick="nav(4)"><div class="ni">👤</div><div class="nl">Me</div></div>
+</div>
+</div>
+<div class="page" id="search-page">
+<div class="phdr"><div class="back" onclick="closePage('search-page')">←</div><div class="ptitle">Discover</div></div>
+<div class="sinput"><input type="text" placeholder="Search videos, creators..." oninput="doSearch(this.value)"></div>
+<div class="sresults" id="sresults">
+<div class="trend"><div class="ttitle">🔥 Trending</div><div class="ttags"><div class="ttag">#Uganda</div><div class="ttag">#Kampala</div><div class="ttag">#AfroBeats</div><div class="ttag">#Comedy</div><div class="ttag">#Dance</div><div class="ttag">#Gospel</div></div></div>
+</div>
+</div>
+<div class="page" id="profile-page">
+<div class="pcover"><div class="pcoverlay"></div></div>
+<div style="flex:1;overflow-y:auto">
+<div class="pinfo">
+<div class="ppic" id="ppic">U</div>
+<div class="pname" id="pname">@user</div>
+<div class="pbio" id="pbio">No bio yet</div>
+<div class="pstats"><div class="pstat"><div class="psn">0</div><div class="psl">Following</div></div><div class="pstat"><div class="psn">0</div><div class="psl">Followers</div></div><div class="pstat"><div class="psn">0</div><div class="psl">Likes</div></div></div>
+<div class="pbtns"><div class="pedit">Edit Profile</div><div class="plogout" onclick="logout()">Log Out</div></div>
+</div>
+<div style="padding:16px;border-top:1px solid #2a2a2a"><div class="empty"><div class="eicon">🎬</div><div class="etext">No videos yet</div></div></div>
+</div>
+</div>
+<div id="toast"></div>
+<script>
+const API="http://178.105.190.123/api";
+let token=localStorage.getItem("ht"),user=JSON.parse(localStorage.getItem("hu")||"null"),isLogin=true;
+setTimeout(()=>{const s=document.getElementById("splash");s.classList.add("hide");setTimeout(()=>{s.style.display="none";token&&user?showApp():showAuth();},500);},2200);
+function showAuth(){document.getElementById("auth").classList.add("show");}
+function showApp(){document.getElementById("app").classList.add("show");loadFeed();}
+async function loadFeed(tr=false){document.getElementById("feed").innerHTML="<div class=loading><div class=spinner></div><div class=ltext>Loading...</div></div>";try{const r=await fetch(API+(tr?"/feed/trending":"/feed"));const d=await r.json();renderFeed(d.videos||[]);}catch(e){document.getElementById("feed").innerHTML="<div class=empty><div class=eicon>📡</div><div class=etext>Could not load videos</div></div>";}}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":n;}
+function switchTab(el,tr){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));el.classList.add("active");loadFeed(tr);}
+function openPage(id){document.getElementById(id).classList.add("show");}
+function closePage(id){document.getElementById(id).classList.remove("show");}
+let tt;function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2500);}
+function logout(){localStorage.removeItem("ht");localStorage.removeItem("hu");token=null;user=null;closePage("profile-page");document.getElementById("app").classList.remove("show");setTimeout(showAuth,300);}
+</script>
+</body>
+</html>
