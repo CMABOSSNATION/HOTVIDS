@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOTVID – Trending</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+
+  :root {
+    --hot: #ff2d55;
+    --gold: #ffd700;
+    --bg: #0a0a0a;
+    --card: #141414;
+    --text: #ffffff;
+    --muted: #888;
+    --accent: #ff2d55;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* TOP NAV */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #0a0a0aee 0%, transparent 100%);
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--hot);
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px #ff2d5580;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px;
+  }
+
+  .nav-tab {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .nav-tab.active {
+    background: var(--hot);
+    color: white;
+  }
+
+  /* TRENDING HEADER */
+  .trending-header {
+    margin-top: 80px;
+    padding: 0 16px 16px;
+  }
+
+  .trending-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fire-icon {
+    font-size: 32px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .trending-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* HASHTAGS STRIP */
+  .hashtags-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 16px 16px;
+    scrollbar-width: none;
+  }
+
+  .hashtags-strip::-webkit-scrollbar { display: none; }
+
+  .hashtag-pill {
+    flex-shrink: 0;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .hashtag-pill.hot {
+    border-color: var(--hot);
+    color: var(--hot);
+    background: #ff2d5515;
+  }
+
+  .hashtag-pill:active {
+    transform: scale(0.95);
+  }
+
+  /* VIDEO GRID */
+  .video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 0 2px;
+  }
+
+  .video-card {
+    position: relative;
+    aspect-ratio: 9/16;
+    background: var(--card);
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 0;
+  }
+
+  .video-card:first-child {
+    grid-column: 1 / -1;
+    aspect-ratio: 9/12;
+  }
+
+  .video-card img,
+  .video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, #000000cc);
+    padding: 40px 10px 10px;
+  }
+
+  .video-card:first-child .video-card-overlay {
+    padding: 60px 16px 16px;
+  }
+
+  /* RANK BADGE */
+  .rank-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: white;
+    text-shadow: 0 2px 8px #000;
+    line-height: 1;
+  }
+
+  .rank-badge.top1 {
+    font-size: 32px;
+    color: var(--gold);
+    text-shadow: 0 0 20px #ffd70080;
+  }
+
+  .rank-badge.top2 { color: #c0c0c0; }
+  .rank-badge.top3 { color: #cd7f32; }
+
+  /* TRENDING FIRE */
+  .trending-fire {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--hot);
+    border-radius: 12px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .video-username {
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .video-card:first-child .video-username {
+    font-size: 14px;
+  }
+
+  .video-title {
+    font-size: 11px;
+    color: #ccc;
+    margin-top: 2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: #bbb;
+  }
+
+  .stat-icon { font-size: 12px; }
+
+  /* SKELETON LOADER */
+  .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-card {
+    aspect-ratio: 9/16;
+    background: #141414;
+    overflow: hidden;
+  }
+
+  .skeleton-card.big { aspect-ratio: 9/12; grid-column: 1/-1; }
+
+  .skeleton-thumb {
+    width: 100%;
+    height: 75%;
+  }
+
+  .skeleton-info {
+    padding: 8px;
+  }
+
+  .skeleton-line {
+    height: 10px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+  }
+
+  /* FULL SCREEN PLAYER */
+  .player-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    display: none;
+    flex-direction: column;
+  }
+
+  .player-overlay.open { display: flex; }
+
+  .player-video-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .player-video-wrap video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .player-close {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    background: #00000080;
+    border: none;
+    color: white;
+    font-size: 22px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .player-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+  }
+
+  .action-btn .icon {
+    font-size: 28px;
+    filter: drop-shadow(0 2px 4px #000);
+  }
+
+  .action-btn span {
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px #000;
+  }
+
+  .action-btn.liked .icon { filter: none; }
+
+  .player-info {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 70px;
+  }
+
+  .player-username {
+    font-weight: 700;
+    font-size: 15px;
+    text-shadow: 0 1px 4px #000;
+  }
+
+  .player-title {
+    font-size: 13px;
+    color: #ddd;
+    margin-top: 4px;
+    text-shadow: 0 1px 3px #000;
+  }
+
+  .player-trending-score {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ff2d5530;
+    border: 1px solid var(--hot);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--hot);
+  }
+
+  /* LOAD MORE */
+  .load-more-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 20px auto;
+    padding: 14px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .load-more-btn:active {
+    background: var(--hot);
+    border-color: var(--hot);
+    transform: scale(0.98);
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0af0;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+    z-index: 100;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .bottom-nav a.active { color: var(--hot); }
+  .bottom-nav a .icon { font-size: 22px; }
+
+  .spacer { height: 80px; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .big-icon { font-size: 64px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; color: white; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="nav">
+  <div class="nav-logo">HOTVID</div>
+  <div class="nav-tabs">
+    <a class="nav-tab" href="feed.html">For You</a>
+    <a class="nav-tab active" href="trending.html">🔥 Trending</a>
+  </div>
+</nav>
+
+<!-- TRENDING HEADER -->
+<div class="trending-header">
+  <div class="trending-title">
+    <span class="fire-icon">🔥</span>
+    TRENDING
+  </div>
+  <div class="trending-subtitle">Updated every 30 minutes · Uganda & Africa</div>
+</div>
+
+<!-- HASHTAGS STRIP -->
+<div class="hashtags-strip" id="hashtagsStrip">
+  <div class="hashtag-pill hot">#All</div>
+  <div class="hashtag-pill skeleton" style="width:80px;height:30px;border-radius:20px"></div>
+  <div class="hashtag-pill skeleton" style="width:100px;height:30px;border-radius:20px"></div>
+  <div class="hashtag-pill skeleton" style="width:70px;height:30px;border-radius:20px"></div>
+</div>
+
+<!-- VIDEO GRID -->
+<div class="video-grid" id="videoGrid">
+  <!-- Skeleton loaders -->
+  <div class="skeleton-card big">
+    <div class="skeleton skeleton-thumb"></div>
+    <div class="skeleton-info">
+      <div class="skeleton skeleton-line" style="width:60%"></div>
+      <div class="skeleton skeleton-line" style="width:40%"></div>
+    </div>
+  </div>
+  <div class="skeleton-card">
+    <div class="skeleton skeleton-thumb"></div>
+  </div>
+  <div class="skeleton-card">
+    <div class="skeleton skeleton-thumb"></div>
+  </div>
+  <div class="skeleton-card">
+    <div class="skeleton skeleton-thumb"></div>
+  </div>
+  <div class="skeleton-card">
+    <div class="skeleton skeleton-thumb"></div>
+  </div>
+</div>
+
+<button class="load-more-btn" id="loadMoreBtn" style="display:none" onclick="loadMore()">
+  Load More Videos
+</button>
+
+<div class="spacer"></div>
+
+<!-- FULL SCREEN PLAYER -->
+<div class="player-overlay" id="playerOverlay">
+  <div class="player-video-wrap">
+    <button class="player-close" onclick="closePlayer()">✕</button>
+    <video id="playerVideo" loop playsinline autoplay></video>
+
+    <div class="player-actions">
+      <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+        <span class="icon">🤍</span>
+        <span id="likeCount">0</span>
+      </button>
+      <button class="action-btn" onclick="openComments()">
+        <span class="icon">💬</span>
+        <span id="commentCount">0</span>
+      </button>
+      <button class="action-btn" onclick="shareVideo()">
+        <span class="icon">↗️</span>
+        <span>Share</span>
+      </button>
+      <button class="action-btn" onclick="sendGift()">
+        <span class="icon">🎁</span>
+        <span>Gift</span>
+      </button>
+    </div>
+
+    <div class="player-info">
+      <div class="player-username" id="playerUsername"></div>
+      <div class="player-title" id="playerTitle"></div>
+      <div class="player-trending-score">
+        🔥 <span id="playerScore">0</span> trending score
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="index.html">
+    <span class="icon">🏠</span>
+    Home
+  </a>
+  <a href="trending.html" class="active">
+    <span class="icon">🔥</span>
+    Trending
+  </a>
+  <a href="upload.html">
+    <span class="icon">➕</span>
+    Upload
+  </a>
+  <a href="#" onclick="requireLogin()">
+    <span class="icon">💬</span>
+    Inbox
+  </a>
+  <a href="#" onclick="requireLogin()">
+    <span class="icon">👤</span>
+    Profile
+  </a>
+</nav>
+
+<script>
+  const API = '';  // Empty = same origin. Change to http://178.105.190.123:3000 if needed
+  let videos = [];
+  let offset = 0;
+  const limit = 20;
+  let currentVideo = null;
+  let liked = false;
+
+  // Format numbers
+  const fmt = (n) => {
+    if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+    return n || 0;
+  };
+
+  // Load trending videos
+  async function loadTrending(reset = false) {
+    if (reset) { offset = 0; videos = []; }
+    try {
+      const res = await fetch(`${API}/api/trending?limit=${limit}&offset=${offset}`);
+      const data = await res.json();
+      if (data.success) {
+        videos = [...videos, ...data.data];
+        renderVideos(reset);
+        offset += data.data.length;
+        document.getElementById('loadMoreBtn').style.display =
+          data.data.length === limit ? 'block' : 'none';
+      }
+    } catch (err) {
+      console.error(err);
+      renderFallback();
+    }
+  }
+
+  // Load hashtags
+  async function loadHashtags() {
+    try {
+      const res = await fetch(`${API}/api/trending/hashtags`);
+      const data = await res.json();
+      if (data.success && data.data.length) {
+        const strip = document.getElementById('hashtagsStrip');
+        strip.innerHTML = '<div class="hashtag-pill hot" onclick="filterHashtag(null)">#All</div>';
+        data.data.slice(0, 10).forEach(h => {
+          strip.innerHTML += `
+            <div class="hashtag-pill" onclick="filterHashtag('${h.hashtag}')">
+              #${h.hashtag} <span style="color:#666;font-size:11px">${fmt(h.total_views)}</span>
+            </div>`;
+        });
+      }
+    } catch (e) {}
+  }
+
+  // Render video grid
+  function renderVideos(reset) {
+    const grid = document.getElementById('videoGrid');
+    if (reset) grid.innerHTML = '';
+
+    if (videos.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="big-icon">🎬</div>
+          <h3>No trending videos yet</h3>
+          <p>Be the first to upload!</p>
+        </div>`;
+      return;
+    }
+
+    const startIndex = reset ? 0 : offset - videos.slice(offset).length;
+
+    videos.forEach((v, i) => {
+      if (i < (reset ? 0 : offset - limit)) return;
+
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      if (i === 0 && reset) card.style.gridColumn = '1 / -1';
+
+      const rankClass = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+      const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+
+      card.innerHTML = `
+        <img
+          src="${v.thumbnail_url || 'https://placehold.co/400x700/141414/333?text=HOTVID'}"
+          alt="${v.title || ''}"
+          loading="lazy"
+          onerror="this.src='https://placehold.co/400x700/141414/333?text=HOTVID'"
+        />
+        <div class="rank-badge ${rankClass}">${rankEmoji}</div>
+        <div class="trending-fire">🔥 ${Math.round(v.trending_score || 0)}</div>
+        <div class="video-card-overlay">
+          <div class="video-username">@${v.username || 'creator'}</div>
+          <div class="video-title">${v.title || ''}</div>
+          <div class="video-stats">
+            <div class="stat"><span class="stat-icon">👁️</span>${fmt(v.view_count)}</div>
+            <div class="stat"><span class="stat-icon">❤️</span>${fmt(v.like_count)}</div>
+            <div class="stat"><span class="stat-icon">🎁</span>${fmt(v.gift_count)}</div>
+          </div>
+        </div>`;
+
+      card.onclick = () => openPlayer(v);
+      grid.appendChild(card);
+    });
+  }
+
+  // Open fullscreen player
+  function openPlayer(v) {
+    currentVideo = v;
+    liked = false;
+
+    const overlay = document.getElementById('playerOverlay');
+    const vid = document.getElementById('playerVideo');
+
+    vid.src = v.video_url || '';
+    document.getElementById('playerUsername').textContent = '@' + (v.username || 'creator');
+    document.getElementById('playerTitle').textContent = v.title || '';
+    document.getElementById('likeCount').textContent = fmt(v.like_count);
+    document.getElementById('commentCount').textContent = fmt(v.comment_count);
+    document.getElementById('playerScore').textContent = Math.round(v.trending_score || 0);
+    document.getElementById('likeBtn').querySelector('.icon').textContent = '🤍';
+
+    overlay.classList.add('open');
+    vid.play().catch(() => {});
+
+    // Record view
+    fetch(`${API}/api/trending/view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ video_id: v.id })
+    }).catch(() => {});
+  }
+
+  function closePlayer() {
+    const overlay = document.getElementById('playerOverlay');
+    const vid = document.getElementById('playerVideo');
+    overlay.classList.remove('open');
+    vid.pause();
+    vid.src = '';
+  }
+
+  function toggleLike() {
+    if (!currentVideo) return;
+    liked = !liked;
+    const btn = document.getElementById('likeBtn');
+    btn.querySelector('.icon').textContent = liked ? '❤️' : '🤍';
+    const token = localStorage.getItem('token');
+    if (!token) { requireLogin(); return; }
+    fetch(`${API}/api/videos/${currentVideo.id}/like`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    }).catch(() => {});
+  }
+
+  function shareVideo() {
+    if (!currentVideo) return;
+    if (navigator.share) {
+      navigator.share({
+        title: currentVideo.title,
+        text: `Watch this on HOTVID 🔥`,
+        url: window.location.origin + '/feed.html?v=' + currentVideo.id
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.origin + '/feed.html?v=' + currentVideo.id)
+        .then(() => alert('Link copied!'));
+    }
+  }
+
+  function openComments() {
+    const token = localStorage.getItem('token');
+    if (!token) { requireLogin(); return; }
+    // Wire to your comments module when ready
+    alert('Comments coming soon!');
+  }
+
+  function sendGift() {
+    const token = localStorage.getItem('token');
+    if (!token) { requireLogin(); return; }
+    window.location.href = 'gifts.html?video_id=' + (currentVideo?.id || '');
+  }
+
+  function filterHashtag(tag) {
+    document.querySelectorAll('.hashtag-pill').forEach(p => p.classList.remove('hot'));
+    event.target.classList.add('hot');
+    // TODO: filter grid by hashtag
+  }
+
+  function loadMore() {
+    loadTrending(false);
+  }
+
+  function requireLogin() {
+    if (!localStorage.getItem('token')) {
+      alert('Login to interact with videos!');
+      window.location.href = 'index.html?login=1';
+    }
+  }
+
+  // Fallback when API not ready
+  function renderFallback() {
+    document.getElementById('videoGrid').innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="big-icon">🔥</div>
+        <h3>Trending Coming Soon</h3>
+        <p>Deploy the backend to see trending videos</p>
+      </div>`;
+  }
+
+  // Init
+  loadHashtags();
+  loadTrending(true);
+
+  // Close player on back button
+  window.addEventListener('popstate', () => closePlayer());
+</script>
+</body>
+</html>
