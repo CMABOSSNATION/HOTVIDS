@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOTVID - Advertiser Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;}
+.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;}
+.back{color:#fff;font-size:22px;cursor:pointer;}
+.htitle{font-size:18px;font-weight:700;}
+.tabs{display:flex;border-bottom:1px solid #222;padding:0 20px;}
+.tab{padding:12px 16px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;}
+.tab.active{color:#e50000;border-bottom-color:#e50000;}
+.container{padding:20px;max-width:600px;margin:0 auto;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;}
+.stat-label{color:#666;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.stat-value{font-size:24px;font-weight:900;color:#e50000;}
+.stat-sub{color:#555;font-size:11px;margin-top:4px;}
+
+/* ADS LIST */
+.ad-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;margin-bottom:12px;}
+.ad-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.ad-title{font-size:15px;font-weight:700;}
+.ad-status{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.ad-status.active{background:#0a2a0a;color:#4caf50;border:1px solid #4caf50;}
+.ad-status.paused{background:#2a2a00;color:#ffcc00;border:1px solid #ffcc00;}
+.ad-status.ended{background:#1a1a1a;color:#666;border:1px solid #333;}
+.ad-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.ad-stat{text-align:center;}
+.ad-stat .val{font-size:16px;font-weight:700;}
+.ad-stat .lbl{font-size:10px;color:#666;}
+.progress-bar{background:#222;border-radius:10px;height:6px;overflow:hidden;margin-bottom:10px;}
+.progress-fill{background:linear-gradient(90deg,#e50000,#ff4444);height:100%;border-radius:10px;}
+.ad-actions{display:flex;gap:8px;}
+.ad-btn{flex:1;padding:8px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;}
+.ad-btn.pause{background:#222;color:#ffcc00;}
+.ad-btn.edit{background:#222;color:#fff;}
+.ad-btn.delete{background:#1a0000;color:#e50000;}
+
+/* CREATE AD FORM */
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;color:#aaa;font-size:13px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:#111;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#e50000;}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-group select option{background:#111;}
+.budget-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.budget-opt{background:#111;border:2px solid #222;border-radius:10px;padding:10px;text-align:center;cursor:pointer;}
+.budget-opt.sel{border-color:#e50000;background:#1a0000;}
+.budget-opt .bamt{font-size:15px;font-weight:700;}
+.budget-opt .bdays{font-size:11px;color:#666;}
+.targeting{background:#111;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:16px;}
+.targeting h4{font-size:14px;font-weight:700;margin-bottom:12px;color:#aaa;}
+.target-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.target-label{font-size:14px;}
+.toggle{width:44px;height:24px;background:#333;border-radius:12px;cursor:pointer;position:relative;transition:.3s;}
+.toggle.on{background:#e50000;}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.3s;}
+.toggle.on::after{left:22px;}
+.submit-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:16px;font-size:17px;font-weight:700;cursor:pointer;}
+.submit-btn:disabled{background:#333;cursor:not-allowed;}
+.preview-card{background:#111;border:1px solid #e50000;border-radius:14px;padding:16px;margin-bottom:20px;}
+.preview-label{color:#e50000;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+.preview-content{display:flex;gap:12px;align-items:center;}
+.preview-thumb{width:60px;height:60px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.preview-info .pt{font-size:14px;font-weight:700;margin-bottom:4px;}
+.preview-info .pd{font-size:12px;color:#888;}
+.preview-info .pb{background:#e50000;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;margin-top:6px;}
+.empty{text-align:center;padding:40px 20px;color:#444;}
+.empty .ei{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="back" onclick="history.back()">&#8592;</span>
+  <span class="htitle">🎯 Advertiser Dashboard</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview')">Overview</div>
+  <div class="tab" onclick="showTab('myads')">My Ads</div>
+  <div class="tab" onclick="showTab('create')">Create Ad</div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="tab-overview" class="container">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Spent</div>
+      <div class="stat-value" id="total-spent">0</div>
+      <div class="stat-sub">UGX lifetime</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Impressions</div>
+      <div class="stat-value" id="total-imp">0</div>
+      <div class="stat-sub">Total views</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active Ads</div>
+      <div class="stat-value" id="active-ads">0</div>
+      <div class="stat-sub">Running now</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg CPM</div>
+      <div class="stat-value" id="avg-cpm">0</div>
+      <div class="stat-sub">Cost per 1000 views</div>
+    </div>
+  </div>
+
+  <div style="background:#111;border:1px solid #222;border-radius:14px;padding:20px;margin-bottom:16px;">
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:16px;">Why Advertise on HOTVID?</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:24px;">🇺🇬</span>
+        <div><div style="font-weight:600;margin-bottom:2px;">Uganda's #1 Video Platform</div><div style="color:#666;font-size:13px;">Reach millions of Ugandans daily</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:24px;">🎯</span>
+        <div><div style="font-weight:600;margin-bottom:2px;">Targeted Advertising</div><div style="color:#666;font-size:13px;">Reach your exact audience</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:24px;">💰</span>
+        <div><div style="font-weight:600;margin-bottom:2px;">Affordable UGX Pricing</div><div style="color:#666;font-size:13px;">Start from just 10,000 UGX</div></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="showTab('create')">Create Your First Ad 🚀</button>
+</div>
+
+<!-- MY ADS -->
+<div id="tab-myads" class="container" style="display:none;">
+  <div id="ads-list"><div class="empty"><div class="ei">📢</div><div>No ads yet</div><div style="font-size:13px;margin-top:8px;">Create your first ad to reach Uganda</div></div></div>
+</div>
+
+<!-- CREATE AD -->
+<div id="tab-create" class="container" style="display:none;">
+  <div class="preview-card">
+    <div class="preview-label">Ad Preview</div>
+    <div class="preview-content">
+      <div class="preview-thumb" id="prev-thumb">🎬</div>
+      <div class="preview-info">
+        <div class="pt" id="prev-title">Your Ad Title</div>
+        <div class="pd" id="prev-desc">Your ad description here</div>
+        <button class="pb">Learn More</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Ad Title *</label>
+    <input type="text" id="ad-title" placeholder="e.g. Shop at Owino Market" maxlength="60"
+      oninput="document.getElementById('prev-title').textContent=this.value||'Your Ad Title'">
+  </div>
+
+  <div class="form-group">
+    <label>Description</label>
+    <textarea id="ad-desc" placeholder="What are you promoting?" maxlength="150"
+      oninput="document.getElementById('prev-desc').textContent=this.value||'Your ad description here'"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Ad Type</label>
+    <select id="ad-type">
+      <option value="video">Video Ad</option>
+      <option value="image">Image Ad</option>
+      <option value="banner">Banner Ad</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Media URL (Image/Video Link)</label>
+    <input type="url" id="ad-media" placeholder="https://...">
+  </div>
+
+  <div class="form-group">
+    <label>Click URL (Where to send users)</label>
+    <input type="url" id="ad-url" placeholder="https://your-website.com">
+  </div>
+
+  <div class="form-group">
+    <label>Budget</label>
+    <div class="budget-options">
+      <div class="budget-opt" onclick="selectBudget(10000,this)">
+        <div class="bamt">10K</div><div class="bdays">UGX · 3 days</div>
+      </div>
+      <div class="budget-opt" onclick="selectBudget(50000,this)">
+        <div class="bamt">50K</div><div class="bdays">UGX · 7 days</div>
+      </div>
+      <div class="budget-opt" onclick="selectBudget(100000,this)">
+        <div class="bamt">100K</div><div class="bdays">UGX · 14 days</div>
+      </div>
+      <div class="budget-opt" onclick="selectBudget(250000,this)">
+        <div class="bamt">250K</div><div class="bdays">UGX · 30 days</div>
+      </div>
+      <div class="budget-opt" onclick="selectBudget(500000,this)">
+        <div class="bamt">500K</div><div class="bdays">UGX · 60 days</div>
+      </div>
+      <div class="budget-opt" onclick="selectBudget(1000000,this)">
+        <div class="bamt">1M</div><div class="bdays">UGX · 90 days</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="targeting">
+    <h4>🎯 Targeting Options</h4>
+    <div class="target-row">
+      <span class="target-label">Uganda Only</span>
+      <div class="toggle on" id="tg-uganda" onclick="toggleTarget(this)"></div>
+    </div>
+    <div class="target-row">
+      <span class="target-label">18-35 Age Group</span>
+      <div class="toggle" id="tg-age" onclick="toggleTarget(this)"></div>
+    </div>
+    <div class="target-row">
+      <span class="target-label">Mobile Users Only</span>
+      <div class="toggle on" id="tg-mobile" onclick="toggleTarget(this)"></div>
+    </div>
+  </div>
+
+  <button class="submit-btn" id="create-btn" onclick="createAd()">
+    Launch Ad Campaign 🚀
+  </button>
+</div>
+
+<script>
+const API = 'http://178.105.190.123';
+const token = localStorage.getItem('hvt');
+if(!token){ location.href='/'; }
+
+let selectedBudget = 0;
+
+function showTab(tab){
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display='block';
+  const tabs = ['overview','myads','create'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  if(tab==='myads') loadMyAds();
+  if(tab==='overview') loadStats();
+}
+
+function selectBudget(amt, el){
+  document.querySelectorAll('.budget-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedBudget = amt;
+}
+
+function toggleTarget(el){ el.classList.toggle('on'); }
+
+async function loadStats(){
+  try{
+    const r = await fetch(API+'/api/ads/my-stats',{headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    document.getElementById('total-spent').textContent = fmt(d.total_spent||0);
+    document.getElementById('total-imp').textContent = fmt(d.total_impressions||0);
+    document.getElementById('active-ads').textContent = d.active_count||0;
+    document.getElementById('avg-cpm').textContent = fmt(d.avg_cpm||0);
+  }catch(e){}
+}
+
+async function loadMyAds(){
+  try{
+    const r = await fetch(API+'/api/ads/my-ads',{headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    const list = document.getElementById('ads-list');
+    if(!d.ads||!d.ads.length){
+      list.innerHTML='<div class="empty"><div class="ei">📢</div><div>No ads yet</div><div style="font-size:13px;margin-top:8px;">Create your first ad</div></div>';
+      return;
+    }
+    list.innerHTML = d.ads.map(ad=>`
+      <div class="ad-card">
+        <div class="ad-header">
+          <span class="ad-title">${ad.title}</span>
+          <span class="ad-status ${ad.status}">${ad.status}</span>
+        </div>
+        <div class="ad-stats">
+          <div class="ad-stat"><div class="val">${fmt(ad.impressions||0)}</div><div class="lbl">Views</div></div>
+          <div class="ad-stat"><div class="val">${fmt(ad.clicks||0)}</div><div class="lbl">Clicks</div></div>
+          <div class="ad-stat"><div class="val">${ad.ctr||0}%</div><div class="lbl">CTR</div></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min((ad.spent/ad.budget)*100,100)||0}%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:10px;">
+          <span>Spent: ${fmt(ad.spent||0)} UGX</span>
+          <span>Budget: ${fmt(ad.budget||0)} UGX</span>
+        </div>
+        <div class="ad-actions">
+          <button class="ad-btn pause" onclick="toggleAd('${ad.id}','${ad.status}')">${ad.status==='active'?'Pause':'Resume'}</button>
+          <button class="ad-btn delete" onclick="deleteAd('${ad.id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+async function createAd(){
+  const title = document.getElementById('ad-title').value.trim();
+  const desc = document.getElementById('ad-desc').value.trim();
+  const media_url = document.getElementById('ad-media').value.trim();
+  const target_url = document.getElementById('ad-url').value.trim();
+  if(!title){ alert('Enter ad title'); return; }
+  if(!selectedBudget){ alert('Select a budget'); return; }
+  if(!target_url){ alert('Enter click URL'); return; }
+
+  const btn = document.getElementById('create-btn');
+  btn.disabled=true; btn.textContent='Creating...';
+
+  try{
+    const r = await fetch(API+'/api/ads/create',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+      body:JSON.stringify({title,description:desc,media_url,target_url,budget:selectedBudget})
+    });
+    const d = await r.json();
+    if(d.error){ alert(d.error); btn.disabled=false; btn.textContent='Launch Ad Campaign 🚀'; return; }
+    alert('Ad created! Redirecting to payment...');
+    location.href='/payments.html';
+  }catch(e){
+    alert('Failed to create ad');
+    btn.disabled=false;
+    btn.textContent='Launch Ad Campaign 🚀';
+  }
+}
+
+async function toggleAd(id, status){
+  try{
+    await fetch(API+'/api/ads/'+id+'/toggle',{method:'POST',headers:{Authorization:'Bearer '+token}});
+    loadMyAds();
+  }catch(e){}
+}
+
+async function deleteAd(id){
+  if(!confirm('Delete this ad?')) return;
+  try{
+    await fetch(API+'/api/ads/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+    loadMyAds();
+  }catch(e){}
+}
+
+function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n); }
+
+loadStats();
+</script>
+</body>
+        </html>
