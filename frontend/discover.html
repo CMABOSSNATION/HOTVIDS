@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOTVID – Discover</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+
+  :root {
+    --hot: #ff2d55;
+    --bg: #0a0a0a;
+    --card: #141414;
+    --text: #ffffff;
+    --muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* SEARCH BAR */
+  .search-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .search-wrap {
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 10px 14px;
+    gap: 10px;
+    border: 1px solid #2a2a2a;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap:focus-within { border-color: var(--hot); }
+
+  .search-icon { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+
+  .search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+
+  .search-clear {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    display: none;
+  }
+
+  /* TABS */
+  .search-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 0 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .search-tabs::-webkit-scrollbar { display: none; }
+
+  .search-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .search-tab.active {
+    color: white;
+    border-bottom-color: var(--hot);
+  }
+
+  /* DISCOVER HOME */
+  .section { padding: 16px; }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* TRENDING HASHTAGS GRID */
+  .hashtags-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .hashtag-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #1a1a1a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hashtag-card:active { transform: scale(0.97); }
+
+  .hashtag-card.featured {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #1a0a0f, #200d15);
+    border-color: #ff2d5530;
+  }
+
+  .hashtag-bg {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 60px;
+    opacity: 0.08;
+    line-height: 1;
+  }
+
+  .hashtag-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .hashtag-card.featured .hashtag-name { font-size: 18px; color: var(--hot); }
+
+  .hashtag-stats {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* VIDEO GRID */
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .video-thumb {
+    aspect-ratio: 9/16;
+    background: var(--card);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .video-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-thumb-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, #000000aa);
+    padding: 20px 6px 6px;
+  }
+
+  .video-thumb-views {
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 3px #000;
+  }
+
+  /* HASHTAG PAGE */
+  .hashtag-page-header {
+    padding: 20px 16px 0;
+    text-align: center;
+  }
+
+  .hashtag-page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--hot);
+  }
+
+  .hashtag-page-stats {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    margin-bottom: 16px;
+  }
+
+  /* USER RESULTS */
+  .user-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+  }
+
+  .user-result:active { background: #1a1a1a; }
+
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff2d55, #ff6b35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; }
+  .user-name { font-size: 14px; font-weight: 700; }
+  .user-followers { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* SKELETON */
+  .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0af0;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+    z-index: 100;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .bottom-nav a.active { color: var(--hot); }
+  .bottom-nav a .icon { font-size: 22px; }
+
+  .spacer { height: 80px; }
+</style>
+</head>
+<body>
+
+<!-- SEARCH HEADER -->
+<div class="search-header">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input
+      class="search-input"
+      id="searchInput"
+      type="text"
+      placeholder="Search videos, users, #hashtags..."
+      oninput="handleSearchInput(this.value)"
+      onkeydown="if(event.key==='Enter') doSearch()"
+    />
+    <button class="search-clear" id="clearBtn" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<!-- TABS (shown during search) -->
+<div class="search-tabs" id="searchTabs" style="display:none">
+  <div class="search-tab active" onclick="switchTab('all', this)">All</div>
+  <div class="search-tab" onclick="switchTab('videos', this)">Videos</div>
+  <div class="search-tab" onclick="switchTab('users', this)">Users</div>
+  <div class="search-tab" onclick="switchTab('hashtags', this)">Hashtags</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+
+  <!-- DISCOVER HOME (default) -->
+  <div id="discoverHome">
+    <div class="section">
+      <div class="section-title">🔥 Trending Hashtags</div>
+      <div class="hashtags-grid" id="hashtagsGrid">
+        <!-- Skeletons -->
+        <div class="hashtag-card featured skeleton" style="height:80px"></div>
+        <div class="hashtag-card skeleton" style="height:70px"></div>
+        <div class="hashtag-card skeleton" style="height:70px"></div>
+        <div class="hashtag-card skeleton" style="height:70px"></div>
+        <div class="hashtag-card skeleton" style="height:70px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HASHTAG PAGE -->
+  <div id="hashtagPage" style="display:none">
+    <div class="hashtag-page-header">
+      <div class="hashtag-page-title" id="hashtagPageTitle">#hashtag</div>
+      <div class="hashtag-page-stats" id="hashtagPageStats"></div>
+    </div>
+    <div class="videos-grid" id="hashtagVideosGrid"></div>
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  <div id="searchResults" style="display:none"></div>
+
+</div>
+
+<div class="spacer"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="index.html"><span class="icon">🏠</span>Home</a>
+  <a href="trending.html"><span class="icon">🔥</span>Trending</a>
+  <a href="upload.html"><span class="icon">➕</span>Upload</a>
+  <a href="notifications.html"><span class="icon">🔔</span>Inbox</a>
+  <a href="profile.html"><span class="icon">👤</span>Profile</a>
+</nav>
+
+<script>
+  const API = '';
+  let searchTimer = null;
+  let currentTab = 'all';
+
+  const fmt = (n) => {
+    if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+    return n || 0;
+  };
+
+  // ── DISCOVER HOME ────────────────────────────────────────────
+  async function loadTrendingHashtags() {
+    try {
+      const res = await fetch(`${API}/api/search/hashtags/trending`);
+      const data = await res.json();
+      if (!data.success || !data.data.length) return;
+
+      const grid = document.getElementById('hashtagsGrid');
+      const emojis = ['🔥','🎵','💃','🏆','😂','❤️','🌍','🎬','💰','👑'];
+
+      grid.innerHTML = data.data.slice(0, 8).map((h, i) => `
+        <div class="hashtag-card ${i === 0 ? 'featured' : ''}"
+             onclick="openHashtag('${h.hashtag}')">
+          <div class="hashtag-bg">${emojis[i % emojis.length]}</div>
+          <div class="hashtag-name">#${h.hashtag}</div>
+          <div class="hashtag-stats">${fmt(h.video_count)} videos · ${fmt(h.total_views)} views</div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error('loadTrendingHashtags error:', err);
+    }
+  }
+
+  // ── HASHTAG PAGE ─────────────────────────────────────────────
+  async function openHashtag(tag) {
+    document.getElementById('discoverHome').style.display = 'none';
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('hashtagPage').style.display = 'block';
+    document.getElementById('searchTabs').style.display = 'none';
+
+    document.getElementById('hashtagPageTitle').textContent = '#' + tag;
+    document.getElementById('hashtagPageStats').textContent = 'Loading...';
+    document.getElementById('hashtagVideosGrid').innerHTML = '';
+
+    // Set search input
+    document.getElementById('searchInput').value = '#' + tag;
+    document.getElementById('clearBtn').style.display = 'block';
+
+    try {
+      const res = await fetch(`${API}/api/search/hashtags/${tag}`);
+      const data = await res.json();
+
+      document.getElementById('hashtagPageStats').textContent =
+        `${fmt(data.total)} videos`;
+
+      if (!data.data?.length) {
+        document.getElementById('hashtagVideosGrid').innerHTML = `
+          <div class="empty" style="grid-column:1/-1">
+            <div class="icon">🎬</div>
+            <div>No videos with #${tag} yet</div>
+          </div>`;
+        return;
+      }
+
+      document.getElementById('hashtagVideosGrid').innerHTML = data.data.map(v => `
+        <div class="video-thumb" onclick="window.location='feed.html?v=${v.id}'">
+          <img
+            src="${v.thumbnail_url || 'https://placehold.co/200x355/141414/333?text=▶'}"
+            alt="${v.title || ''}"
+            loading="lazy"
+            onerror="this.src='https://placehold.co/200x355/141414/333?text=▶'"
+          />
+          <div class="video-thumb-overlay">
+            <div class="video-thumb-views">👁️ ${fmt(v.view_count)}</div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error('openHashtag error:', err);
+    }
+  }
+
+  // ── SEARCH ───────────────────────────────────────────────────
+  function handleSearchInput(val) {
+    const clearBtn = document.getElementById('clearBtn');
+    clearBtn.style.display = val.length ? 'block' : 'none';
+
+    clearTimeout(searchTimer);
+
+    if (!val.trim()) {
+      showDiscover();
+      return;
+    }
+
+    // If starts with # open hashtag directly
+    if (val.startsWith('#') && val.length > 1 && !val.includes(' ')) {
+      searchTimer = setTimeout(() => openHashtag(val.slice(1)), 400);
+      return;
+    }
+
+    document.getElementById('searchTabs').style.display = 'flex';
+    searchTimer = setTimeout(() => doSearch(val), 400);
+  }
+
+  async function doSearch(q) {
+    q = q || document.getElementById('searchInput').value.trim();
+    if (!q) return;
+
+    document.getElementById('discoverHome').style.display = 'none';
+    document.getElementById('hashtagPage').style.display = 'none';
+    document.getElementById('searchResults').style.display = 'block';
+    document.getElementById('searchTabs').style.display = 'flex';
+
+    document.getElementById('searchResults').innerHTML =
+      '<div style="padding:20px;text-align:center;color:#555">Searching...</div>';
+
+    try {
+      const res = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}&type=${currentTab}`);
+      const data = await res.json();
+      renderSearchResults(data);
+    } catch (err) {
+      document.getElementById('searchResults').innerHTML =
+        '<div class="empty"><div class="icon">⚠️</div><div>Search failed</div></div>';
+    }
+  }
+
+  function renderSearchResults(data) {
+    const container = document.getElementById('searchResults');
+    const q = data.query;
+    let html = '';
+
+    const { videos = [], users = [], hashtags = [] } = data.data || {};
+
+    // Hashtags
+    if (hashtags.length && (currentTab === 'all' || currentTab === 'hashtags')) {
+      html += `<div class="section"><div class="section-title">🏷️ Hashtags</div>
+        <div class="hashtags-grid">
+          ${hashtags.map(h => `
+            <div class="hashtag-card" onclick="openHashtag('${h.hashtag}')">
+              <div class="hashtag-name">#${h.hashtag}</div>
+              <div class="hashtag-stats">${fmt(h.video_count)} videos</div>
+            </div>
+          `).join('')}
+        </div></div>`;
+    }
+
+    // Users
+    if (users.length && (currentTab === 'all' || currentTab === 'users')) {
+      html += `<div class="section"><div class="section-title">👤 Users</div>
+        ${users.map(u => `
+          <div class="user-result" onclick="window.location='profile.html?id=${u.id}'">
+            <div class="user-avatar">${u.username[0].toUpperCase()}</div>
+            <div class="user-info">
+              <div class="user-name">@${u.username}</div>
+              <div class="user-followers">${fmt(u.followers_count)} followers</div>
+            </div>
+          </div>
+        `).join('')}</div>`;
+    }
+
+    // Videos
+    if (videos.length && (currentTab === 'all' || currentTab === 'videos')) {
+      html += `<div class="section"><div class="section-title">🎬 Videos</div>
+        <div class="videos-grid">
+          ${videos.map(v => `
+            <div class="video-thumb" onclick="window.location='feed.html?v=${v.id}'">
+              <img
+                src="${v.thumbnail_url || 'https://placehold.co/200x355/141414/333?text=▶'}"
+                loading="lazy"
+                onerror="this.src='https://placehold.co/200x355/141414/333?text=▶'"
+              />
+              <div class="video-thumb-overlay">
+                <div class="video-thumb-views">👁️ ${fmt(v.view_count)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div></div>`;
+    }
+
+    if (!html) {
+      html = `<div class="empty">
+        <div class="icon">🔍</div>
+        <h3>No results for "${q}"</h3>
+        <p>Try different keywords or hashtags</p>
+      </div>`;
+    }
+
+    container.innerHTML = html;
+  }
+
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    doSearch();
+  }
+
+  function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('clearBtn').style.display = 'none';
+    showDiscover();
+  }
+
+  function showDiscover() {
+    document.getElementById('discoverHome').style.display = 'block';
+    document.getElementById('hashtagPage').style.display = 'none';
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('searchTabs').style.display = 'none';
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────
+  // Check if opened with a hashtag param
+  const params = new URLSearchParams(window.location.search);
+  const tagParam = params.get('tag');
+  if (tagParam) {
+    openHashtag(tagParam);
+  } else {
+    loadTrendingHashtags();
+  }
+</script>
+</body>
+</html>
