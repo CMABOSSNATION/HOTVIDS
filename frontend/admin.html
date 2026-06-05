@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HOTVID Admin — Control Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ───────────────────── DESIGN TOKENS ───────────────────── */
+:root {
+  --bg:       #0a0b0d;
+  --surface:  #111317;
+  --card:     #161a1f;
+  --border:   #1f242b;
+  --border2:  #2a3040;
+  --text:     #e8eaf0;
+  --muted:    #6b7590;
+  --accent:   #ff3b5c;          /* HOTVID red */
+  --gold:     #ffb830;
+  --green:    #22d37a;
+  --blue:     #3b8bff;
+  --purple:   #9b5de5;
+  --sidebar-w: 230px;
+  --radius:   12px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* ───────────────────── SCROLLBAR ───────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ───────────────────── SIDEBAR ───────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+  transition: transform .3s ease;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 800; font-size: 15px; color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(255,59,92,.35);
+}
+.logo-text { font-family: var(--font-head); font-weight: 800; font-size: 18px; letter-spacing: -.5px; }
+.logo-text span { color: var(--accent); }
+
+.nav-section { padding: 18px 12px 6px; }
+.nav-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 8px; margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 9px;
+  cursor: pointer; color: var(--muted);
+  font-size: 13.5px; font-weight: 500;
+  transition: all .18s ease;
+  position: relative;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active {
+  background: rgba(255,59,92,.12);
+  color: var(--accent);
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%; border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff; font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 20px;
+  font-family: var(--font-mono);
+}
+.badge.gold { background: var(--gold); color: #000; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+.admin-profile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 9px;
+  cursor: pointer;
+}
+.admin-profile:hover { background: var(--card); }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
+  flex-shrink: 0;
+}
+.admin-info .name { font-size: 13px; font-weight: 600; }
+.admin-info .role { font-size: 11px; color: var(--muted); }
+
+/* ───────────────────── MAIN ───────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ───────────────────── TOPBAR ───────────────────── */
+.topbar {
+  height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title {
+  font-family: var(--font-head);
+  font-size: 17px; font-weight: 700;
+}
+.topbar-sub { font-size: 12px; color: var(--muted); }
+.spacer { flex: 1; }
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px;
+  width: 220px;
+}
+.search-bar input {
+  background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--font-body);
+  font-size: 13px; width: 100%;
+}
+.search-bar input::placeholder { color: var(--muted); }
+.topbar-btn {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px;
+  position: relative; transition: all .18s;
+}
+.topbar-btn:hover { background: var(--border); }
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+}
+
+/* ───────────────────── CONTENT ───────────────────── */
+.content {
+  padding: 28px;
+  flex: 1;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ───────────────────── STATS GRID ───────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+.stat-card.red::after   { background: var(--accent); }
+.stat-card.gold::after  { background: var(--gold); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.blue::after  { background: var(--blue); }
+
+.stat-label { font-size: 11.5px; color: var(--muted); font-weight: 500; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-value {
+  font-family: var(--font-head);
+  font-size: 28px; font-weight: 800;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.stat-delta {
+  font-size: 11.5px; font-family: var(--font-mono);
+  display: flex; align-items: center; gap: 4px;
+}
+.stat-delta.up   { color: var(--green); }
+.stat-delta.down { color: var(--accent); }
+.stat-icon {
+  position: absolute; top: 18px; right: 18px;
+  font-size: 22px; opacity: .15;
+}
+
+/* ───────────────────── TWO COL GRID ───────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+/* ───────────────────── PANEL ───────────────────── */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.panel-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.panel-head h3 { font-family: var(--font-head); font-size: 14.5px; font-weight: 700; }
+.panel-head .ph-sub { font-size: 11.5px; color: var(--muted); margin-left: auto; }
+.panel-head .btn-sm {
+  margin-left: auto;
+  padding: 5px 12px; border-radius: 7px;
+  background: var(--accent); color: #fff;
+  font-size: 11.5px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: var(--font-body);
+  transition: opacity .2s;
+}
+.panel-head .btn-sm:hover { opacity: .85; }
+
+/* ───────────────────── TABLE ───────────────────── */
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  padding: 10px 16px;
+  text-align: left; font-size: 11px;
+  font-weight: 600; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,.02); }
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.u-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff3b5c, #9b5de5);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 11px; color: #fff;
+  flex-shrink: 0;
+}
+.u-name { font-weight: 500; }
+.u-handle { font-size: 11px; color: var(--muted); }
+
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  font-family: var(--font-mono);
+}
+.pill.active  { background: rgba(34,211,122,.15); color: var(--green); }
+.pill.banned  { background: rgba(255,59,92,.15);  color: var(--accent); }
+.pill.pending { background: rgba(255,184,48,.15); color: var(--gold); }
+.pill.live    { background: rgba(255,59,92,.15);  color: var(--accent); }
+
+.action-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11.5px; cursor: pointer;
+  color: var(--text); font-family: var(--font-body);
+  transition: all .15s;
+}
+.action-btn:hover { background: var(--border); }
+.action-btn.danger { color: var(--accent); border-color: rgba(255,59,92,.3); }
+.action-btn.danger:hover { background: rgba(255,59,92,.1); }
+.action-btn.success { color: var(--green); border-color: rgba(34,211,122,.3); }
+
+/* ───────────────────── MINI CHART ───────────────────── */
+.mini-chart { padding: 20px; }
+.chart-bars {
+  display: flex; align-items: flex-end;
+  gap: 4px; height: 80px;
+}
+.bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  background: var(--border2);
+  transition: background .2s;
+  cursor: pointer; min-width: 0;
+}
+.bar:hover { background: var(--accent); }
+.bar.highlight { background: var(--accent); opacity: .8; }
+.chart-labels {
+  display: flex; gap: 4px;
+  margin-top: 6px;
+}
+.chart-labels span {
+  flex: 1; text-align: center;
+  font-size: 9.5px; color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ───────────────────── REVENUE SPLIT ───────────────────── */
+.rev-split { padding: 20px; }
+.split-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.split-row:last-child { margin-bottom: 0; }
+.split-label { font-size: 13px; font-weight: 500; width: 120px; flex-shrink: 0; }
+.split-bar-wrap {
+  flex: 1; background: var(--border);
+  border-radius: 6px; height: 8px; overflow: hidden;
+}
+.split-bar-fill {
+  height: 100%; border-radius: 6px;
+  transition: width 1s ease;
+}
+.split-val { font-family: var(--font-mono); font-size: 12px; color: var(--muted); width: 90px; text-align: right; }
+
+/* ───────────────────── TOP CREATORS ───────────────────── */
+.creator-list { padding: 4px 0; }
+.creator-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+  cursor: pointer;
+}
+.creator-row:last-child { border-bottom: none; }
+.creator-row:hover { background: rgba(255,255,255,.02); }
+.cr-rank {
+  width: 20px; font-family: var(--font-mono);
+  font-size: 12px; color: var(--muted); text-align: center;
+}
+.cr-rank.gold { color: var(--gold); font-weight: 700; }
+.cr-info { flex: 1; }
+.cr-name { font-size: 13px; font-weight: 500; }
+.cr-stat { font-size: 11.5px; color: var(--muted); font-family: var(--font-mono); }
+.cr-earn { font-family: var(--font-mono); font-size: 12px; color: var(--green); }
+
+/* ───────────────────── ACTIVITY FEED ───────────────────── */
+.activity-feed { padding: 4px 0; max-height: 320px; overflow-y: auto; }
+.act-item {
+  display: flex; gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.act-item:last-child { border-bottom: none; }
+.act-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  margin-top: 5px; flex-shrink: 0;
+}
+.act-text { font-size: 12.5px; line-height: 1.5; flex: 1; }
+.act-text strong { font-weight: 600; }
+.act-time { font-size: 11px; color: var(--muted); font-family: var(--font-mono); white-space: nowrap; }
+
+/* ───────────────────── ADS PAGE ───────────────────── */
+.ads-kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px;
+}
+.kpi-label { font-size: 11.5px; color: var(--muted); margin-bottom: 6px; }
+.kpi-value { font-family: var(--font-head); font-size: 22px; font-weight: 800; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ───────────────────── MODAL ───────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px;
+  width: 460px; max-width: 95vw;
+  animation: modalIn .25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-head {
+  display: flex; align-items: center;
+  margin-bottom: 22px;
+}
+.modal-head h2 { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+.modal-close {
+  margin-left: auto; width: 32px; height: 32px;
+  border-radius: 8px; background: var(--surface);
+  border: 1px solid var(--border); cursor: pointer;
+  font-size: 16px; display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: all .15s;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px;
+  font-weight: 600; color: var(--muted);
+  margin-bottom: 6px; letter-spacing: .4px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  color: var(--text); font-family: var(--font-body);
+  font-size: 13.5px; outline: none;
+  transition: border-color .2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent);
+}
+.form-group textarea { min-height: 80px; resize: vertical; }
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+.btn {
+  padding: 9px 20px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: var(--font-body);
+  transition: all .18s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { opacity: .88; }
+.btn-secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-secondary:hover { background: var(--border); }
+
+/* ───────────────────── TOAST ───────────────────── */
+.toast-wrap {
+  position: fixed; bottom: 28px; right: 28px;
+  display: flex; flex-direction: column; gap: 10px;
+  z-index: 999;
+}
+.toast {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; min-width: 240px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.4);
+  animation: toastIn .3s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.toast-icon { font-size: 18px; }
+.toast.success { border-color: rgba(34,211,122,.3); }
+.toast.error   { border-color: rgba(255,59,92,.3); }
+
+/* ───────────────────── OVERVIEW PAGE SPECIFIC ───────────────────── */
+.live-banner {
+  background: linear-gradient(135deg, rgba(255,59,92,.12) 0%, rgba(155,93,229,.08) 100%);
+  border: 1px solid rgba(255,59,92,.25);
+  border-radius: var(--radius);
+  padding: 16px 22px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px;
+}
+.live-pulse {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.4s ease infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,59,92,.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,59,92,0); }
+}
+.live-text { flex: 1; }
+.live-text strong { font-weight: 700; }
+.live-text span   { font-size: 12.5px; color: var(--muted); margin-left: 8px; }
+.live-stat {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  display: flex; gap: 20px;
+}
+.live-stat div { text-align: right; }
+.live-stat .ls-val { font-weight: 600; font-size: 15px; }
+.live-stat .ls-label { font-size: 10px; color: var(--muted); }
+
+/* ───────────────────── SETTINGS ───────────────────── */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.setting-group {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.sg-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-head); font-size: 14px; font-weight: 700;
+}
+.sg-body { padding: 20px; }
+.toggle-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px;
+}
+.toggle-row:last-child { margin-bottom: 0; }
+.toggle-label { flex: 1; font-size: 13.5px; }
+.toggle-sub { font-size: 11.5px; color: var(--muted); }
+.toggle {
+  width: 40px; height: 22px;
+  background: var(--border2); border-radius: 20px;
+  cursor: pointer; position: relative;
+  transition: background .25s; flex-shrink: 0;
+  border: none;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content: '';
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: left .25s;
+}
+.toggle.on::after { left: 21px; }
+
+/* ───────────────────── RESPONSIVE ───────────────────── */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .settings-grid { grid-template-columns: 1fr; }
+  .ads-kpi { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">HV</div>
+    <div class="logo-text">HOT<span>VID</span></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item active" onclick="showPage('overview',this)">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" onclick="showPage('analytics',this)">
+      <span class="nav-icon">📈</span> Analytics
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Content</div>
+    <a class="nav-item" onclick="showPage('videos',this)">
+      <span class="nav-icon">🎬</span> Videos
+      <span class="badge">12</span>
+    </a>
+    <a class="nav-item" onclick="showPage('users',this)">
+      <span class="nav-icon">👥</span> Users
+    </a>
+    <a class="nav-item" onclick="showPage('comments',this)">
+      <span class="nav-icon">💬</span> Comments
+      <span class="badge">3</span>
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Monetisation</div>
+    <a class="nav-item" onclick="showPage('revenue',this)">
+      <span class="nav-icon">💰</span> Revenue
+    </a>
+    <a class="nav-item" onclick="showPage('ads',this)">
+      <span class="nav-icon">📣</span> Ads Manager
+    </a>
+    <a class="nav-item" onclick="showPage('creators',this)">
+      <span class="nav-icon">⭐</span> Creators
+    </a>
+    <a class="nav-item" onclick="showPage('withdrawals',this)">
+      <span class="nav-icon">📤</span> Withdrawals
+      <span class="badge gold">5</span>
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Platform</div>
+    <a class="nav-item" onclick="showPage('livestreams',this)">
+      <span class="nav-icon">🔴</span> Live Streams
+    </a>
+    <a class="nav-item" onclick="showPage('settings',this)">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="admin-profile">
+      <div class="avatar">SA</div>
+      <div class="admin-info">
+        <div class="name">Super Admin</div>
+        <div class="role">HOTVID Uganda</div>
+      </div>
+      <span style="font-size:14px;color:var(--muted);margin-left:auto">⏏</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-sub" id="page-sub">Welcome back, Admin</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" placeholder="Search users, videos…" id="globalSearch"/>
+    </div>
+    <div class="topbar-btn" onclick="showToast('No new notifications','✅','success')">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+    <div class="topbar-btn" onclick="toggleSidebar()">☰</div>
+  </div>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content">
+
+    <!-- ──── OVERVIEW ──── -->
+    <div class="page active" id="page-overview">
+
+      <div class="live-banner">
+        <div class="live-pulse"></div>
+        <div class="live-text">
+          <strong>Platform is LIVE</strong>
+          <span>3 streams active • 847 concurrent viewers</span>
+        </div>
+        <div class="live-stat">
+          <div><div class="ls-val" id="lv-online">2,341</div><div class="ls-label">Online Now</div></div>
+          <div><div class="ls-val" id="lv-today">UGX 1.2M</div><div class="ls-label">Revenue Today</div></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card red">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value">48,291</div>
+          <div class="stat-delta up">▲ +1,204 this week</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Monthly Revenue</div>
+          <div class="stat-value">UGX 34.8M</div>
+          <div class="stat-delta up">▲ +18% vs last month</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">🎬</div>
+          <div class="stat-label">Videos Uploaded</div>
+          <div class="stat-value">127,440</div>
+          <div class="stat-delta up">▲ +3,210 this week</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">👁</div>
+          <div class="stat-label">Total Video Views</div>
+          <div class="stat-value">8.4M</div>
+          <div class="stat-delta up">▲ +12% vs last month</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Views chart -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Daily Views — June 2025</h3>
+            <span class="ph-sub">Last 14 days</span>
+          </div>
+          <div class="mini-chart">
+            <div class="chart-bars" id="viewsChart"></div>
+            <div class="chart-labels" id="viewsLabels"></div>
+          </div>
+        </div>
+
+        <!-- Revenue split -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Revenue Breakdown</h3>
+            <span class="ph-sub">This month</span>
+          </div>
+          <div class="rev-split">
+            <div class="split-row">
+              <div class="split-label">🎁 Gifts</div>
+              <div class="split-bar-wrap"><div class="split-bar-fill" style="width:62%;background:var(--accent)"></div></div>
+              <div class="split-val">UGX 21.5M</div>
+            </div>
+            <div class="split-row">
+              <div class="split-label">📣 Ads</div>
+              <div class="split-bar-wrap"><div class="split-bar-fill" style="width:28%;background:var(--blue)"></div></div>
+              <div class="split-val">UGX 9.7M</div>
+            </div>
+            <div class="split-row">
+              <div class="split-label">🏆 Subscriptions</div>
+              <div class="split-bar-wrap"><div class="split-bar-fill" style="width:10%;background:var(--gold)"></div></div>
+              <div class="split-val">UGX 3.6M</div>
+            </div>
+          </div>
+          <div style="padding:0 20px 16px">
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.7">
+              Creator payout <strong style="color:var(--green)">UGX 19.4M</strong> (70% gifts + 40% ads)<br>
+              Platform keeps <strong style="color:var(--accent)">UGX 15.4M</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Top creators -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Top Creators</h3>
+            <button class="btn-sm" onclick="showPage('creators',document.querySelector('.nav-item:nth-child(10))'))">See all</button>
+          </div>
+          <div class="creator-list" id="topCreatorsList"></div>
+        </div>
+
+        <!-- Activity feed -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Live Activity</h3>
+            <span class="ph-sub" style="color:var(--green);font-size:11px">● LIVE</span>
+          </div>
+          <div class="activity-feed" id="activityFeed"></div>
+        </div>
+      </div>
+    </div><!-- /overview -->
+
+
+    <!-- ──── USERS ──── -->
+    <div class="page" id="page-users">
+      <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center">
+        <div style="font-size:13px;color:var(--muted)">48,291 total users</div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openModal('addUser')">+ Add User</button>
+        <select style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none">
+          <option>All users</option>
+          <option>Active</option>
+          <option>Banned</option>
+          <option>Creators</option>
+        </select>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Phone</th>
+                <th>Joined</th>
+                <th>Videos</th>
+                <th>Followers</th>
+                <th>Wallet (UGX)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── VIDEOS ──── -->
+    <div class="page" id="page-videos">
+      <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center">
+        <div style="font-size:13px;color:var(--muted)">127,440 videos</div>
+        <div class="spacer"></div>
+        <select style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none">
+          <option>All videos</option>
+          <option>Trending</option>
+          <option>Flagged</option>
+          <option>Pending review</option>
+        </select>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Creator</th>
+                <th>Views</th>
+                <th>Likes</th>
+                <th>Comments</th>
+                <th>Gifts (UGX)</th>
+                <th>Uploaded</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="videosTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── ADS ──── -->
+    <div class="page" id="page-ads">
+      <div class="ads-kpi">
+        <div class="kpi-card">
+          <div class="kpi-label">ACTIVE CAMPAIGNS</div>
+          <div class="kpi-value" style="color:var(--blue)">14</div>
+          <div class="kpi-sub">3 pending approval</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">TOTAL IMPRESSIONS</div>
+          <div class="kpi-value" style="color:var(--gold)">4.2M</div>
+          <div class="kpi-sub">This month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">AD REVENUE</div>
+          <div class="kpi-value" style="color:var(--green)">UGX 9.7M</div>
+          <div class="kpi-sub">Platform share: UGX 5.8M</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openModal('addAd')">+ New Campaign</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Campaign</th>
+                <th>Advertiser</th>
+                <th>Type</th>
+                <th>Budget (UGX)</th>
+                <th>Spent (UGX)</th>
+                <th>Impressions</th>
+                <th>CTR</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── REVENUE ──── -->
+    <div class="page" id="page-revenue">
+      <div class="stats-grid">
+        <div class="stat-card gold">
+          <div class="stat-icon">💵</div>
+          <div class="stat-label">Total Revenue (MTD)</div>
+          <div class="stat-value">UGX 34.8M</div>
+          <div class="stat-delta up">▲ +18% MoM</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">🎁</div>
+          <div class="stat-label">Gift Revenue</div>
+          <div class="stat-value">UGX 21.5M</div>
+          <div class="stat-delta up">▲ +22% MoM</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📣</div>
+          <div class="stat-label">Ad Revenue</div>
+          <div class="stat-value">UGX 9.7M</div>
+          <div class="stat-delta up">▲ +9% MoM</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">📤</div>
+          <div class="stat-label">Creator Payouts</div>
+          <div class="stat-value">UGX 19.4M</div>
+          <div class="stat-delta down">▼ Payout pending: UGX 3.2M</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Transaction History</h3><span class="ph-sub">All payment events</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>From</th><th>To</th><th>Amount (UGX)</th><th>Method</th><th>Status</th></tr>
+            </thead>
+            <tbody id="revenueTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── CREATORS ──── -->
+    <div class="page" id="page-creators">
+      <div class="panel">
+        <div class="panel-head"><h3>Creator Leaderboard</h3><span class="ph-sub">Ranked by earnings</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Creator</th><th>Videos</th><th>Followers</th><th>Total Views</th><th>Gift Earned (UGX)</th><th>Wallet (UGX)</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="creatorsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── WITHDRAWALS ──── -->
+    <div class="page" id="page-withdrawals">
+      <div style="margin-bottom:20px;display:flex;gap:12px;align-items:center">
+        <div style="background:rgba(255,184,48,.12);border:1px solid rgba(255,184,48,.3);border-radius:9px;padding:10px 16px;font-size:13px">
+          ⏳ <strong>5 pending withdrawals</strong> — total UGX 3.2M awaiting approval
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="approveAll()">Approve All Pending</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Creator</th><th>Phone / MoMo</th><th>Amount (UGX)</th><th>Method</th><th>Requested</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="withdrawalsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── COMMENTS ──── -->
+    <div class="page" id="page-comments">
+      <div class="panel">
+        <div class="panel-head"><h3>Comment Moderation</h3><span class="ph-sub">Flagged first</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Comment</th><th>Video</th><th>Reported</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="commentsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── LIVE STREAMS ──── -->
+    <div class="page" id="page-livestreams">
+      <div class="stats-grid">
+        <div class="stat-card red">
+          <div class="stat-icon">🔴</div>
+          <div class="stat-label">Active Streams</div>
+          <div class="stat-value">3</div>
+          <div class="stat-delta up">▲ peak 12 today</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-icon">👁</div>
+          <div class="stat-label">Current Viewers</div>
+          <div class="stat-value">847</div>
+          <div class="stat-delta up">▲ live now</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">🎁</div>
+          <div class="stat-label">Gifts Today (UGX)</div>
+          <div class="stat-value">UGX 340K</div>
+          <div class="stat-delta up">▲ from live gifts</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">📡</div>
+          <div class="stat-label">RTMP Connections</div>
+          <div class="stat-value">3</div>
+          <div class="stat-delta up">stable</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Active Streams</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Streamer</th><th>Title</th><th>Viewers</th><th>Duration</th><th>Gifts (UGX)</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="streamsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── ANALYTICS ──── -->
+    <div class="page" id="page-analytics">
+      <div class="stats-grid">
+        <div class="stat-card red"><div class="stat-icon">📱</div><div class="stat-label">DAU</div><div class="stat-value">12,441</div><div class="stat-delta up">▲ +8% WoW</div></div>
+        <div class="stat-card gold"><div class="stat-icon">⏱</div><div class="stat-label">Avg Session</div><div class="stat-value">18.4min</div><div class="stat-delta up">▲ +2.1min</div></div>
+        <div class="stat-card green"><div class="stat-icon">🔁</div><div class="stat-label">Retention D7</div><div class="stat-value">41%</div><div class="stat-delta up">▲ +3pts</div></div>
+        <div class="stat-card blue"><div class="stat-icon">📍</div><div class="stat-label">Top Region</div><div class="stat-value">Kampala</div><div class="stat-delta up">▲ 62% of users</div></div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>User Growth</h3><span class="ph-sub">Last 14 days</span></div>
+          <div class="mini-chart">
+            <div class="chart-bars" id="growthChart"></div>
+            <div class="chart-labels" id="growthLabels"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Traffic by District</h3></div>
+          <div style="padding:20px" id="districtList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── SETTINGS ──── -->
+    <div class="page" id="page-settings">
+      <div class="settings-grid">
+        <div class="setting-group">
+          <div class="sg-head">💰 Revenue Splits</div>
+          <div class="sg-body">
+            <div class="form-group">
+              <label>Creator Gift Share (%)</label>
+              <input type="number" value="70" min="0" max="100"/>
+            </div>
+            <div class="form-group">
+              <label>Creator Ad Share (%)</label>
+              <input type="number" value="40" min="0" max="100"/>
+            </div>
+            <div class="form-group">
+              <label>Min Withdrawal (UGX)</label>
+              <input type="number" value="5000"/>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Revenue settings saved','✅','success')">Save Changes</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="sg-head">🎁 Virtual Gifts</div>
+          <div class="sg-body">
+            <div class="form-group">
+              <label>Gift Pack 1 Name</label>
+              <input type="text" value="Boda Boda ⚡"/>
+            </div>
+            <div class="form-group">
+              <label>Gift Pack 1 Price (UGX)</label>
+              <input type="number" value="500"/>
+            </div>
+            <div class="form-group">
+              <label>Gift Pack 2 Name</label>
+              <input type="text" value="Rolex 🌯"/>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Gift settings saved','✅','success')">Save Changes</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="sg-head">📱 Platform Features</div>
+          <div class="sg-body">
+            <div class="toggle-row">
+              <div><div class="toggle-label">Live Streaming</div><div class="toggle-sub">RTMP live streams</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Virtual Gifts</div><div class="toggle-sub">Gift sending system</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Ads System</div><div class="toggle-sub">In-feed advertisements</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">SMS Voting</div><div class="toggle-sub">USSD/SMS interaction</div></div>
+              <button class="toggle" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">PWA Install</div><div class="toggle-sub">Install to homescreen</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="sg-head">🔒 Security</div>
+          <div class="sg-body">
+            <div class="form-group">
+              <label>JWT Token Expiry</label>
+              <select><option>7 days</option><option>30 days</option><option>1 day</option></select>
+            </div>
+            <div class="form-group">
+              <label>Max Upload Size (MB)</label>
+              <input type="number" value="200"/>
+            </div>
+            <div class="toggle-row" style="margin-top:4px">
+              <div><div class="toggle-label">Maintenance Mode</div><div class="toggle-sub">Block public access</div></div>
+              <button class="toggle" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Security settings saved','✅','success')" style="margin-top:16px">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+<div class="modal-overlay" id="modal-addUser" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Add User</h2>
+      <button class="modal-close" onclick="closeModal('addUser')">✕</button>
+    </div>
+    <div class="form-group"><label>FULL NAME</label><input type="text" placeholder="e.g. Aisha Nakato"/></div>
+    <div class="form-group"><label>PHONE NUMBER</label><input type="text" placeholder="+256 7XX XXX XXX"/></div>
+    <div class="form-group"><label>USERNAME</label><input type="text" placeholder="@username"/></div>
+    <div class="form-group"><label>ROLE</label>
+      <select><option>Viewer</option><option>Creator</option><option>Admin</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('addUser')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Create User</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addAd" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>New Ad Campaign</h2>
+      <button class="modal-close" onclick="closeModal('addAd')">✕</button>
+    </div>
+    <div class="form-group"><label>CAMPAIGN NAME</label><input type="text" placeholder="e.g. Nile Special Promo"/></div>
+    <div class="form-group"><label>ADVERTISER</label><input type="text" placeholder="Company name"/></div>
+    <div class="form-group"><label>AD TYPE</label>
+      <select><option>In-Feed Video</option><option>Banner</option><option>Sponsored Hashtag</option></select>
+    </div>
+    <div class="form-group"><label>BUDGET (UGX)</label><input type="number" placeholder="e.g. 2000000"/></div>
+    <div class="form-group"><label>DURATION (days)</label><input type="number" placeholder="e.g. 30"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('addAd')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAd()">Launch Campaign</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TOASTS ═══════════════════ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ═══════════════════ JS ═══════════════════ -->
+<script>
+/* ─── DATA ─── */
+const USERS = [
+  {id:1, name:'Aisha Nakato',    handle:'@aisha_ug',     phone:'+256 774 111 000', joined:'2024-03-12', videos:142, followers:28400, wallet:145000, status:'active'},
+  {id:2, name:'Bosco Okello',    handle:'@boscovids',    phone:'+256 701 222 111', joined:'2024-05-01', videos:87,  followers:12100, wallet:88000,  status:'active'},
+  {id:3, name:'Grace Atim',      handle:'@grace_atim',   phone:'+256 756 333 222', joined:'2024-06-14', videos:210, followers:61000, wallet:312000, status:'active'},
+  {id:4, name:'Moses Kiggundu',  handle:'@moses_kig',    phone:'+256 785 444 333', joined:'2024-07-22', videos:55,  followers:4200,  wallet:21000,  status:'pending'},
+  {id:5, name:'Diana Akello',    handle:'@diana_akello', phone:'+256 712 555 444', joined:'2024-08-09', videos:0,   followers:220,   wallet:0,      status:'banned'},
+  {id:6, name:'Patrick Tumwine', handle:'@ptumwine',     phone:'+256 741 666 555', joined:'2024-09-30', videos:320, followers:95000, wallet:780000, status:'active'},
+];
+
+const VIDEOS = [
+  {id:1, title:'Mukiga Dance Challenge',        creator:'@grace_atim',  views:'2.1M', likes:'134K', comments:4210, gifts:280000,  uploaded:'2025-05-28', status:'active'},
+  {id:2, title:'Kampala Street Food Tour',      creator:'@boscovids',   views:'890K', likes:'67K',  comments:1840, gifts:92000,   uploaded:'2025-05-30', status:'active'},
+  {id:3, title:'Nile Festival Highlights 2025', creator:'@ptumwine',    views:'3.4M', likes:'241K', comments:8920, gifts:620000,  uploaded:'2025-06-01', status:'active'},
+  {id:4, title:'Rolex Making Tutorial',         creator:'@aisha_ug',    views:'412K', likes:'31K',  comments:920,  gifts:45000,   uploaded:'2025-06-02', status:'active'},
+  {id:5, title:'Matatu Music Mix Vol.3',        creator:'@ptumwine',    views:'1.8M', likes:'98K',  comments:3100, gifts:180000,  uploaded:'2025-06-03', status:'active'},
+  {id:6, title:'Fake giveaway scam [flagged]',  creator:'@moses_kig',   views:'12K',  likes:'400',  comments:80,   gifts:0,       uploaded:'2025-06-04', status:'flagged'},
+];
+
+const ADS = [
+  {id:1, campaign:'Nile Special June Promo',   advertiser:'Nile Breweries',   type:'In-Feed Video',       budget:5000000, spent:2100000, impressions:'840K', ctr:'3.2%', status:'active'},
+  {id:2, campaign:'MTN MoMo Campaign',          advertiser:'MTN Uganda',        type:'Sponsored Hashtag',   budget:8000000, spent:3400000, impressions:'1.4M', ctr:'4.1%', status:'active'},
+  {id:3, campaign:'Airtel Money Push',          advertiser:'Airtel Uganda',     type:'Banner',              budget:2000000, spent:200000,  impressions:'94K',  ctr:'1.8%', status:'pending'},
+  {id:4, campaign:'Rolex Uganda Eats',          advertiser:'UG Food Co.',       type:'In-Feed Video',       budget:1500000, spent:1500000, impressions:'620K', ctr:'2.9%', status:'ended'},
+  {id:5, campaign:'Pearl of Africa Tourism',    advertiser:'Uganda Tourism Bd', type:'In-Feed Video',       budget:4000000, spent:890000,  impressions:'390K', ctr:'3.7%', status:'active'},
+];
+
+const WITHDRAWALS = [
+  {id:1, creator:'Grace Atim',     phone:'0785 444 333', amount:200000, method:'MTN MoMo', requested:'2025-06-03', status:'pending'},
+  {id:2, creator:'Patrick Tumwine',phone:'0741 666 555', amount:500000, method:'MTN MoMo', requested:'2025-06-03', status:'pending'},
+  {id:3, creator:'Aisha Nakato',   phone:'0774 111 000', amount:100000, method:'Airtel',   requested:'2025-06-04', status:'pending'},
+  {id:4, creator:'Bosco Okello',   phone:'0701 222 111', amount:80000,  method:'MTN MoMo', requested:'2025-06-04', status:'pending'},
+  {id:5, creator:'Grace Atim',     phone:'0785 444 333', amount:320000, method:'MTN MoMo', requested:'2025-06-02', status:'approved'},
+  {id:6, creator:'Patrick Tumwine',phone:'0741 666 555', amount:250000, method:'Airtel',   requested:'2025-05-29', status:'approved'},
+];
+
+const COMMENTS = [
+  {id:1, user:'@anon_user12', comment:'Come to my WhatsApp 0700000000 free gifts!', video:'Nile Festival', reports:14},
+  {id:2, user:'@troll99',     comment:'This content is garbage trash delete it',     video:'Mukiga Dance',  reports:7},
+  {id:3, user:'@spam_bot',    comment:'Click this link to win UGX 1M prize!!!',      video:'Street Food',   reports:22},
+  {id:4, user:'@grace_atim',  comment:'Thank you all so much for the love! 🙏',      video:'Mukiga Dance',  reports:0},
+];
+
+const STREAMS = [
+  {id:1, streamer:'@ptumwine',  title:'Late Night Chat Live',     viewers:412, duration:'1h 22m', gifts:140000, status:'live'},
+  {id:2, streamer:'@grace_atim',title:'Dance & Win — Live Comp!', viewers:308, duration:'44m',   gifts:180000, status:'live'},
+  {id:3, streamer:'@aisha_ug',  title:'Cooking Rolex LIVE 🌯',   viewers:127, duration:'18m',   gifts:22000,  status:'live'},
+];
+
+const TOP_CREATORS = [
+  {rank:1, name:'Patrick Tumwine', handle:'@ptumwine',    followers:'95K', earnings:'UGX 780K'},
+  {rank:2, name:'Grace Atim',      handle:'@grace_atim',  followers:'61K', earnings:'UGX 312K'},
+  {rank:3, name:'Aisha Nakato',    handle:'@aisha_ug',    followers:'28.4K',earnings:'UGX 145K'},
+  {rank:4, name:'Bosco Okello',    handle:'@boscovids',   followers:'12.1K',earnings:'UGX 88K'},
+  {rank:5, name:'Moses Kiggundu',  handle:'@moses_kig',   followers:'4.2K', earnings:'UGX 21K'},
+];
+
+const ACTIVITIES = [
+  {color:'var(--green)', text:'<strong>@ptumwine</strong> started a live stream — 410 viewers joined', time:'2m ago'},
+  {color:'var(--gold)',  text:'<strong>@grace_atim</strong> received a gift worth <strong>UGX 50,000</strong>', time:'4m ago'},
+  {color:'var(--blue)',  text:'New user <strong>Nalongo Amina</strong> registered from Masaka', time:'7m ago'},
+  {color:'var(--accent)',text:'Comment flagged for spam — from <strong>@spam_bot</strong>', time:'12m ago'},
+  {color:'var(--green)', text:'Withdrawal of <strong>UGX 200,000</strong> approved for @grace_atim', time:'18m ago'},
+  {color:'var(--blue)',  text:'<strong>MTN MoMo Campaign</strong> ad reached 1.4M impressions', time:'25m ago'},
+  {color:'var(--gold)',  text:'<strong>@aisha_ug</strong> uploaded a new video: "Rolex Making Tutorial"', time:'31m ago'},
+  {color:'var(--accent)',text:'User <strong>@diana_akello</strong> banned for ToS violation', time:'1h ago'},
+];
+
+const REVENUE_TRANSACTIONS = [
+  {date:'2025-06-04', type:'Gift',        from:'Viewer',      to:'@grace_atim',  amount:50000,  method:'MoMo',   status:'completed'},
+  {date:'2025-06-04', type:'Ad Payment',  from:'MTN Uganda',  to:'Platform',     amount:120000, method:'Bank',   status:'completed'},
+  {date:'2025-06-03', type:'Withdrawal',  from:'@ptumwine',   to:'MoMo',         amount:500000, method:'MoMo',   status:'pending'},
+  {date:'2025-06-03', type:'Gift',        from:'Viewer',      to:'@ptumwine',    amount:140000, method:'MoMo',   status:'completed'},
+  {date:'2025-06-02', type:'Withdrawal',  from:'@grace_atim', to:'MoMo',         amount:320000, method:'MoMo',   status:'approved'},
+  {date:'2025-06-01', type:'Ad Payment',  from:'Nile Brew.',  to:'Platform',     amount:400000, method:'Bank',   status:'completed'},
+];
+
+/* ─── RENDER ─── */
+function renderAll() {
+  renderUsersTable();
+  renderVideosTable();
+  renderAdsTable();
+  renderWithdrawalsTable();
+  renderRevenueTable();
+  renderCreatorsTable();
+  renderCommentsTable();
+  renderStreamsTable();
+  renderTopCreators();
+  renderActivity();
+  renderChart('viewsChart','viewsLabels',[320,410,380,500,620,490,710,680,820,750,900,840,780,960],'red');
+  renderChart('growthChart','growthLabels',[120,145,132,180,210,195,240,222,280,265,310,290,330,360],'blue');
+  renderDistricts();
+}
+
+function fmt(n) { return Number(n).toLocaleString('en-UG'); }
+
+function renderUsersTable() {
+  const tb = document.getElementById('usersTableBody');
+  tb.innerHTML = USERS.map(u => `
+    <tr>
+      <td><div class="user-cell">
+        <div class="u-avatar">${u.name[0]}</div>
+        <div><div class="u-name">${u.name}</div><div class="u-handle">${u.handle}</div></div>
+      </div></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${u.phone}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.joined}</td>
+      <td style="font-family:var(--font-mono)">${u.videos}</td>
+      <td style="font-family:var(--font-mono)">${fmt(u.followers)}</td>
+      <td style="font-family:var(--font-mono);color:var(--green)">${fmt(u.wallet)}</td>
+      <td><span class="pill ${u.status}">${u.status}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="action-btn" onclick="showToast('Editing ${u.name}','✏️','success')">Edit</button>
+        ${u.status==='banned'
+          ? `<button class="action-btn success" onclick="showToast('${u.name} unbanned','✅','success')">Unban</button>`
+          : `<button class="action-btn danger" onclick="showToast('${u.name} banned','🚫','error')">Ban</button>`
+        }
+      </td>
+    </tr>`).join('');
+}
+
+function renderVideosTable() {
+  const tb = document.getElementById('videosTableBody');
+  tb.innerHTML = VIDEOS.map(v => `
+    <tr>
+      <td style="font-weight:500;max-width:180px">${v.title}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${v.creator}</td>
+      <td style="font-family:var(--font-mono)">${v.views}</td>
+      <td style="font-family:var(--font-mono)">${v.likes}</td>
+      <td style="font-family:var(--font-mono)">${fmt(v.comments)}</td>
+      <td style="font-family:var(--font-mono);color:var(--green)">${fmt(v.gifts)}</td>
+      <td style="font-size:12px;color:var(--muted)">${v.uploaded}</td>
+      <td><span class="pill ${v.status==='flagged'?'banned':'active'}">${v.status}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="action-btn" onclick="showToast('Viewing video','▶️','success')">View</button>
+        <button class="action-btn danger" onclick="showToast('Video removed','🗑','error')">Remove</button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderAdsTable() {
+  const tb = document.getElementById('adsTableBody');
+  tb.innerHTML = ADS.map(a => `
+    <tr>
+      <td style="font-weight:500">${a.campaign}</td>
+      <td style="font-size:12.5px">${a.advertiser}</td>
+      <td style="font-size:12px;color:var(--muted)">${a.type}</td>
+      <td style="font-family:var(--font-mono)">${fmt(a.budget)}</td>
+      <td style="font-family:var(--font-mono);color:var(--gold)">${fmt(a.spent)}</td>
+      <td style="font-family:var(--font-mono)">${a.impressions}</td>
+      <td style="font-family:var(--font-mono);color:var(--blue)">${a.ctr}</td>
+      <td><span class="pill ${a.status==='active'?'active':a.status==='pending'?'pending':'banned'}">${a.status}</span></td>
+      <td style="display:flex;gap:6px">
+        ${a.status==='pending'?`<button class="action-btn success" onclick="showToast('Campaign approved','✅','success')">Approve</button>`:''}
+        <button class="action-btn danger" onclick="showToast('Campaign paused','⏸','error')">Pause</button>
+      </td>
+    </tr>`).join('');
+}
+
+function renderWithdrawalsTable() {
+  const tb = document.getElementById('withdrawalsTableBody');
+  tb.innerHTML = WITHDRAWALS.map(w => `
+    <tr>
+      <td style="font-weight:500">${w.creator}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${w.phone}</td>
+      <td style="font-family:var(--font-mono);color:var(--green);font-size:14px;font-weight:600">${fmt(w.amount)}</td>
+      <td style="font-size:12.5px">${w.method}</td>
+      <td style="font-size:12px;color:var(--muted)">${w.requested}</td>
+      <td><span class="pill ${w.status==='pending'?'pending':'active'}">${w.status}</span></td>
+      <td style="display:flex;gap:6px">
+        ${w.status==='pending'
+          ? `<button class="action-btn success" onclick="showToast('UGX ${fmt(w.amount)} sent to ${w.creator}','💸','success')">Approve</button>
+             <button class="action-btn danger" onclick="showToast('Withdrawal rejected','❌','error')">Reject</button>`
+          : `<span style="font-size:12px;color:var(--muted)">Processed</span>`
+        }
+      </td>
+    </tr>`).join('');
+}
+
+function renderRevenueTable() {
+  const tb = document.getElementById('revenueTableBody');
+  tb.innerHTML = REVENUE_TRANSACTIONS.map(r => `
+    <tr>
+      <td style="font-size:12px;color:var(--muted)">${r.date}</td>
+      <td><span class="pill ${r.type==='Gift'?'active':r.type==='Withdrawal'?'pending':'live'}">${r.type}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${r.from}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${r.to}</td>
+      <td style="font-family:var(--font-mono);color:var(--green);font-weight:600">${fmt(r.amount)}</td>
+      <td style="font-size:12.5px">${r.method}</td>
+      <td><span class="pill ${r.status==='completed'?'active':r.status==='approved'?'active':'pending'}">${r.status}</span></td>
+    </tr>`).join('');
+}
+
+function renderCreatorsTable() {
+  const tb = document.getElementById('creatorsTableBody');
+  const creators = USERS.filter(u=>u.videos>0).sort((a,b)=>b.wallet-a.wallet);
+  tb.innerHTML = creators.map((c,i) => `
+    <tr>
+      <td style="font-family:var(--font-mono);color:${i===0?'var(--gold)':'var(--muted)'}">${i+1}</td>
+      <td><div class="user-cell">
+        <div class="u-avatar">${c.name[0]}</div>
+        <div><div class="u-name">${c.name}</div><div class="u-handle">${c.handle}</div></div>
+      </div></td>
+      <td style="font-family:var(--font-mono)">${c.videos}</td>
+      <td style="font-family:var(--font-mono)">${fmt(c.followers)}</td>
+      <td style="font-family:var(--font-mono)">${fmt(c.followers*18)}</td>
+      <td style="font-family:var(--font-mono);color:var(--gold)">${fmt(c.wallet*1.4)}</td>
+      <td style="font-family:var(--font-mono);color:var(--green)">${fmt(c.wallet)}</td>
+      <td><button class="action-btn" onclick="showToast('Viewing ${c.name} profile','👤','success')">Profile</button></td>
+    </tr>`).join('');
+}
+
+function renderCommentsTable() {
+  const tb = document.getElementById('commentsTableBody');
+  tb.innerHTML = COMMENTS.map(c => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:12px">${c.user}</td>
+      <td style="max-width:260px;font-size:12.5px">${c.comment}</td>
+      <td style="font-size:12px;color:var(--muted)">${c.video}</td>
+      <td><span style="font-family:var(--font-mono);font-size:12px;color:${c.reports>5?'var(--accent)':'var(--muted)'}">⚑ ${c.reports}</span></td>
+      <td style="display:flex;gap:6px">
+        <button class="action-btn danger" onclick="showToast('Comment deleted','🗑','error')">Delete</button>
+        ${c.reports>5?`<button class="action-btn danger" onclick="showToast('User banned','🚫','error')">Ban User</button>`:''}
+      </td>
+    </tr>`).join('');
+}
+
+function renderStreamsTable() {
+  const tb = document.getElementById('streamsTableBody');
+  tb.innerHTML = STREAMS.map(s => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:12px">${s.streamer}</td>
+      <td style="font-weight:500">${s.title}</td>
+      <td style="font-family:var(--font-mono);color:var(--blue)">${fmt(s.viewers)}</td>
+      <td style="font-family:var(--font-mono);color:var(--muted)">${s.duration}</td>
+      <td style="font-family:var(--font-mono);color:var(--green)">${fmt(s.gifts)}</td>
+      <td><span class="pill live">● LIVE</span></td>
+      <td><button class="action-btn danger" onclick="showToast('Stream terminated','🔴','error')">End Stream</button></td>
+    </tr>`).join('');
+}
+
+function renderTopCreators() {
+  const el = document.getElementById('topCreatorsList');
+  el.innerHTML = TOP_CREATORS.map(c => `
+    <div class="creator-row">
+      <div class="cr-rank ${c.rank===1?'gold':''}">${c.rank===1?'🥇':c.rank}</div>
+      <div class="u-avatar" style="width:32px;height:32px;font-size:12px">${c.name[0]}</div>
+      <div class="cr-info">
+        <div class="cr-name">${c.name}</div>
+        <div class="cr-stat">${c.handle} · ${c.followers} followers</div>
+      </div>
+      <div class="cr-earn">${c.earnings}</div>
+    </div>`).join('');
+}
+
+function renderActivity() {
+  const el = document.getElementById('activityFeed');
+  el.innerHTML = ACTIVITIES.map(a => `
+    <div class="act-item">
+      <div class="act-dot" style="background:${a.color}"></div>
+      <div class="act-text">${a.text}</div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+}
+
+const DAY_LABELS = ['23','24','25','26','27','28','29','30','1','2','3','4','5','Today'];
+function renderChart(chartId, labelId, data, colorVar) {
+  const el = document.getElementById(chartId);
+  const lel = document.getElementById(labelId);
+  if (!el) return;
+  const max = Math.max(...data);
+  const colorMap = {red:'var(--accent)',blue:'var(--blue)',gold:'var(--gold)',green:'var(--green)'};
+  el.innerHTML = data.map((v,i) => `
+    <div class="bar${i===data.length-1?' highlight':''}"
+      style="height:${Math.round((v/max)*100)}%;background:${i===data.length-1?colorMap[colorVar]:'var(--border2)'}"
+      title="${v.toLocaleString()}"></div>`).join('');
+  lel.innerHTML = DAY_LABELS.map(l=>`<span>${l}</span>`).join('');
+}
+
+function renderDistricts() {
+  const districts = [
+    {name:'Kampala', pct:62},{name:'Wakiso',pct:14},{name:'Gulu',pct:8},
+    {name:'Mbarara',pct:7},{name:'Jinja',pct:5},{name:'Other',pct:4}
+  ];
+  const el = document.getElementById('districtList');
+  el.innerHTML = districts.map(d=>`
+    <div class="split-row" style="margin-bottom:12px">
+      <div class="split-label" style="font-size:13px;width:90px">${d.name}</div>
+      <div class="split-bar-wrap">
+        <div class="split-bar-fill" style="width:${d.pct}%;background:var(--blue)"></div>
+      </div>
+      <div class="split-val">${d.pct}%</div>
+    </div>`).join('');
+}
+
+/* ─── NAV ─── */
+const PAGE_META = {
+  overview:    ['Dashboard',    'Welcome back, Admin'],
+  analytics:   ['Analytics',   'Platform performance metrics'],
+  videos:      ['Videos',      'Manage all uploaded content'],
+  users:       ['Users',       'Manage registered accounts'],
+  comments:    ['Comments',    'Moderate comments & reports'],
+  revenue:     ['Revenue',     'Financial overview & transactions'],
+  ads:         ['Ads Manager', 'Campaigns & advertiser overview'],
+  creators:    ['Creators',    'Top creator leaderboard'],
+  withdrawals: ['Withdrawals', 'Pending payout requests'],
+  livestreams: ['Live Streams','Active RTMP streams'],
+  settings:    ['Settings',    'Platform configuration'],
+};
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const meta = PAGE_META[id]||[id,''];
+  document.getElementById('page-title').textContent = meta[0];
+  document.getElementById('page-sub').textContent   = meta[1];
+  if(id==='analytics') {
+    setTimeout(()=>{ renderChart('growthChart','growthLabels',[120,145,132,180,210,195,240,222,280,265,310,290,330,360],'blue'); },50);
+  }
+}
+
+/* ─── MODAL ─── */
+function openModal(id) { document.getElementById('modal-'+id).classList.add('open'); }
+function closeModal(id){ document.getElementById('modal-'+id).classList.remove('open'); }
+function closeModalOutside(e) { if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); }
+
+function saveUser() {
+  closeModal('addUser');
+  showToast('User created successfully','✅','success');
+}
+function saveAd() {
+  closeModal('addAd');
+  showToast('Campaign launched','🚀','success');
+}
+function approveAll() {
+  showToast('All 5 withdrawals approved — UGX 3.2M sent','💸','success');
+  document.querySelectorAll('#withdrawalsTableBody .pill.pending').forEach(p=>{
+    p.textContent='approved'; p.classList.replace('pending','active');
+  });
+}
+
+/* ─── TOAST ─── */
+function showToast(msg, icon='ℹ️', type='success') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+/* ─── SIDEBAR TOGGLE ─── */
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+/* ─── LIVE TICKER ─── */
+let onlineCount = 2341;
+setInterval(()=>{
+  onlineCount += Math.floor(Math.random()*20)-8;
+  const el = document.getElementById('lv-online');
+  if(el) el.textContent = onlineCount.toLocaleString();
+}, 3000);
+
+/* ─── INIT ─── */
+renderAll();
+</script>
+</body>
+</html>
