@@ -1,10 +1,21 @@
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
 const auth = require('../../middleware/auth');
-const { getProfile, updateProfile, followUser, unfollowUser } = require('./users.controller');
+const {
+  toggleFollow,
+  getFollowers,
+  getFollowing,
+  getFollowStatus,
+  getProfile
+} = require('./follow.controller');
 
-router.get('/:id', getProfile);
-router.put('/profile', auth, updateProfile);
-router.post('/:id/follow', auth, followUser);
-router.delete('/:id/follow', auth, unfollowUser);
+// Public
+router.get('/:userId/profile', getProfile);
+router.get('/:userId/followers', getFollowers);
+router.get('/:userId/following', getFollowing);
+
+// Auth required
+router.post('/:userId/follow', auth, toggleFollow);
+router.get('/:userId/follow-status', auth, getFollowStatus);
 
 module.exports = router;
