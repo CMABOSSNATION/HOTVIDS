@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOTVID - Creator Wallet</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;}
+.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;}
+.back{color:#fff;font-size:22px;cursor:pointer;}
+.htitle{font-size:18px;font-weight:700;}
+.container{padding:20px;max-width:500px;margin:0 auto;}
+
+.wallet-card{background:linear-gradient(135deg,#1a0000,#2d0000);border:1px solid #e50000;border-radius:20px;padding:28px 24px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;}
+.wallet-card::before{content:'💎';position:absolute;top:-10px;right:-10px;font-size:80px;opacity:.1;}
+.wallet-label{color:#aaa;font-size:13px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.wallet-amount{font-size:42px;font-weight:900;color:#e50000;margin-bottom:4px;}
+.wallet-usd{color:#666;font-size:13px;margin-bottom:20px;}
+.wallet-actions{display:flex;gap:12px;justify-content:center;}
+.waction{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;color:#fff;}
+.waction.primary{background:#e50000;border-color:#e50000;}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.stat-box{background:#111;border:1px solid #222;border-radius:12px;padding:14px;text-align:center;}
+.stat-box .sv{font-size:18px;font-weight:700;color:#e50000;}
+.stat-box .sl{font-size:11px;color:#666;margin-top:4px;}
+
+.section-title{font-size:15px;font-weight:700;margin-bottom:12px;color:#aaa;text-transform:uppercase;letter-spacing:1px;}
+
+.withdraw-form{background:#111;border:1px solid #222;border-radius:16px;padding:20px;margin-bottom:24px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;color:#aaa;font-size:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.form-group input,.form-group select{width:100%;background:#000;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:#e50000;}
+.form-group select option{background:#000;}
+.provider-row{display:flex;gap:10px;margin-bottom:16px;}
+.provider-opt{flex:1;background:#000;border:2px solid #222;border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;}
+.provider-opt.sel{border-color:#e50000;background:#1a0000;}
+.provider-opt .pi{font-size:24px;margin-bottom:4px;}
+.provider-opt .pn{font-size:12px;font-weight:700;}
+.amount-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.amount-opt{background:#000;border:2px solid #222;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;}
+.amount-opt.sel{border-color:#e50000;color:#e50000;}
+.withdraw-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;}
+.withdraw-btn:disabled{background:#333;cursor:not-allowed;}
+.min-note{text-align:center;color:#555;font-size:12px;margin-top:10px;}
+
+.history-item{background:#111;border:1px solid #222;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.hi-left .hi-type{font-size:14px;font-weight:600;}
+.hi-left .hi-date{font-size:12px;color:#666;margin-top:2px;}
+.hi-right .hi-amount{font-size:16px;font-weight:700;}
+.hi-right .hi-status{font-size:11px;text-align:right;margin-top:2px;}
+.hi-right .hi-amount.credit{color:#4caf50;}
+.hi-right .hi-amount.debit{color:#e50000;}
+.status-pending{color:#ffcc00;}
+.status-success{color:#4caf50;}
+.status-failed{color:#e50000;}
+
+.earning-breakdown{background:#111;border:1px solid #222;border-radius:16px;padding:20px;margin-bottom:24px;}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a1a;}
+.breakdown-row:last-child{border-bottom:none;}
+.br-label{font-size:14px;color:#aaa;}
+.br-value{font-size:15px;font-weight:700;}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.modal.show{display:flex;}
+.modal-box{width:100%;max-width:400px;text-align:center;}
+.modal-icon{font-size:64px;margin-bottom:16px;}
+.modal-title{font-size:22px;font-weight:700;margin-bottom:8px;}
+.modal-msg{color:#888;font-size:14px;margin-bottom:24px;line-height:1.5;}
+.modal-btn{background:#e50000;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:700;cursor:pointer;}
+.spinner{width:48px;height:48px;border:4px solid #222;border-top-color:#e50000;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="back" onclick="history.back()">&#8592;</span>
+  <span class="htitle">💰 Creator Wallet</span>
+</div>
+
+<div class="container">
+  <div class="wallet-card">
+    <div class="wallet-label">Available Balance</div>
+    <div class="wallet-amount" id="balance">0</div>
+    <div class="wallet-usd" id="balance-usd">UGX</div>
+    <div class="wallet-actions">
+      <div class="waction" onclick="showTab('history')">History</div>
+      <div class="waction primary" onclick="showTab('withdraw')">Withdraw 💸</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="sv" id="total-earned">0</div>
+      <div class="sl">Total Earned</div>
+    </div>
+    <div class="stat-box">
+      <div class="sv" id="total-withdrawn">0</div>
+      <div class="sl">Withdrawn</div>
+    </div>
+    <div class="stat-box">
+      <div class="sv" id="pending-amount">0</div>
+      <div class="sl">Pending</div>
+    </div>
+  </div>
+
+  <!-- EARN BREAKDOWN -->
+  <div class="earning-breakdown">
+    <div class="section-title" style="margin-bottom:12px;">💎 Earnings Breakdown</div>
+    <div class="breakdown-row">
+      <span class="br-label">🌹 From Gifts</span>
+      <span class="br-value" id="gifts-earned">0 UGX</span>
+    </div>
+    <div class="breakdown-row">
+      <span class="br-label">📢 From Ads</span>
+      <span class="br-value" id="ads-earned">0 UGX</span>
+    </div>
+    <div class="breakdown-row">
+      <span class="br-label">Platform Fee (30%)</span>
+      <span class="br-value" style="color:#e50000;" id="platform-fee">0 UGX</span>
+    </div>
+    <div class="breakdown-row">
+      <span class="br-label" style="font-weight:700;color:#fff;">Your Share (70%)</span>
+      <span class="br-value" style="color:#4caf50;" id="your-share">0 UGX</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tab-withdraw">
+    <div class="section-title">Withdraw to Mobile Money</div>
+    <div class="withdraw-form">
+      <div class="form-group">
+        <label>Select Provider</label>
+        <div class="provider-row">
+          <div class="provider-opt" onclick="selectProvider('mtn',this)">
+            <div class="pi">📱</div>
+            <div class="pn" style="color:#ffcc00;">MTN MoMo</div>
+          </div>
+          <div class="provider-opt" onclick="selectProvider('airtel',this)">
+            <div class="pi">📲</div>
+            <div class="pn" style="color:#e50000;">Airtel Money</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="07XXXXXXXX" maxlength="10">
+      </div>
+
+      <div class="form-group">
+        <label>Amount (UGX)</label>
+        <div class="amount-opts">
+          <div class="amount-opt" onclick="selectAmt(5000,this)">5K</div>
+          <div class="amount-opt" onclick="selectAmt(10000,this)">10K</div>
+          <div class="amount-opt" onclick="selectAmt(20000,this)">20K</div>
+          <div class="amount-opt" onclick="selectAmt(50000,this)">50K</div>
+          <div class="amount-opt" onclick="selectAmt(100000,this)">100K</div>
+        </div>
+        <input type="number" id="withdraw-amount" placeholder="Or enter custom amount" min="5000">
+      </div>
+
+      <button class="withdraw-btn" id="withdraw-btn" onclick="doWithdraw()">
+        Withdraw to MoMo 💸
+      </button>
+      <div class="min-note">Minimum withdrawal: 5,000 UGX · Processing: 1-24 hours</div>
+    </div>
+  </div>
+
+  <div id="tab-history" style="display:none;">
+    <div class="section-title">Transaction History</div>
+    <div id="history-list">
+      <div style="text-align:center;padding:40px;color:#444;">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="spinner" id="modal-spinner"></div>
+    <div class="modal-icon" id="modal-icon" style="display:none;"></div>
+    <div class="modal-title" id="modal-title">Processing...</div>
+    <div class="modal-msg" id="modal-msg">Please wait</div>
+    <button class="modal-btn" id="modal-btn" style="display:none;" onclick="closeModal()">Done</button>
+  </div>
+</div>
+
+<script>
+const API = 'http://178.105.190.123';
+const token = localStorage.getItem('hvt');
+if(!token){ location.href='/'; }
+
+let selectedProvider = '';
+let selectedAmount = 0;
+
+async function loadWallet(){
+  try{
+    const r = await fetch(API+'/api/gifts/wallet',{headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    const bal = d.balance||0;
+    document.getElementById('balance').textContent = bal.toLocaleString();
+    document.getElementById('total-earned').textContent = fmt(d.total_earned||bal);
+    document.getElementById('total-withdrawn').textContent = fmt(d.total_withdrawn||0);
+    document.getElementById('pending-amount').textContent = fmt(d.pending||0);
+    document.getElementById('gifts-earned').textContent = fmt(d.gifts_earned||0)+' UGX';
+    document.getElementById('ads-earned').textContent = fmt(d.ads_earned||0)+' UGX';
+    const fee = Math.floor(bal*0.3);
+    const share = bal - fee;
+    document.getElementById('platform-fee').textContent = fmt(fee)+' UGX';
+    document.getElementById('your-share').textContent = fmt(share)+' UGX';
+  }catch(e){}
+}
+
+async function loadHistory(){
+  try{
+    const r = await fetch(API+'/api/wallet/history',{headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    const list = document.getElementById('history-list');
+    if(!d.transactions||!d.transactions.length){
+      list.innerHTML='<div style="text-align:center;padding:40px;color:#444;">No transactions yet</div>';
+      return;
+    }
+    list.innerHTML = d.transactions.map(t=>`
+      <div class="history-item">
+        <div class="hi-left">
+          <div class="hi-type">${t.type==='credit'?'💰 Gift Received':'💸 Withdrawal'}</div>
+          <div class="hi-date">${new Date(t.created_at).toLocaleDateString('en-UG')}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-amount ${t.type}">${t.type==='credit'?'+':'-'}${fmt(t.amount)} UGX</div>
+          <div class="hi-status status-${t.status}">${t.status}</div>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+function showTab(tab){
+  document.getElementById('tab-withdraw').style.display = tab==='withdraw'?'block':'none';
+  document.getElementById('tab-history').style.display = tab==='history'?'block':'none';
+  if(tab==='history') loadHistory();
+}
+
+function selectProvider(p, el){
+  document.querySelectorAll('.provider-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedProvider = p;
+}
+
+function selectAmt(amt, el){
+  document.querySelectorAll('.amount-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedAmount = amt;
+  document.getElementById('withdraw-amount').value = amt;
+}
+
+async function doWithdraw(){
+  const phone = document.getElementById('phone').value.trim();
+  const amt = parseInt(document.getElementById('withdraw-amount').value)||selectedAmount;
+  if(!selectedProvider){ alert('Select MTN or Airtel'); return; }
+  if(!phone){ alert('Enter phone number'); return; }
+  if(!amt||amt<5000){ alert('Minimum withdrawal is 5,000 UGX'); return; }
+
+  showModal('','Processing Withdrawal...','Sending to your mobile money. Please wait.');
+
+  try{
+    const r = await fetch(API+'/api/wallet/withdraw',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+      body:JSON.stringify({phone,amount:amt,provider:selectedProvider})
+    });
+    const d = await r.json();
+    if(d.error){ showResult('❌','Withdrawal Failed',d.error); return; }
+    showResult('✅','Withdrawal Initiated!',`UGX ${amt.toLocaleString()} is being sent to ${phone}. You'll receive an SMS confirmation within 24 hours.`);
+    loadWallet();
+  }catch(e){
+    showResult('❌','Connection Error','Could not process. Try again later.');
+  }
+}
+
+function showModal(icon,title,msg){
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-spinner').style.display='block';
+  document.getElementById('modal-icon').style.display='none';
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal-btn').style.display='none';
+}
+
+function showResult(icon,title,msg){
+  document.getElementById('modal-spinner').style.display='none';
+  document.getElementById('modal-icon').style.display='block';
+  document.getElementById('modal-icon').textContent=icon;
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal-btn').style.display='block';
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n); }
+
+loadWallet();
+</script>
+</body>
+    </html>
