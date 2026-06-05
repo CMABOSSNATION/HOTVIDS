@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOTVID – Notifications</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+  :root {
+    --hot: #ff2d55;
+    --bg: #0a0a0a;
+    --card: #141414;
+    --text: #ffffff;
+    --muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid #1a1a1a;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .read-all-btn {
+    background: none;
+    border: none;
+    color: var(--hot);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* PUSH PERMISSION BANNER */
+  .push-banner {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #1a0a0f, #200d15);
+    border: 1px solid #ff2d5540;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .push-banner-icon { font-size: 28px; flex-shrink: 0; }
+
+  .push-banner-text { flex: 1; }
+  .push-banner-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .push-banner-text p { font-size: 12px; color: var(--muted); }
+
+  .push-enable-btn {
+    background: var(--hot);
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* NOTIFICATION ITEMS */
+  .notif-list { padding: 8px 0; }
+
+  .notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .notif-item.unread { background: #ffffff08; }
+  .notif-item:active { background: #1a1a1a; }
+
+  .notif-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: linear-gradient(135deg, #ff2d55, #ff6b35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .notif-type-icon {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .notif-body { flex: 1; }
+
+  .notif-message {
+    font-size: 14px;
+    color: #ddd;
+    line-height: 1.4;
+  }
+
+  .notif-message strong { color: white; }
+
+  .notif-time {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--hot);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+
+  .empty .icon { font-size: 56px; margin-bottom: 16px; }
+  .empty h3 { font-size: 18px; color: white; margin-bottom: 8px; }
+
+  /* SKELETON */
+  .skeleton {
+    background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    align-items: center;
+  }
+
+  /* UNREAD BADGE on bottom nav */
+  .nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--hot);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #0a0a0af0;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 20px;
+    z-index: 100;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .bottom-nav a.active { color: var(--hot); }
+  .bottom-nav a .icon { font-size: 22px; }
+
+  .spacer { height: 80px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Notifications</div>
+  <button class="read-all-btn" onclick="markAllRead()">Mark all read</button>
+</div>
+
+<!-- PUSH PERMISSION BANNER -->
+<div class="push-banner" id="pushBanner" style="display:none">
+  <div class="push-banner-icon">🔔</div>
+  <div class="push-banner-text">
+    <h4>Stay in the loop</h4>
+    <p>Get notified when someone likes, comments or follows you</p>
+  </div>
+  <button class="push-enable-btn" onclick="enablePush()">Enable</button>
+</div>
+
+<!-- NOTIFICATION LIST -->
+<div class="notif-list" id="notifList">
+  <!-- Skeleton -->
+  <div class="skeleton-item">
+    <div class="skeleton" style="width:46px;height:46px;border-radius:50%;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div class="skeleton" style="height:12px;width:80%;margin-bottom:8px"></div>
+      <div class="skeleton" style="height:10px;width:40%"></div>
+    </div>
+  </div>
+  <div class="skeleton-item">
+    <div class="skeleton" style="width:46px;height:46px;border-radius:50%;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div class="skeleton" style="height:12px;width:70%;margin-bottom:8px"></div>
+      <div class="skeleton" style="height:10px;width:30%"></div>
+    </div>
+  </div>
+  <div class="skeleton-item">
+    <div class="skeleton" style="width:46px;height:46px;border-radius:50%;flex-shrink:0"></div>
+    <div style="flex:1">
+      <div class="skeleton" style="height:12px;width:90%;margin-bottom:8px"></div>
+      <div class="skeleton" style="height:10px;width:35%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="index.html"><span class="icon">🏠</span>Home</a>
+  <a href="trending.html"><span class="icon">🔥</span>Trending</a>
+  <a href="upload.html"><span class="icon">➕</span>Upload</a>
+  <a href="notifications.html" class="active">
+    <span class="icon" style="position:relative">
+      🔔
+      <span class="nav-badge" id="navBadge" style="display:none">0</span>
+    </span>
+    Inbox
+  </a>
+  <a href="profile.html"><span class="icon">👤</span>Profile</a>
+</nav>
+
+<script>
+  const API = '';
+  const VAPID_PUBLIC_KEY = 'YOUR_VAPID_PUBLIC_KEY'; // Replace after generating
+
+  // ── LOAD NOTIFICATIONS ──────────────────────────────────────
+  async function loadNotifications() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      document.getElementById('notifList').innerHTML = `
+        <div class="empty">
+          <div class="icon">🔔</div>
+          <h3>Login to see notifications</h3>
+        </div>`;
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/api/notifications`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        renderNotifications(data.data);
+        updateBadge(data.unread_count);
+      }
+    } catch (err) {
+      console.error('loadNotifications error:', err);
+    }
+  }
+
+  function renderNotifications(notifications) {
+    const list = document.getElementById('notifList');
+
+    if (!notifications.length) {
+      list.innerHTML = `
+        <div class="empty">
+          <div class="icon">🔔</div>
+          <h3>No notifications yet</h3>
+          <p>When someone likes or follows you, you'll see it here</p>
+        </div>`;
+      return;
+    }
+
+    const typeIcons = {
+      like: '❤️', comment: '💬', follow: '👤', gift: '🎁', default: '🔔'
+    };
+
+    list.innerHTML = notifications.map(n => `
+      <div class="notif-item ${n.is_read ? '' : 'unread'}"
+           onclick="handleNotifClick(${n.id}, '${n.type}', ${n.reference_id || 0})">
+        <div class="notif-avatar">
+          ${(n.from_username || 'U')[0].toUpperCase()}
+          <div class="notif-type-icon">${typeIcons[n.type] || typeIcons.default}</div>
+        </div>
+        <div class="notif-body">
+          <div class="notif-message">${n.message}</div>
+          <div class="notif-time">${timeAgo(n.created_at)}</div>
+        </div>
+        ${n.is_read ? '' : '<div class="unread-dot"></div>'}
+      </div>
+    `).join('');
+  }
+
+  async function handleNotifClick(id, type, refId) {
+    // Mark as read
+    const token = localStorage.getItem('token');
+    fetch(`${API}/api/notifications/read/${id}`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    }).catch(() => {});
+
+    // Navigate
+    if (type === 'like' || type === 'comment') {
+      window.location.href = `feed.html?v=${refId}`;
+    } else if (type === 'follow') {
+      window.location.href = `profile.html?id=${refId}`;
+    } else if (type === 'gift') {
+      window.location.href = `profile.html`;
+    }
+  }
+
+  async function markAllRead() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    await fetch(`${API}/api/notifications/read-all`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    document.querySelectorAll('.notif-item').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('.unread-dot').forEach(el => el.remove());
+    updateBadge(0);
+  }
+
+  function updateBadge(count) {
+    const badge = document.getElementById('navBadge');
+    if (count > 0) {
+      badge.style.display = 'block';
+      badge.textContent = count > 99 ? '99+' : count;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // ── PUSH NOTIFICATIONS ──────────────────────────────────────
+  async function checkPushStatus() {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+    if (Notification.permission === 'default') {
+      document.getElementById('pushBanner').style.display = 'flex';
+    }
+  }
+
+  async function enablePush() {
+    const token = localStorage.getItem('token');
+    if (!token) { alert('Login first'); return; }
+
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        alert('Please allow notifications in your browser settings');
+        return;
+      }
+
+      document.getElementById('pushBanner').style.display = 'none';
+
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+
+      await fetch(`${API}/api/notifications/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ subscription: sub })
+      });
+
+      alert('Push notifications enabled! 🔔');
+    } catch (err) {
+      console.error('enablePush error:', err);
+      alert('Failed to enable push notifications');
+    }
+  }
+
+  // Register service worker
+  async function registerSW() {
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/sw.js');
+      } catch (err) {
+        console.error('SW registration failed:', err);
+      }
+    }
+  }
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  }
+
+  function timeAgo(dateStr) {
+    const diff = (Date.now() - new Date(dateStr)) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  // ── INIT ────────────────────────────────────────────────────
+  registerSW();
+  checkPushStatus();
+  loadNotifications();
+</script>
+</body>
+</html>
