@@ -1,47 +1,35 @@
-const db = require('../../config/database');
-const { v4: uuidv4 } = require('uuid');
+const db = require("../../config/database");
+const {v4:uuidv4} = require("uuid");
 
-exports.getGifts = async (req, res) => {
-  try {
-    const [gifts] = await db.execute('SELECT * FROM gifts');
-    res.json({ gifts });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+const GIFTS = {
+  rose:{name:"Rose",emoji:"🌹",price:500},
+  trophy:{name:"Trophy",emoji:"🏆",price:5000},
+  rocket:{name:"Rocket",emoji:"🚀",price:25000},
+  crown:{name:"Crown",emoji:"👑",price:100000},
+  diamond:{name:"Diamond",emoji:"💎",price:500000}
 };
 
-exports.sendGift = async (req, res) => {
+exports.listGifts = (req,res) => res.json(GIFTS);
+
+exports.sendGift = async (req,res) => {
   try {
-    const { gift_id, receiver_id, video_id } = req.body;
-    const [gifts] = await db.execute('SELECT * FROM gifts WHERE id = ?', [gift_id]);
-    if (!gifts.length) return res.status(404).json({ error: 'Gift not found' });
-    const gift = gifts[0];
-    const platform_cut = Math.floor(gift.price_ugx * 0.30);
-    const creator_cut = gift.price_ugx - platform_cut;
-    const id = uuidv4();
-    await db.execute(
-      'INSERT INTO gift_transactions (id, sender_id, receiver_id, gift_id, amount_ugx, platform_cut_ugx, creator_cut_ugx, video_id) VALUES (?,?,?,?,?,?,?,?)',
-      [id, req.user.id, receiver_id, gift_id, gift.price_ugx, platform_cut, creator_cut, video_id]
-    );
-    await db.execute(
-      'UPDATE wallets SET balance_ugx = balance_ugx + ?, total_earned_ugx = total_earned_ugx + ? WHERE user_id = ?',
-      [creator_cut, creator_cut, receiver_id]
-    );
-    res.json({ message: 'Gift sent', gift: gift.name, amount: gift.price_ugx });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const {recipient_id,gift_type,video_id} = req.body;
+    const gift = GIFTS[gift_type];
+    if(!gift) return res.status(400).json({error:"Invalid gift type"});
+    const [wallet] = await db.query("SELECT balance FROM wallets WHERE user_id=?",[req.user.id]);
+    const balance = wallet.length ? wallet[0].balance : 0;
+    if(balance < gift.price) return res.status(400).json({error:"Insufficient balance. Top up your wallet."});
+    await db.query("UPDATE wallets SET balance=balance-? WHERE user_id=?",[gift.price,req.user.id]);
+    const creator_earn = Math.floor(gift.price*0.7);
+    await db.query("INSERT INTO wallets (id,user_id,balance) VALUES (?,?,?) ON DUPLICATE KEY UPDATE balance=balance+?",[uuidv4(),recipient_id,creator_earn,creator_earn]);
+    await db.query("INSERT INTO gift_transactions (id,sender_id,recipient_id,gift_type,amount,video_id) VALUES (?,?,?,?,?,?)",[uuidv4(),req.user.id,recipient_id,gift_type,gift.price,video_id||null]);
+    res.json({message:"Gift sent!",gift:gift.name,emoji:gift.emoji});
+  } catch(e){res.status(500).json({error:e.message});}
 };
 
-exports.getWallet = async (req, res) => {
+exports.getWallet = async (req,res) => {
   try {
-    const [rows] = await db.execute('SELECT * FROM wallets WHERE user_id = ?', [req.user.id]);
-    if (!rows.length) {
-      await db.execute('INSERT INTO wallets (id, user_id) VALUES (?,?)', [uuidv4(), req.user.id]);
-      return res.json({ balance_ugx: 0, total_earned_ugx: 0 });
-    }
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
+    const [rows] = await db.query("SELECT balance FROM wallets WHERE user_id=?",[req.user.id]);
+    res.json({balance:rows.length?rows[0].balance:0});
+  } catch(e){res.status(500).json({error:e.message});}
 };
