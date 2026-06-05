@@ -168,12 +168,8 @@ async function loadFeed(){
     const r = await fetch(API+'/api/feed/trending');
     const d = await r.json();
     videos = d.videos||[];
-    if(videos.length===0){
-      showEmpty();
-    } else {
-      renderVideo(0);
-      setupSwipe();
-    }
+    renderVideo(0);
+    setupSwipe();
   }catch(e){
     showEmpty();
   }
