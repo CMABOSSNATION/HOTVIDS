@@ -433,7 +433,7 @@
 </nav>
 
 <script>
-  const API = '';
+  const API = 'http://178.105.190.123:3000';
   const params = new URLSearchParams(window.location.search);
   const profileUserId = params.get('id') || JSON.parse(localStorage.getItem('user') || '{}').id;
   const myId = JSON.parse(localStorage.getItem('user') || '{}').id;

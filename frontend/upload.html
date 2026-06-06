@@ -85,7 +85,7 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:
   <button class="upload-btn" id="uploadBtn" disabled>SELECT A VIDEO FIRST</button>
 </div>
 <script>
-const API = '';
+const API = window.location.origin.includes('localhost') ? 'http://localhost:3000' : 'http://178.105.190.123:3000';
 const token = localStorage.getItem('hotvid_token');
 if(!token){ window.location.href='/index.html'; }
 
@@ -155,17 +155,26 @@ document.getElementById('uploadBtn').addEventListener('click', async function(){
   setProgress(5, 'Getting upload URL...');
 
   try {
-    // Step 1: Get Cloudflare direct upload URL
+    // Step 1: Get upload URL (server decides mode)
     const urlRes = await fetch(API+'/api/upload/upload-url', {
       headers:{ Authorization: 'Bearer '+token }
     });
     if(!urlRes.ok) throw new Error('Failed to get upload URL');
-    const {uploadURL, uid} = await urlRes.json();
-    setProgress(15, 'Starting upload to Cloudflare...');
+    const { uploadURL, uid: cfUid, mode } = await urlRes.json();
+    setProgress(15, 'Starting upload...');
 
-    // Step 2: Upload directly to Cloudflare Stream
-    await uploadToCloudflare(uploadURL, selectedFile);
-    setProgress(90, 'Saving video...');
+    let finalUid;
+
+    if(mode === 'cloudflare') {
+      // Upload directly to Cloudflare Stream
+      await uploadToCloudflare(uploadURL, selectedFile);
+      finalUid = cfUid;
+      setProgress(90, 'Saving video...');
+    } else {
+      // Local upload fallback — POST multipart to our server
+      finalUid = await uploadLocal(API+'/api/upload/local', selectedFile);
+      setProgress(90, 'Saving video...');
+    }
 
     // Step 3: Save to HOTVID database
     const saveRes = await fetch(API+'/api/upload/save', {
@@ -174,8 +183,9 @@ document.getElementById('uploadBtn').addEventListener('click', async function(){
       body: JSON.stringify({
         title,
         description: document.getElementById('description').value.trim(),
-        cloudflare_video_id: uid,
-        hashtags: tags.map(t=>'#'+t).join(' ')
+        cloudflare_video_id: finalUid,
+        hashtags: tags.map(t=>'#'+t).join(' '),
+        mode
       })
     });
     if(!saveRes.ok) throw new Error('Failed to save video');
@@ -190,6 +200,30 @@ document.getElementById('uploadBtn').addEventListener('click', async function(){
     this.textContent='RETRY UPLOAD 🔥';
   }
 });
+
+function uploadLocal(url, file){
+  return new Promise((resolve, reject)=>{
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    fd.append('file', file);
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Authorization','Bearer '+token);
+    xhr.upload.onprogress = function(e){
+      if(e.lengthComputable){
+        const pct = Math.round((e.loaded/e.total)*70)+15;
+        setProgress(pct, 'Uploading... '+Math.round((e.loaded/e.total)*100)+'%');
+      }
+    };
+    xhr.onload = ()=>{
+      if(xhr.status===200||xhr.status===201){
+        try{ const data=JSON.parse(xhr.responseText); resolve(data.uid||data.filename); }
+        catch(e){ reject(new Error('Invalid server response')); }
+      } else { reject(new Error('Upload failed: '+xhr.status)); }
+    };
+    xhr.onerror = ()=> reject(new Error('Network error during upload'));
+    xhr.send(fd);
+  });
+}
 
 function uploadToCloudflare(uploadURL, file){
   return new Promise((resolve, reject)=>{
