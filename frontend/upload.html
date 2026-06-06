@@ -85,7 +85,7 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:
   <button class="upload-btn" id="uploadBtn" disabled>SELECT A VIDEO FIRST</button>
 </div>
 <script>
-const API = window.location.origin.includes('localhost') ? 'http://localhost:3000' : '';
+const API = '';
 const token = localStorage.getItem('hotvid_token');
 if(!token){ window.location.href='/index.html'; }
 
