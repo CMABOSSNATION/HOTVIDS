@@ -37,10 +37,18 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(helmet());
-app.use(cors());
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(morgan('dev'));
 app.use(express.json());
+
+// Serve uploaded videos
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../../../uploads')));
 
 // Routes
 app.use('/api/auth', require('./modules/auth/auth.routes'));
