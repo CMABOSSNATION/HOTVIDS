@@ -146,23 +146,17 @@ let isLogin = true;
 let touchStartY = 0;
 let pendingAction = null;
 
-// Try parse user
-if(token && user){
-  document.getElementById('loginBtn').textContent = user.username || 'Me';
-}
-
-// SPLASH
-setTimeout(()=>{
-  const s = document.getElementById('splash');
-  s.style.display='none';
-  document.getElementById('feed-page').style.display='flex';
-  loadFeed();
-  setTimeout(()=>{
-    s.style.display='none';
-    document.getElementById('feed-page').style.display='flex';
+// SPLASH - wait for DOM
+document.addEventListener('DOMContentLoaded', function(){
+  try{ if(token && user) document.getElementById('loginBtn').textContent = user.username || 'Me'; }catch(e){}
+  setTimeout(function(){
+    var s = document.getElementById('splash');
+    if(s) s.style.display='none';
+    var fp = document.getElementById('feed-page');
+    if(fp) fp.style.display='flex';
     loadFeed();
-  },500);
-},2200);
+  }, 2000);
+});
 
 // LOAD FEED - no auth needed
 async function loadFeed(){
