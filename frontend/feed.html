@@ -210,7 +210,7 @@ function renderAll(){
     const cfId = v.cloudflare_video_id;
     slide.innerHTML = `
       ${cfId ?
-        `<video id="vid-${i}" src="https://videodelivery.net/${cfId}/manifest/video.m3u8"
+        `<video id="vid-${i}" src="http://178.105.190.123/uploads/videos/${cfId}"
           loop playsinline ${isMuted?'muted':''} onclick="toggleMute()"
           style="width:100%;height:100%;object-fit:cover;"></video>` :
         `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000 0%,#000 100%);display:flex;align-items:center;justify-content:center;">

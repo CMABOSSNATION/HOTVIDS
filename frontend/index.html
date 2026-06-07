@@ -193,7 +193,7 @@ function renderVideo(idx){
   const v = videos[idx];
   const container = document.getElementById('feed-container');
   const cfId = v.cloudflare_video_id;
-  const videoSrc = cfId ? `https://videodelivery.net/${cfId}/manifest/video.m3u8` : '';
+  const videoSrc = cfId ? `http://178.105.190.123/uploads/videos/${cfId}` : '';
   
   container.innerHTML = `
     <div id="top-bar">
@@ -313,7 +313,7 @@ function toggleAuth(){
   document.getElementById('auser').style.display = authMode==='register'?'block':'none';
   document.getElementById('auth-submit').textContent = authMode==='login'?'Sign In':'Create Account';
   document.getElementById('auth-toggle').innerHTML = authMode==='login'?'New to HOTVID? <b>Create Account</b>':'Already have account? <b>Sign In</b>';
-  document.getElementById('auth-sub').textContent = authMode==='login'?'Your world. Your videos.':'Join Uganda's #1 platform';
+  document.getElementById('auth-sub').textContent = authMode==='login'?'Your world. Your videos.':'Join Uganda No.1 platform';
 }
 
 async function doAuth(){
