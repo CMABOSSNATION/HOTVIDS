@@ -15,8 +15,8 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 #splash .dot{width:10px;height:10px;background:var(--red);border-radius:50%;animation:pulse 1s infinite;}
 #splash .tagline{color:#555;font-size:14px;margin-top:8px;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.splash-hide{animation:fadeout .5s forwards;}
-@keyframes fadeout{to{opacity:0;pointer-events:none;}}
+/*.splash-hide removed*/
+
 
 /* FEED */
 #feed-page{position:fixed;inset:0;display:none;flex-direction:column;}
@@ -154,7 +154,9 @@ if(token && user){
 // SPLASH
 setTimeout(()=>{
   const s = document.getElementById('splash');
-  s.classList.add('splash-hide');
+  s.style.display='none';
+  document.getElementById('feed-page').style.display='flex';
+  loadFeed();
   setTimeout(()=>{
     s.style.display='none';
     document.getElementById('feed-page').style.display='flex';
