@@ -6,21 +6,28 @@
 <title>HOTVID - Uganda's #1 Video Platform</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--red:#e50000;--black:#000;--dark:#111;--gray:#888;}
+:root{--red:#e50000;}
 body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;overflow:hidden;}
 
-/* SPLASH */
-#splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
+#splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
 #splash .logo{font-size:56px;font-weight:900;color:var(--red);letter-spacing:4px;}
-#splash .dot{width:10px;height:10px;background:var(--red);border-radius:50%;animation:pulse 1s infinite;}
 #splash .tagline{color:#555;font-size:14px;margin-top:8px;}
+#splash .dot{width:10px;height:10px;background:var(--red);border-radius:50%;margin-top:20px;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-/*.splash-hide removed*/
 
-
-/* FEED */
 #feed-page{position:fixed;inset:0;display:none;flex-direction:column;}
-#feed-container{flex:1;overflow:hidden;position:relative;}
+#feed-container{flex:1;overflow:hidden;position:relative;background:#000;}
+
+#top-bar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);position:absolute;top:0;left:0;right:0;z-index:10;}
+#top-bar .logo{color:var(--red);font-weight:900;font-size:20px;letter-spacing:2px;}
+#top-bar .auth-btn{background:var(--red);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;}
+
+#bottom-nav{height:56px;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:space-around;border-top:1px solid #222;flex-shrink:0;}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 16px;}
+.nav-btn .nicon{font-size:22px;}
+.nav-btn .nlabel{font-size:10px;color:#666;}
+.nav-btn.active .nlabel{color:var(--red);}
+
 .video-item{position:absolute;inset:0;width:100%;height:100%;background:#000;}
 .video-item video{width:100%;height:100%;object-fit:cover;}
 .video-overlay{position:absolute;inset:0;pointer-events:none;}
@@ -33,23 +40,9 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;pointer-events:auto;}
 .action-btn .icon{font-size:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
 .action-btn .count{font-size:11px;color:#fff;font-weight:600;}
-.action-btn.liked .icon{filter:none;}
 
-/* BOTTOM NAV */
-#bottom-nav{height:56px;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:space-around;border-top:1px solid #222;flex-shrink:0;}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 16px;}
-.nav-btn .nicon{font-size:22px;}
-.nav-btn .nlabel{font-size:10px;color:#666;}
-.nav-btn.active .nlabel{color:var(--red);}
-.nav-btn.active .nicon{filter:drop-shadow(0 0 4px var(--red));}
-
-/* TOP BAR */
-#top-bar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);position:absolute;top:0;left:0;right:0;z-index:10;}
-#top-bar .logo{color:var(--red);font-weight:900;font-size:20px;letter-spacing:2px;}
-#top-bar .auth-btn{background:var(--red);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;}
-
-/* LOGIN MODAL */
-#auth-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+#auth-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+#auth-modal.open{display:flex;}
 #auth-modal .modal-box{width:100%;max-width:400px;}
 #auth-modal .modal-logo{color:var(--red);font-size:36px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:8px;}
 #auth-modal .modal-sub{color:#666;font-size:13px;text-align:center;margin-bottom:24px;}
@@ -58,18 +51,13 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 #auth-modal .auth-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:16px;}
 #auth-modal .auth-toggle{text-align:center;color:#666;font-size:13px;cursor:pointer;}
 #auth-modal .auth-toggle b{color:var(--red);}
-#auth-modal .close-modal{position:absolute;top:20px;right:20px;font-size:24px;cursor:pointer;color:#666;}
+#auth-modal .close-modal{position:absolute;top:20px;right:20px;font-size:28px;cursor:pointer;color:#888;z-index:2001;}
 #auth-modal .auth-err{color:#ff4444;font-size:13px;margin-bottom:12px;text-align:center;display:none;}
 
-/* LOGIN PROMPT */
 #login-prompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid var(--red);border-radius:12px;padding:16px 24px;z-index:500;display:none;text-align:center;white-space:nowrap;}
 #login-prompt p{font-size:13px;color:#aaa;margin-bottom:8px;}
 #login-prompt button{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;}
 
-/* UPLOAD BTN */
-#upload-fab{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--red);border:none;border-radius:50%;width:48px;height:48px;font-size:24px;color:#fff;cursor:pointer;z-index:100;box-shadow:0 4px 12px rgba(229,0,0,.4);display:none;}
-
-/* LOADING */
 .loading-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
 .spinner{width:36px;height:36px;border:3px solid #333;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -77,30 +65,24 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="logo">HOTVID</div>
   <div class="tagline">Uganda's #1 Video Platform</div>
   <div class="dot" style="margin-top:20px"></div>
 </div>
 
-<!-- MAIN APP -->
 <div id="feed-page">
   <div id="feed-container">
     <div class="loading-screen"><div class="spinner"></div></div>
-    <div id="top-bar">
-      <span class="logo">🔥HOTVID</span>
-      <button class="auth-btn" id="loginBtn" onclick="showAuthModal()">Sign In</button>
-    </div>
   </div>
   <div id="bottom-nav">
     <div class="nav-btn active" onclick="showFeed()">
       <span class="nicon">🏠</span><span class="nlabel">Home</span>
     </div>
-    <div class="nav-btn" onclick="openSearch()">
+    <div class="nav-btn" onclick="location.href='/discover.html'">
       <span class="nicon">🔍</span><span class="nlabel">Discover</span>
     </div>
-    <div class="nav-btn" onclick="requireLogin('upload')">
+    <div class="nav-btn" onclick="location.href='/upload.html'">
       <span class="nicon">➕</span><span class="nlabel">Upload</span>
     </div>
     <div class="nav-btn" onclick="requireLogin('inbox')">
@@ -112,7 +94,6 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
   </div>
 </div>
 
-<!-- AUTH MODAL -->
 <div id="auth-modal">
   <span class="close-modal" onclick="closeAuthModal()">✕</span>
   <div class="modal-box">
@@ -129,90 +110,90 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
   </div>
 </div>
 
-<!-- LOGIN PROMPT -->
 <div id="login-prompt">
   <p>Sign up to interact with creators</p>
   <button onclick="showAuthModal()">Join HOTVID 🔥</button>
 </div>
 
 <script>
-const API = 'http://178.105.190.123:3000';
-let token = localStorage.getItem('hvt');
+const API = '';
+let token = localStorage.getItem('hvt') || '';
 let user = null;
-try{ user=JSON.parse(localStorage.getItem('hvu')); }catch(e){}
+try{ user = JSON.parse(localStorage.getItem('hvu')); }catch(e){}
 let videos = [];
 let currentIdx = 0;
-let isLogin = true;
 let touchStartY = 0;
 let pendingAction = null;
+let authMode = 'login';
 
-// SPLASH - wait for DOM
-document.addEventListener('DOMContentLoaded', function(){
-  try{ if(token && user) document.getElementById('loginBtn').textContent = user.username || 'Me'; }catch(e){}
+// SPLASH - simple timeout, no waiting for events
+window.onload = function(){
   setTimeout(function(){
     var s = document.getElementById('splash');
-    if(s) s.style.display='none';
     var fp = document.getElementById('feed-page');
-    if(fp) fp.style.display='flex';
-    loadFeed();
+    s.style.opacity = '0';
+    setTimeout(function(){
+      s.style.display = 'none';
+      fp.style.display = 'flex';
+      loadFeed();
+    }, 500);
   }, 2000);
-});
+};
 
-// LOAD FEED - no auth needed
 async function loadFeed(){
   try{
-    const r = await fetch(API+'/api/feed/trending');
+    const r = await fetch(API + '/api/feed/trending');
     const d = await r.json();
-    videos = d.videos||[];
+    videos = d.videos || [];
+    if(videos.length === 0){ showEmpty(); return; }
     renderVideo(0);
     setupSwipe();
-  }catch(e){
-    showEmpty();
-  }
+  }catch(e){ showEmpty(); }
 }
 
 function showEmpty(){
   document.getElementById('feed-container').innerHTML = `
-    <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+    <div id="top-bar">
+      <span class="logo">🔥HOTVID</span>
+      <button class="auth-btn" onclick="showAuthModal()">${user ? user.username : 'Sign In'}</button>
+    </div>
+    <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;">
       <div style="font-size:64px">🎬</div>
       <div style="color:#666;font-size:16px">No videos yet</div>
-      <div style="color:#444;font-size:13px">Be the first to upload!</div>
-      <button onclick="requireLogin('upload')" style="background:#e50000;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload Video 🔥</button>
-    </div>
-  `;
+      <div style="color:#444;font-size:13px">Be the first creator on HOTVID Uganda!</div>
+      <button onclick="location.href='/upload.html'" style="background:#e50000;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload Video 🔥</button>
+    </div>`;
 }
 
 function renderVideo(idx){
   if(!videos[idx]) return;
   const v = videos[idx];
   const container = document.getElementById('feed-container');
-  const cfId = v.cloudflare_video_id;
-  const videoSrc = cfId ? `http://178.105.190.123/uploads/videos/${cfId}` : '';
-  
+  const videoSrc = v.video_url || (v.cloudflare_video_id ? '/uploads/videos/' + v.cloudflare_video_id : '');
   container.innerHTML = `
     <div id="top-bar">
       <span class="logo">🔥HOTVID</span>
-      <button class="auth-btn" onclick="showAuthModal()">${user?user.username:'Sign In'}</button>
+      <button class="auth-btn" onclick="showAuthModal()">${user ? user.username : 'Sign In'}</button>
     </div>
-    <div class="video-item" id="vi-${idx}">
-      ${videoSrc ? 
-        `<video id="vid" src="${videoSrc}" autoplay loop playsinline muted onclick="toggleMute()"></video>` :
+    <div class="video-item">
+      ${videoSrc ?
+        `<video src="${videoSrc}" autoplay loop playsinline muted onclick="toggleMute()" style="width:100%;height:100%;object-fit:cover;"></video>` :
         `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;font-size:80px;">🎬</div>`
       }
       <div class="video-overlay">
         <div class="video-info">
-          <div class="creator">@<span>${v.username||'creator'}</span></div>
-          <div class="title">${v.title||''}</div>
-          <div class="hashtags">${v.hashtags||''}</div>
+          <div class="creator">@<span>${v.username || 'creator'}</span></div>
+          <div class="title">${v.title || ''}</div>
+          <div class="hashtags">${v.hashtags || ''}</div>
         </div>
         <div class="video-actions">
           <div class="action-btn" onclick="handleLike('${v.id}')">
             <span class="icon">❤️</span>
-            <span class="count">${fmt(v.likes||0)}</span>
+            <span class="count">${fmt(v.likes_count || 0)}</span>
           </div>
           <div class="action-btn" onclick="handleComment('${v.id}')">
             <span class="icon">💬</span>
-            <span class="count">${fmt(v.comments||0)}</span>
+            <span class="count">${fmt(v.comments_count || 0)}</span>
           </div>
           <div class="action-btn" onclick="shareVideo('${v.id}')">
             <span class="icon">↗️</span>
@@ -224,123 +205,104 @@ function renderVideo(idx){
           </div>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
   setupSwipe();
-  recordView(v.id);
 }
 
-function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':n;}
-
-async function recordView(id){
-  try{ await fetch(API+'/api/videos/'+id+'/view',{method:'POST'}); }catch(e){}
-}
+function fmt(n){ return n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : String(n||0); }
 
 function toggleMute(){
-  const v=document.getElementById('vid');
-  if(v) v.muted=!v.muted;
+  const v = document.querySelector('video');
+  if(v) v.muted = !v.muted;
 }
 
-// SWIPE
 function setupSwipe(){
-  const c=document.getElementById('feed-container');
-  c.ontouchstart=e=>{ touchStartY=e.touches[0].clientY; };
-  c.ontouchend=e=>{
-    const diff=touchStartY-e.changedTouches[0].clientY;
-    if(Math.abs(diff)>50){
-      if(diff>0 && currentIdx<videos.length-1){ currentIdx++; renderVideo(currentIdx); }
-      else if(diff<0 && currentIdx>0){ currentIdx--; renderVideo(currentIdx); }
+  const c = document.getElementById('feed-container');
+  c.ontouchstart = e => { touchStartY = e.touches[0].clientY; };
+  c.ontouchend = e => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if(Math.abs(diff) > 50){
+      if(diff > 0 && currentIdx < videos.length-1){ currentIdx++; renderVideo(currentIdx); }
+      else if(diff < 0 && currentIdx > 0){ currentIdx--; renderVideo(currentIdx); }
     }
   };
 }
 
-// ACTIONS - require login
 function handleLike(id){
   if(!token){ showLoginPrompt(); return; }
-  fetch(API+'/api/videos/'+id+'/like',{method:'POST',headers:{Authorization:'Bearer '+token}});
+  fetch(API + '/api/videos/' + id + '/like', {method:'POST', headers:{Authorization:'Bearer '+token}});
 }
 
 function handleComment(id){
   if(!token){ showLoginPrompt(); return; }
-  // TODO: open comments
 }
 
-function handleGift(vid,cid){
+function handleGift(vid, cid){
   if(!token){ showLoginPrompt(); return; }
-  window.location.href='/gifts.html?video='+vid+'&creator='+cid;
+  location.href = '/gifts.html?video='+vid+'&creator='+cid;
 }
 
 function shareVideo(id){
-  if(navigator.share){
-    navigator.share({title:'Watch on HOTVID',url:API+'/?v='+id});
-  }
+  if(navigator.share) navigator.share({title:'Watch on HOTVID', url: window.location.origin + '/?v=' + id});
 }
 
 function requireLogin(action){
-  if(!token){ pendingAction=action; showAuthModal(); return; }
-  if(action==='upload') window.location.href='/upload.html';
-  if(action==='profile') window.location.href='/profile.html';
+  if(!token){ pendingAction = action; showAuthModal(); return; }
+  if(action === 'profile') location.href = '/profile.html';
+  if(action === 'inbox') location.href = '/notifications.html';
 }
 
-function openSearch(){ window.location.href='/search.html'; }
 function showFeed(){ loadFeed(); }
 
-// LOGIN PROMPT
 function showLoginPrompt(){
-  const p=document.getElementById('login-prompt');
-  p.style.display='block';
-  setTimeout(()=>p.style.display='none',3000);
+  const p = document.getElementById('login-prompt');
+  p.style.display = 'block';
+  setTimeout(() => p.style.display = 'none', 3000);
 }
 
-// AUTH MODAL
 function showAuthModal(){
-  document.getElementById('auth-modal').style.display='flex';
+  document.getElementById('auth-modal').classList.add('open');
 }
 
 function closeAuthModal(){
-  document.getElementById('auth-modal').style.display='none';
+  document.getElementById('auth-modal').classList.remove('open');
 }
 
-let authMode = 'login';
 function toggleAuth(){
-  authMode = authMode==='login'?'register':'login';
-  document.getElementById('auser').style.display = authMode==='register'?'block':'none';
-  document.getElementById('auth-submit').textContent = authMode==='login'?'Sign In':'Create Account';
-  document.getElementById('auth-toggle').innerHTML = authMode==='login'?'New to HOTVID? <b>Create Account</b>':'Already have account? <b>Sign In</b>';
-  document.getElementById('auth-sub').textContent = authMode==='login'?'Your world. Your videos.':'Join Uganda No.1 platform';
+  authMode = authMode === 'login' ? 'register' : 'login';
+  document.getElementById('auser').style.display = authMode === 'register' ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-toggle').innerHTML = authMode === 'login' ?
+    'New to HOTVID? <b>Create Account</b>' : 'Already have account? <b>Sign In</b>';
 }
 
 async function doAuth(){
-  const email=document.getElementById('aemail').value.trim();
-  const pass=document.getElementById('apass').value.trim();
-  const uname=document.getElementById('auser').value.trim();
-  const errEl=document.getElementById('auth-err');
-  errEl.style.display='none';
-  
-  if(!email||!pass){ errEl.textContent='Please fill all fields'; errEl.style.display='block'; return; }
-  
-  const btn=document.getElementById('auth-submit');
-  btn.textContent='Please wait...';
-  btn.disabled=true;
-  
+  const email = document.getElementById('aemail').value.trim();
+  const pass = document.getElementById('apass').value.trim();
+  const uname = document.getElementById('auser').value.trim();
+  const errEl = document.getElementById('auth-err');
+  errEl.style.display = 'none';
+  if(!email || !pass){ errEl.textContent = 'Please fill all fields'; errEl.style.display = 'block'; return; }
+  const btn = document.getElementById('auth-submit');
+  btn.textContent = 'Please wait...'; btn.disabled = true;
   try{
-    const url = authMode==='login' ? API+'/api/auth/login' : API+'/api/auth/register';
-    const body = authMode==='login' ? {email,password:pass} : {username:uname,email,password:pass};
-    const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const url = authMode === 'login' ? API+'/api/auth/login' : API+'/api/auth/register';
+    const body = authMode === 'login' ? {email, password:pass} : {username:uname, email, password:pass};
+    const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
     const d = await r.json();
-    if(d.error){ errEl.textContent=d.error; errEl.style.display='block'; btn.textContent=authMode==='login'?'Sign In':'Create Account'; btn.disabled=false; return; }
-    token=d.token;
-    user=d.user;
-    localStorage.setItem('hvt',token);
-    localStorage.setItem('hvu',JSON.stringify(user));
+    if(d.error){
+      errEl.textContent = d.error; errEl.style.display = 'block';
+      btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account'; btn.disabled = false; return;
+    }
+    token = d.token; user = d.user;
+    localStorage.setItem('hvt', token);
+    localStorage.setItem('hvu', JSON.stringify(user));
     closeAuthModal();
-    document.getElementById('loginBtn') && (document.getElementById('loginBtn').textContent=user.username);
-    if(pendingAction){ requireLogin(pendingAction); pendingAction=null; }
+    if(pendingAction){ requireLogin(pendingAction); pendingAction = null; }
+    loadFeed();
   }catch(e){
-    errEl.textContent='Connection error. Try again.';
-    errEl.style.display='block';
-    btn.textContent=authMode==='login'?'Sign In':'Create Account';
-    btn.disabled=false;
+    errEl.textContent = 'Connection error. Try again.'; errEl.style.display = 'block';
+    btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account'; btn.disabled = false;
   }
 }
 </script>
