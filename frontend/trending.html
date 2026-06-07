@@ -721,7 +721,7 @@
     liked = !liked;
     const btn = document.getElementById('likeBtn');
     btn.querySelector('.icon').textContent = liked ? '❤️' : '🤍';
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) { requireLogin(); return; }
     fetch(`${API}/api/videos/${currentVideo.id}/like`, {
       method: 'POST',
@@ -744,14 +744,14 @@
   }
 
   function openComments() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) { requireLogin(); return; }
     // Wire to your comments module when ready
     alert('Comments coming soon!');
   }
 
   function sendGift() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) { requireLogin(); return; }
     window.location.href = 'gifts.html?video_id=' + (currentVideo?.id || '');
   }
@@ -767,7 +767,7 @@
   }
 
   function requireLogin() {
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('hvt')) {
       alert('Login to interact with videos!');
       window.location.href = 'index.html?login=1';
     }

@@ -292,7 +292,7 @@
 
   // ── LOAD NOTIFICATIONS ──────────────────────────────────────
   async function loadNotifications() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) {
       document.getElementById('notifList').innerHTML = `
         <div class="empty">
@@ -352,7 +352,7 @@
 
   async function handleNotifClick(id, type, refId) {
     // Mark as read
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     fetch(`${API}/api/notifications/read/${id}`, {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token }
@@ -369,7 +369,7 @@
   }
 
   async function markAllRead() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) return;
     await fetch(`${API}/api/notifications/read-all`, {
       method: 'POST',
@@ -399,7 +399,7 @@
   }
 
   async function enablePush() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('hvt');
     if (!token) { alert('Login first'); return; }
 
     try {
