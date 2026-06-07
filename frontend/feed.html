@@ -3,93 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HOTVID</title>
+<title>HOTVID 🔥</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:#000;overflow:hidden;height:100vh;width:100vw;}
 
 #feed{height:100vh;width:100vw;overflow:hidden;position:relative;}
-.video-slide{position:absolute;top:0;left:0;width:100%;height:100%;transition:transform .3s ease;}
-
+.video-slide{position:absolute;top:0;left:0;width:100%;height:100%;transition:transform .3s ease;will-change:transform;}
 video{width:100%;height:100%;object-fit:cover;}
 
 /* OVERLAY */
-.overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 40%,transparent 70%,rgba(0,0,0,.3) 100%);}
+.overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 40%,transparent 70%,rgba(0,0,0,.3) 100%);pointer-events:none;}
 
 /* VIDEO INFO */
-.vinfo{position:absolute;bottom:80px;left:16px;right:72px;}
-.vinfo .creator{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
-.vinfo .creator span{color:#e50000;}
-.vinfo .vtitle{font-size:14px;color:#ddd;margin-bottom:6px;line-height:1.4;}
-.vinfo .tags{font-size:13px;color:#e50000;}
+.vinfo{position:absolute;bottom:76px;left:16px;right:76px;}
+.vinfo .creator{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;cursor:pointer;}
+.vinfo .creator span{color:#ff2d55;}
+.vinfo .vtitle{font-size:13px;color:#ddd;margin-bottom:5px;line-height:1.5;}
+.vinfo .tags{font-size:12px;color:#ff2d55;line-height:1.8;}
 
-/* ACTIONS */
-.actions{position:absolute;bottom:80px;right:12px;display:flex;flex-direction:column;gap:20px;align-items:center;}
-.abtn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
-.abtn .aicon{font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));}
+/* ACTIONS SIDEBAR */
+.actions{position:absolute;bottom:76px;right:10px;display:flex;flex-direction:column;gap:18px;align-items:center;}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.abtn .aicon{font-size:28px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));transition:transform .15s;}
+.abtn:active .aicon{transform:scale(1.3);}
 .abtn .acount{font-size:11px;color:#fff;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.8);}
-.avatar-ring{width:44px;height:44px;border-radius:50%;border:2px solid #e50000;overflow:hidden;margin-bottom:-8px;}
+.abtn.liked .aicon{filter:drop-shadow(0 0 8px #ff2d55);}
+
+/* AVATAR RING */
+.avatar-ring{width:42px;height:42px;border-radius:50%;border:2.5px solid #ff2d55;overflow:hidden;cursor:pointer;flex-shrink:0;}
 .avatar-ring img{width:100%;height:100%;object-fit:cover;}
+.avatar-ring-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#ff2d55,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:white;}
 
 /* TOP BAR */
-#topbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);}
-.tlogo{color:#e50000;font-weight:900;font-size:22px;letter-spacing:2px;}
-.ttabs{display:flex;gap:20px;}
-.ttab{color:#aaa;font-size:15px;font-weight:600;cursor:pointer;padding-bottom:4px;}
-.ttab.active{color:#fff;border-bottom:2px solid #e50000;}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);}
+.tlogo{color:#ff2d55;font-weight:900;font-size:21px;letter-spacing:2px;font-family:'Bebas Neue',Impact,sans-serif;}
+.ttabs{display:flex;gap:18px;}
+.ttab{color:#aaa;font-size:14px;font-weight:600;cursor:pointer;padding-bottom:3px;}
+.ttab.active{color:#fff;border-bottom:2px solid #ff2d55;}
 .tsearch{font-size:22px;cursor:pointer;}
 
 /* BOTTOM NAV */
-#botnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:60px;background:rgba(0,0,0,.95);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;}
+#botnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:58px;background:rgba(0,0,0,.95);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;}
 .nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 12px;}
 .nbtn .ni{font-size:22px;}
 .nbtn .nl{font-size:10px;color:#555;}
-.nbtn.active .nl{color:#e50000;}
-.upload-btn{background:#e50000;border:none;border-radius:10px;width:44px;height:32px;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.nbtn.active .nl{color:#ff2d55;}
+.nbtn.active .ni{filter:drop-shadow(0 0 4px #ff2d55);}
+.upload-btn{background:#ff2d55;border:none;border-radius:10px;width:42px;height:30px;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-/* MUTE INDICATOR */
-#mute-indicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
+/* MUTE */
+#mute-indicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
 
 /* LOADING */
 #loader{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
-.spin{width:40px;height:40px;border:3px solid #222;border-top-color:#e50000;border-radius:50%;animation:spin .8s linear infinite;}
+.spin{width:40px;height:40px;border:3px solid #222;border-top-color:#ff2d55;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* LOGIN PROMPT */
-#loginprompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid #e50000;border-radius:12px;padding:14px 20px;z-index:500;text-align:center;display:none;white-space:nowrap;}
+#loginprompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid #ff2d55;border-radius:12px;padding:14px 20px;z-index:500;text-align:center;display:none;white-space:nowrap;}
 #loginprompt p{font-size:12px;color:#aaa;margin-bottom:8px;}
-#loginprompt button{background:#e50000;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;}
+#loginprompt button{background:#ff2d55;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;}
 
 /* COMMENTS PANEL */
-#comments-panel{position:fixed;bottom:0;left:0;right:0;height:70vh;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;}
+#comments-panel{position:fixed;bottom:0;left:0;right:0;height:72vh;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;}
 #comments-panel.open{transform:translateY(0);}
-.cp-header{padding:16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;}
-.cp-header h3{font-size:16px;font-weight:700;}
-.cp-close{font-size:22px;cursor:pointer;color:#666;}
-.cp-list{height:calc(70vh - 120px);overflow-y:auto;padding:12px 16px;}
-.comment-item{display:flex;gap:10px;margin-bottom:16px;}
-.comment-avatar{width:32px;height:32px;border-radius:50%;background:#333;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.comment-body .cuser{font-size:13px;font-weight:700;color:#e50000;}
-.comment-body .ctext{font-size:14px;color:#ddd;margin-top:2px;}
-.cp-input{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:#111;border-top:1px solid #222;display:flex;gap:10px;}
-.cp-input input{flex:1;background:#222;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-size:14px;outline:none;}
-.cp-input button{background:#e50000;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;}
+.cp-header{padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;}
+.cp-header h3{font-size:15px;font-weight:700;}
+.cp-close{font-size:20px;cursor:pointer;color:#666;}
+.cp-list{height:calc(72vh - 120px);overflow-y:auto;padding:10px 16px;}
+.comment-item{display:flex;gap:10px;margin-bottom:14px;}
+.comment-avatar{width:32px;height:32px;border-radius:50%;background:#222;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;}
+.comment-avatar img{width:100%;height:100%;object-fit:cover;}
+.comment-body{flex:1;}
+.comment-body .cuser{font-size:12px;font-weight:700;color:#ff2d55;cursor:pointer;}
+.comment-body .ctext{font-size:13px;color:#ddd;margin-top:2px;line-height:1.5;}
+.comment-body .ctime{font-size:11px;color:#555;margin-top:3px;}
+.comment-body .clike{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#888;cursor:pointer;margin-top:3px;}
+.cp-input{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#111;border-top:1px solid #222;display:flex;gap:10px;align-items:center;}
+.cp-input input{flex:1;background:#1e1e1e;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-size:14px;outline:none;}
+.cp-input button{background:#ff2d55;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+/* SHARE PANEL */
+#share-panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0;}
+#share-panel.open{transform:translateY(0);}
+.sp-header{padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;}
+.sp-title{font-size:15px;font-weight:700;}
+.sp-close{font-size:20px;cursor:pointer;color:#666;}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:16px;}
+.share-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px 6px;border-radius:12px;transition:background .2s;}
+.share-item:active{background:#1a1a1a;}
+.share-item .si-icon{font-size:32px;}
+.share-item .si-name{font-size:11px;color:#ccc;}
+.share-link-row{padding:0 16px 16px;display:flex;gap:8px;}
+.share-link-input{flex:1;background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:10px 12px;color:#aaa;font-size:12px;outline:none;}
+.share-copy-btn{background:#ff2d55;border:none;border-radius:8px;padding:10px 16px;color:white;font-weight:700;cursor:pointer;font-size:13px;}
 
 /* GIFTS PANEL */
-#gifts-panel{position:fixed;bottom:0;left:0;right:0;height:50vh;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:20px;}
+#gifts-panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:20px;}
 #gifts-panel.open{transform:translateY(0);}
-.gifts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px;}
+.gifts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
 .gift-item{text-align:center;cursor:pointer;padding:10px 4px;border-radius:12px;border:2px solid transparent;transition:.2s;}
-.gift-item.sel{border-color:#e50000;background:#1a0000;}
-.gift-item .ge{font-size:28px;}
-.gift-item .gn{font-size:10px;color:#aaa;margin-top:4px;}
-.gift-item .gp{font-size:11px;color:#e50000;font-weight:700;}
-.send-gift-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:16px;}
+.gift-item.sel{border-color:#ff2d55;background:#1a0000;}
+.gift-item .ge{font-size:26px;}
+.gift-item .gn{font-size:10px;color:#aaa;margin-top:3px;}
+.gift-item .gp{font-size:10px;color:#ff2d55;font-weight:700;}
+.send-gift-btn{width:100%;background:#ff2d55;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;}
+.wallet-bal{font-size:12px;color:#888;text-align:center;margin-top:8px;}
 
 /* GIFT ANIMATION */
 #giftanim{position:fixed;inset:0;pointer-events:none;z-index:9998;}
 .flying{position:absolute;font-size:50px;animation:fly 1.5s ease-out forwards;}
-@keyframes fly{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-60vh) scale(2);opacity:0;}}
+@keyframes fly{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-60vh) scale(2.5);opacity:0;}}
+
+/* BACKDROP (dimmer behind panels) */
+.panel-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290;display:none;}
+.panel-backdrop.open{display:block;}
+
+/* TOAST */
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid #333;}
+#toast.show{opacity:1;}
 </style>
 </head>
 <body>
@@ -99,67 +132,98 @@ video{width:100%;height:100%;object-fit:cover;}
 <div id="topbar">
   <span class="tlogo">🔥HOTVID</span>
   <div class="ttabs">
-    <span class="ttab" onclick="loadTab('following')">Following</span>
-    <span class="ttab active" onclick="loadTab('trending')">For You</span>
+    <span class="ttab" id="tab-following" onclick="loadTab('following')">Following</span>
+    <span class="ttab active" id="tab-trending" onclick="loadTab('trending')">For You</span>
   </div>
   <span class="tsearch" onclick="goSearch()">🔍</span>
 </div>
 
 <div id="feed"></div>
-
 <div id="mute-indicator">🔇</div>
 
 <div id="botnav">
-  <div class="nbtn active" onclick="location.href='/'"><span class="ni">🏠</span><span class="nl">Home</span></div>
+  <div class="nbtn active" onclick="location.href='index.html'"><span class="ni">🏠</span><span class="nl">Home</span></div>
   <div class="nbtn" onclick="goSearch()"><span class="ni">🔍</span><span class="nl">Discover</span></div>
   <button class="upload-btn" onclick="requireAuth('upload')">➕</button>
   <div class="nbtn" onclick="requireAuth('inbox')"><span class="ni">🔔</span><span class="nl">Inbox</span></div>
   <div class="nbtn" onclick="requireAuth('profile')"><span class="ni">👤</span><span class="nl">Me</span></div>
 </div>
 
+<!-- LOGIN PROMPT -->
 <div id="loginprompt">
-  <p>Join HOTVID to interact with creators</p>
-  <button onclick="location.href='/?login=1'">Sign Up Free 🔥</button>
+  <p>Join HOTVID to interact with creators 🔥</p>
+  <button onclick="location.href='index.html?login=1'">Sign Up Free</button>
 </div>
+
+<!-- BACKDROP -->
+<div class="panel-backdrop" id="backdrop" onclick="closeAllPanels()"></div>
 
 <!-- COMMENTS PANEL -->
 <div id="comments-panel">
   <div class="cp-header">
-    <h3 id="cp-title">Comments</h3>
+    <h3 id="cp-title">Comments (0)</h3>
     <span class="cp-close" onclick="closeComments()">✕</span>
   </div>
   <div class="cp-list" id="cp-list"></div>
   <div class="cp-input">
-    <input type="text" id="cp-input" placeholder="Add a comment...">
+    <input type="text" id="cp-input" placeholder="Add a comment..." maxlength="500"
+      onkeydown="if(event.key==='Enter')postComment()">
     <button onclick="postComment()">Post</button>
+  </div>
+</div>
+
+<!-- SHARE PANEL -->
+<div id="share-panel">
+  <div class="sp-header">
+    <div class="sp-title">Share Video</div>
+    <span class="sp-close" onclick="closeShare()">✕</span>
+  </div>
+  <div class="share-grid">
+    <div class="share-item" onclick="shareToWhatsApp()"><div class="si-icon">💬</div><div class="si-name">WhatsApp</div></div>
+    <div class="share-item" onclick="shareToTelegram()"><div class="si-icon">✈️</div><div class="si-name">Telegram</div></div>
+    <div class="share-item" onclick="shareToFacebook()"><div class="si-icon">👤</div><div class="si-name">Facebook</div></div>
+    <div class="share-item" onclick="shareToTwitter()"><div class="si-icon">🐦</div><div class="si-name">X / Twitter</div></div>
+    <div class="share-item" onclick="shareToTikTok()"><div class="si-icon">🎵</div><div class="si-name">TikTok</div></div>
+    <div class="share-item" onclick="shareToInstagram()"><div class="si-icon">📸</div><div class="si-name">Instagram</div></div>
+    <div class="share-item" onclick="shareNative()"><div class="si-icon">↗️</div><div class="si-name">More...</div></div>
+    <div class="share-item" onclick="copyShareLink()"><div class="si-icon">🔗</div><div class="si-name">Copy Link</div></div>
+  </div>
+  <div class="share-link-row">
+    <input class="share-link-input" id="shareLinkInput" readonly>
+    <button class="share-copy-btn" onclick="copyShareLink()">Copy</button>
   </div>
 </div>
 
 <!-- GIFTS PANEL -->
 <div id="gifts-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;">
-    <h3 style="font-size:16px;font-weight:700;">Send a Gift</h3>
-    <span style="font-size:22px;cursor:pointer;color:#666;" onclick="closeGifts()">✕</span>
+    <h3 style="font-size:15px;font-weight:700;">Send a Gift 🎁</h3>
+    <span style="font-size:20px;cursor:pointer;color:#666;" onclick="closeGifts()">✕</span>
   </div>
   <div class="gifts-grid" id="gifts-grid"></div>
   <button class="send-gift-btn" onclick="sendGift()">Send Gift 🎁</button>
+  <div class="wallet-bal" id="wallet-bal-info"></div>
 </div>
 
 <div id="giftanim"></div>
+<div id="toast"></div>
 
 <script>
 const API = 'http://178.105.190.123:3000';
 let token = localStorage.getItem('hvt');
 let user = null;
-try{ user = JSON.parse(localStorage.getItem('hvu')); }catch(e){}
+try { user = JSON.parse(localStorage.getItem('hvu')); } catch(e) {}
 
 let videos = [];
 let currentIdx = 0;
 let isMuted = true;
 let touchStartY = 0;
+let touchStartX = 0;
 let currentVideoId = null;
 let currentCreatorId = null;
 let selectedGift = null;
+let likedSet = new Set();
+let walletBalance = 0;
 
 const GIFTS = {
   rose:{name:'Rose',emoji:'🌹',price:500},
@@ -169,79 +233,93 @@ const GIFTS = {
   diamond:{name:'Diamond',emoji:'💎',price:500000}
 };
 
-// Load feed
+function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n||0); }
+function toast(msg, dur=2200){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+// ---------- FEED ----------
 async function loadFeed(type='trending'){
+  document.getElementById('loader').style.display='flex';
   try{
-    const url = type==='following' && token ?
-      API+'/api/feed' : API+'/api/feed/trending';
+    const url = type==='following' && token ? `${API}/api/feed` : `${API}/api/feed/trending`;
     const headers = token ? {Authorization:'Bearer '+token} : {};
-    const r = await fetch(url,{headers});
+    const r = await fetch(url, {headers});
     const d = await r.json();
-    videos = d.videos||[];
-    document.getElementById('loader').style.display='none';
-    if(videos.length===0){ showEmpty(); return; }
-    renderAll();
-    playVideo(0);
-    setupSwipe();
-  }catch(e){
-    document.getElementById('loader').style.display='none';
-    showEmpty();
-  }
+    videos = d.videos || d.data || [];
+    // Fetch liked status for logged-in users
+    if(token && videos.length) fetchLikedStatus();
+  }catch(e){ videos=[]; }
+  document.getElementById('loader').style.display='none';
+  if(!videos.length){ showEmpty(); return; }
+  renderAll();
+  playVideo(0);
+  setupSwipe();
 }
 
 function showEmpty(){
-  document.getElementById('feed').innerHTML = `
+  document.getElementById('feed').innerHTML=`
     <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;">
       <div style="font-size:64px">🎬</div>
       <div style="font-size:20px;font-weight:700;">No videos yet</div>
       <div style="color:#666;font-size:14px;">Be the first creator on HOTVID Uganda!</div>
-      <button onclick="requireAuth('upload')" style="background:#e50000;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;">Upload First Video 🔥</button>
+      <button onclick="requireAuth('upload')" style="background:#ff2d55;color:#fff;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload First Video 🔥</button>
     </div>`;
 }
 
+async function fetchLikedStatus(){
+  // Best-effort: check which videos current user has liked
+  // Uses the like endpoint returning liked:true/false if the backend supports it
+  // Otherwise we track locally via localStorage
+  const cached = JSON.parse(localStorage.getItem('hv_liked')||'[]');
+  cached.forEach(id=>likedSet.add(id));
+}
+
 function renderAll(){
-  const feed = document.getElementById('feed');
-  feed.innerHTML = '';
+  const feed=document.getElementById('feed');
+  feed.innerHTML='';
   videos.forEach((v,i)=>{
-    const slide = document.createElement('div');
-    slide.className = 'video-slide';
-    slide.id = 'slide-'+i;
-    slide.style.transform = `translateY(${i*100}%)`;
-    const videoSrc = v.video_url || (v.cloudflare_video_id ? 'https://pub-42a11558e202483aa9635cfba1d86138.r2.dev/' + v.cloudflare_video_id : '');
-    slide.innerHTML = `
-      ${videoSrc ?
-        `<video id="vid-${i}" src="${videoSrc}"
-          loop playsinline ${isMuted?'muted':''} onclick="toggleMute()"
-          style="width:100%;height:100%;object-fit:cover;"></video>` :
-        `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000 0%,#000 100%);display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:80px">🎬</span>
-        </div>`
-      }
+    const slide=document.createElement('div');
+    slide.className='video-slide';
+    slide.id='slide-'+i;
+    slide.style.transform=`translateY(${i*100}%)`;
+    const videoSrc=v.video_url||(v.cloudflare_video_id?'https://pub-42a11558e202483aa9635cfba1d86138.r2.dev/'+v.cloudflare_video_id:'');
+    const liked=likedSet.has(String(v.id));
+    const avatarContent=v.avatar_url
+      ? `<img src="${v.avatar_url}" alt="${v.username||'U'}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(v.username||'U')}&background=ff2d55&color=fff'">`
+      : `<div class="avatar-ring-placeholder">${(v.username||'U')[0].toUpperCase()}</div>`;
+
+    slide.innerHTML=`
+      ${videoSrc
+        ? `<video id="vid-${i}" src="${videoSrc}" loop playsinline ${isMuted?'muted':''} onclick="toggleMute()" preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video>`
+        : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;"><span style="font-size:80px">🎬</span></div>`}
       <div class="overlay"></div>
       <div class="vinfo">
-        <div class="creator">@<span>${v.username||'creator'}</span></div>
+        <div class="creator" onclick="goProfile('${v.creator_id||v.user_id}')">@<span>${v.username||'creator'}</span></div>
         <div class="vtitle">${v.title||''}</div>
         <div class="tags">${v.hashtags||''}</div>
       </div>
       <div class="actions">
-        <div style="margin-bottom:4px;">
-          <div class="avatar-ring"><img src="${v.avatar||'https://ui-avatars.com/api/?name='+encodeURIComponent(v.username||'U')+'&background=e50000&color=fff'}" onerror="this.src='https://ui-avatars.com/api/?name=U&background=e50000&color=fff'"></div>
+        <div style="margin-bottom:4px;cursor:pointer" onclick="goProfile('${v.creator_id||v.user_id}')">
+          <div class="avatar-ring">${avatarContent}</div>
         </div>
-        <div class="abtn" onclick="handleLike('${v.id}',this)">
-          <span class="aicon">❤️</span>
-          <span class="acount">${fmt(v.likes||0)}</span>
+        <div class="abtn ${liked?'liked':''}" id="like-btn-${i}" onclick="handleLike('${v.id}',${i})">
+          <span class="aicon">${liked?'❤️':'🤍'}</span>
+          <span class="acount" id="like-count-${i}">${fmt(v.likes||v.like_count||v.likes_count||0)}</span>
         </div>
         <div class="abtn" onclick="openComments('${v.id}')">
           <span class="aicon">💬</span>
-          <span class="acount">${fmt(v.comments||0)}</span>
+          <span class="acount">${fmt(v.comments||v.comments_count||0)}</span>
         </div>
-        <div class="abtn" onclick="openGifts('${v.id}','${v.creator_id}')">
+        <div class="abtn" onclick="openShare('${v.id}')">
+          <span class="aicon">↗️</span>
+          <span class="acount" id="share-count-${i}">${fmt(v.shares||v.shares_count||0)}</span>
+        </div>
+        <div class="abtn" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
           <span class="aicon">🎁</span>
           <span class="acount">Gift</span>
-        </div>
-        <div class="abtn" onclick="shareVideo('${v.id}')">
-          <span class="aicon">↗️</span>
-          <span class="acount">Share</span>
         </div>
       </div>`;
     feed.appendChild(slide);
@@ -249,184 +327,330 @@ function renderAll(){
 }
 
 function playVideo(idx){
-  // Pause all
   document.querySelectorAll('video').forEach(v=>{ try{v.pause();}catch(e){} });
-  currentIdx = idx;
-  currentVideoId = videos[idx]?.id;
-  currentCreatorId = videos[idx]?.creator_id;
-  const vid = document.getElementById('vid-'+idx);
+  currentIdx=idx;
+  currentVideoId=videos[idx]?.id;
+  currentCreatorId=videos[idx]?.creator_id||videos[idx]?.user_id;
+  const vid=document.getElementById('vid-'+idx);
   if(vid){ vid.muted=isMuted; try{vid.play();}catch(e){} }
-  // Record view
-  if(currentVideoId) fetch(API+'/api/videos/'+currentVideoId+'/view',{method:'POST'}).catch(()=>{});
+  if(currentVideoId) fetch(`${API}/api/videos/${currentVideoId}/view`,{method:'POST'}).catch(()=>{});
 }
 
-// SWIPE
+// ---------- SWIPE ----------
 function setupSwipe(){
-  const feed = document.getElementById('feed');
-  feed.addEventListener('touchstart',e=>{ touchStartY=e.touches[0].clientY; },{passive:true});
+  const feed=document.getElementById('feed');
+  feed.addEventListener('touchstart',e=>{
+    touchStartY=e.touches[0].clientY;
+    touchStartX=e.touches[0].clientX;
+  },{passive:true});
   feed.addEventListener('touchend',e=>{
-    const diff = touchStartY - e.changedTouches[0].clientY;
-    if(Math.abs(diff) > 60){
-      if(diff>0 && currentIdx<videos.length-1) goTo(currentIdx+1);
-      else if(diff<0 && currentIdx>0) goTo(currentIdx-1);
+    const diffY=touchStartY-e.changedTouches[0].clientY;
+    const diffX=touchStartX-e.changedTouches[0].clientX;
+    if(Math.abs(diffY)>Math.abs(diffX) && Math.abs(diffY)>50){
+      if(diffY>0 && currentIdx<videos.length-1) goTo(currentIdx+1);
+      else if(diffY<0 && currentIdx>0) goTo(currentIdx-1);
     }
   },{passive:true});
 }
 
 function goTo(idx){
-  const prev = document.getElementById('slide-'+currentIdx);
-  const next = document.getElementById('slide-'+idx);
-  if(prev) prev.style.transform = `translateY(${(currentIdx-idx)*-100}%)`;
-  if(next) next.style.transform = 'translateY(0)';
-  // Reset other slides
+  const prev=document.getElementById('slide-'+currentIdx);
+  const next=document.getElementById('slide-'+idx);
+  if(prev) prev.style.transform=`translateY(${(currentIdx-idx)*-100}%)`;
+  if(next) next.style.transform='translateY(0)';
   videos.forEach((_,i)=>{
     if(i!==currentIdx && i!==idx){
-      const s = document.getElementById('slide-'+i);
-      if(s) s.style.transform = `translateY(${(i-idx)*100}%)`;
+      const s=document.getElementById('slide-'+i);
+      if(s) s.style.transform=`translateY(${(i-idx)*100}%)`;
     }
   });
   playVideo(idx);
 }
 
 function toggleMute(){
-  isMuted = !isMuted;
-  const vid = document.getElementById('vid-'+currentIdx);
-  if(vid) vid.muted = isMuted;
-  const ind = document.getElementById('mute-indicator');
-  ind.textContent = isMuted ? '🔇' : '🔊';
-  ind.style.opacity = '1';
-  setTimeout(()=>ind.style.opacity='0', 800);
+  isMuted=!isMuted;
+  const vid=document.getElementById('vid-'+currentIdx);
+  if(vid) vid.muted=isMuted;
+  const ind=document.getElementById('mute-indicator');
+  ind.textContent=isMuted?'🔇':'🔊';
+  ind.style.opacity='1';
+  setTimeout(()=>ind.style.opacity='0',800);
 }
 
-function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n); }
-
-// ACTIONS
-function handleLike(id, btn){
+// ---------- LIKE (toggle) ----------
+async function handleLike(videoId, slideIdx){
   if(!token){ showLoginPrompt(); return; }
-  fetch(API+'/api/videos/'+id+'/like',{method:'POST',headers:{Authorization:'Bearer '+token}})
-    .then(()=>{ if(btn){ btn.querySelector('.aicon').textContent='❤️'; } });
-}
+  const btn=document.getElementById('like-btn-'+slideIdx);
+  const icon=btn?.querySelector('.aicon');
+  const countEl=document.getElementById('like-count-'+slideIdx);
+  const alreadyLiked=likedSet.has(String(videoId));
 
-function requireAuth(action){
-  if(!token){ showLoginPrompt(); return; }
-  if(action==='upload') location.href='/upload.html';
-  if(action==='profile') location.href='/profile.html';
-  if(action==='inbox') location.href='/inbox.html';
-}
+  // Optimistic UI
+  if(alreadyLiked){
+    likedSet.delete(String(videoId));
+    btn?.classList.remove('liked');
+    if(icon) icon.textContent='🤍';
+    const c=parseInt(countEl?.textContent)||0;
+    if(countEl) countEl.textContent=fmt(Math.max(c-1,0));
+  } else {
+    likedSet.add(String(videoId));
+    btn?.classList.add('liked');
+    if(icon) icon.textContent='❤️';
+    const c=parseInt(countEl?.textContent)||0;
+    if(countEl) countEl.textContent=fmt(c+1);
+  }
 
-function showLoginPrompt(){
-  const p = document.getElementById('loginprompt');
-  p.style.display='block';
-  setTimeout(()=>p.style.display='none',3000);
-}
+  // Persist liked to localStorage
+  localStorage.setItem('hv_liked', JSON.stringify([...likedSet]));
 
-function goSearch(){ location.href='/search.html'; }
-function shareVideo(id){
-  if(navigator.share) navigator.share({title:'Watch on HOTVID',url:API+'/?v='+id});
-}
-
-function loadTab(type){
-  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
-  loadFeed(type);
-}
-
-// COMMENTS
-async function openComments(videoId){
-  if(!token){ showLoginPrompt(); return; }
-  currentVideoId = videoId;
-  document.getElementById('comments-panel').classList.add('open');
-  const list = document.getElementById('cp-list');
-  list.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">Loading...</div>';
   try{
-    const r = await fetch(API+'/api/videos/'+videoId+'/comments');
-    const comments = await r.json();
-    if(!comments.length){ list.innerHTML='<div style="text-align:center;padding:20px;color:#666;">No comments yet. Be first!</div>'; return; }
-    list.innerHTML = comments.map(c=>`
+    await fetch(`${API}/api/videos/${videoId}/like`,{
+      method:'POST',
+      headers:{Authorization:'Bearer '+token}
+    });
+  }catch(e){ console.error('like error',e); }
+}
+
+// ---------- SHARE ----------
+let shareVideoId = null;
+
+function openShare(videoId){
+  shareVideoId=videoId;
+  const url=getShareUrl(videoId);
+  document.getElementById('shareLinkInput').value=url;
+  document.getElementById('share-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+  // Increment share count optimistically
+  const slideIdx=videos.findIndex(v=>String(v.id)===String(videoId));
+  if(slideIdx>=0){
+    const el=document.getElementById('share-count-'+slideIdx);
+    if(el){ const c=parseInt(el.textContent)||0; el.textContent=fmt(c+1); }
+  }
+  // Record on server
+  fetch(`${API}/api/videos/${videoId}/share`,{method:'POST',headers:token?{Authorization:'Bearer '+token}:{}}).catch(()=>{});
+}
+
+function getShareUrl(id){ return `${location.origin}/feed.html?v=${id}`; }
+
+function closeShare(){ document.getElementById('share-panel').classList.remove('open'); closeBackdrop(); }
+
+function shareToWhatsApp(){
+  const url=getShareUrl(shareVideoId);
+  window.open(`https://wa.me/?text=${encodeURIComponent('Watch this on HOTVID 🔥 '+url)}`, '_blank');
+  closeShare();
+}
+function shareToTelegram(){
+  const url=getShareUrl(shareVideoId);
+  window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Watch this on HOTVID 🔥')}`, '_blank');
+  closeShare();
+}
+function shareToFacebook(){
+  const url=getShareUrl(shareVideoId);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+  closeShare();
+}
+function shareToTwitter(){
+  const url=getShareUrl(shareVideoId);
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Watch this on HOTVID 🔥')}&url=${encodeURIComponent(url)}`, '_blank');
+  closeShare();
+}
+function shareToTikTok(){
+  toast('Copy the link and share on TikTok!');
+  copyShareLink();
+}
+function shareToInstagram(){
+  toast('Copy the link and share in your Instagram story!');
+  copyShareLink();
+}
+function shareNative(){
+  const url=getShareUrl(shareVideoId);
+  if(navigator.share){
+    navigator.share({title:'Watch on HOTVID 🔥',url}).catch(()=>{});
+    closeShare();
+  } else { copyShareLink(); }
+}
+function copyShareLink(){
+  const url=getShareUrl(shareVideoId||currentVideoId);
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!'));
+  } else {
+    const inp=document.getElementById('shareLinkInput');
+    inp.select(); document.execCommand('copy'); toast('🔗 Link copied!');
+  }
+}
+
+// ---------- COMMENTS ----------
+async function openComments(videoId){
+  currentVideoId=videoId;
+  document.getElementById('comments-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+  const list=document.getElementById('cp-list');
+  list.innerHTML='<div style="text-align:center;padding:20px;color:#666;">Loading...</div>';
+  try{
+    const r=await fetch(`${API}/api/videos/${videoId}/comments`);
+    const d=await r.json();
+    const comments=Array.isArray(d)?d:(d.data||d.comments||[]);
+    document.getElementById('cp-title').textContent=`Comments (${comments.length})`;
+    if(!comments.length){
+      list.innerHTML='<div style="text-align:center;padding:30px;color:#666;">No comments yet. Be first! 💬</div>';
+      return;
+    }
+    list.innerHTML=comments.map(c=>`
       <div class="comment-item">
-        <div class="comment-avatar">👤</div>
+        <div class="comment-avatar">
+          ${c.avatar_url?`<img src="${c.avatar_url}" alt="${c.username}" onerror="this.style.display='none'">`:( (c.username||'U')[0].toUpperCase())}
+        </div>
         <div class="comment-body">
-          <div class="cuser">@${c.username}</div>
-          <div class="ctext">${c.text}</div>
+          <div class="cuser" onclick="goProfile('${c.user_id}')" >@${c.username||'user'}</div>
+          <div class="ctext">${escHtml(c.content||c.text||'')}</div>
+          <div class="ctime">${timeSince(c.created_at)}</div>
         </div>
       </div>`).join('');
-  }catch(e){ list.innerHTML='<div style="color:#e50000;text-align:center;padding:20px;">Failed to load comments</div>'; }
+  }catch(e){ list.innerHTML='<div style="color:#ff2d55;text-align:center;padding:20px;">Failed to load comments</div>'; }
 }
 
-function closeComments(){ document.getElementById('comments-panel').classList.remove('open'); }
+function closeComments(){ document.getElementById('comments-panel').classList.remove('open'); closeBackdrop(); }
 
 async function postComment(){
   if(!token){ showLoginPrompt(); return; }
-  const input = document.getElementById('cp-input');
-  const text = input.value.trim();
+  const input=document.getElementById('cp-input');
+  const text=input.value.trim();
   if(!text) return;
   input.value='';
   try{
-    await fetch(API+'/api/videos/'+currentVideoId+'/comments',{
+    await fetch(`${API}/api/videos/${currentVideoId}/comments`,{
       method:'POST',
       headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
-      body:JSON.stringify({text})
+      body:JSON.stringify({text, content:text})
     });
     openComments(currentVideoId);
-  }catch(e){}
+  }catch(e){ toast('Failed to post comment'); }
 }
 
-// GIFTS
-function openGifts(videoId, creatorId){
+// ---------- GIFTS ----------
+async function openGifts(videoId, creatorId){
   if(!token){ showLoginPrompt(); return; }
-  currentVideoId = videoId;
-  currentCreatorId = creatorId;
-  selectedGift = null;
-  const grid = document.getElementById('gifts-grid');
-  grid.innerHTML = Object.entries(GIFTS).map(([key,g])=>`
+  currentVideoId=videoId; currentCreatorId=creatorId; selectedGift=null;
+  // Load wallet balance
+  try{
+    const r=await fetch(`${API}/api/gifts/wallet`,{headers:{Authorization:'Bearer '+token}});
+    const d=await r.json();
+    walletBalance=d.balance||0;
+  }catch(e){ walletBalance=0; }
+  document.getElementById('wallet-bal-info').textContent=`Your balance: ${walletBalance.toLocaleString()} UGX`;
+
+  const grid=document.getElementById('gifts-grid');
+  grid.innerHTML=Object.entries(GIFTS).map(([key,g])=>`
     <div class="gift-item" onclick="selectGift('${key}',this)">
       <div class="ge">${g.emoji}</div>
       <div class="gn">${g.name}</div>
-      <div class="gp">${g.price.toLocaleString()} UGX</div>
+      <div class="gp">${g.price.toLocaleString()}</div>
     </div>`).join('');
   document.getElementById('gifts-panel').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
 }
 
-function selectGift(key, el){
+function selectGift(key,el){
   document.querySelectorAll('.gift-item').forEach(i=>i.classList.remove('sel'));
-  el.classList.add('sel');
-  selectedGift = key;
+  el.classList.add('sel'); selectedGift=key;
 }
 
-function closeGifts(){ document.getElementById('gifts-panel').classList.remove('open'); }
+function closeGifts(){ document.getElementById('gifts-panel').classList.remove('open'); closeBackdrop(); }
 
 async function sendGift(){
-  if(!selectedGift){ alert('Select a gift first'); return; }
+  if(!selectedGift){ toast('Select a gift first'); return; }
+  const g=GIFTS[selectedGift];
+  if(walletBalance<g.price){ toast(`Insufficient balance. Top up wallet first.`); window.location='wallet.html'; return; }
   try{
-    const r = await fetch(API+'/api/gifts/send',{
+    const r=await fetch(`${API}/api/gifts/send`,{
       method:'POST',
       headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
       body:JSON.stringify({recipient_id:currentCreatorId,gift_type:selectedGift,video_id:currentVideoId})
     });
-    const d = await r.json();
-    if(d.error){ alert(d.error); return; }
+    const d=await r.json();
+    if(d.error){ toast(d.error); return; }
     closeGifts();
-    animateGift(GIFTS[selectedGift].emoji);
-  }catch(e){ alert('Failed to send gift'); }
+    animateGift(g.emoji);
+    toast(`🎁 ${g.name} sent!`);
+    walletBalance-=g.price;
+  }catch(e){ toast('Failed to send gift'); }
 }
 
 function animateGift(emoji){
-  const container = document.getElementById('giftanim');
-  for(let i=0;i<5;i++){
+  const container=document.getElementById('giftanim');
+  for(let i=0;i<6;i++){
     setTimeout(()=>{
-      const el = document.createElement('div');
-      el.className = 'flying';
-      el.textContent = emoji;
-      el.style.left = (20+Math.random()*60)+'%';
-      el.style.bottom = '15%';
+      const el=document.createElement('div');
+      el.className='flying'; el.textContent=emoji;
+      el.style.left=(15+Math.random()*70)+'%';
+      el.style.bottom='15%';
       container.appendChild(el);
       setTimeout(()=>el.remove(),1500);
-    },i*200);
+    },i*180);
   }
 }
 
-// START
+// ---------- UTILS ----------
+function closeBackdrop(){
+  // Only close if no panel is open
+  const panels=['comments-panel','share-panel','gifts-panel'];
+  const anyOpen=panels.some(id=>document.getElementById(id).classList.contains('open'));
+  if(!anyOpen) document.getElementById('backdrop').classList.remove('open');
+}
+
+function closeAllPanels(){
+  ['comments-panel','share-panel','gifts-panel'].forEach(id=>{
+    document.getElementById(id).classList.remove('open');
+  });
+  document.getElementById('backdrop').classList.remove('open');
+}
+
+function goProfile(userId){
+  if(!userId||userId==='undefined') return;
+  window.location='profile.html?id='+userId;
+}
+
+function requireAuth(action){
+  if(!token){ showLoginPrompt(); return; }
+  if(action==='upload') location.href='upload.html';
+  if(action==='profile') location.href='profile.html';
+  if(action==='inbox') location.href='notifications.html';
+}
+
+function showLoginPrompt(){
+  const p=document.getElementById('loginprompt');
+  p.style.display='block';
+  clearTimeout(p._t);
+  p._t=setTimeout(()=>p.style.display='none',3000);
+}
+
+function goSearch(){ location.href='discover.html'; }
+
+function loadTab(type){
+  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+type)?.classList.add('active');
+  videos=[]; document.getElementById('feed').innerHTML='';
+  loadFeed(type);
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeSince(dateStr){
+  if(!dateStr) return '';
+  const d=new Date(dateStr), now=Date.now(), diff=(now-d)/1000;
+  if(diff<60) return 'just now';
+  if(diff<3600) return Math.floor(diff/60)+'m ago';
+  if(diff<86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+// Open to specific video if URL has ?v=ID
+const urlV=new URLSearchParams(location.search).get('v');
+if(urlV){ currentVideoId=urlV; }
+
 loadFeed();
 </script>
 </body>
-      </html>
+</html>
