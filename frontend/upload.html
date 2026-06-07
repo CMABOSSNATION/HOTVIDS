@@ -161,7 +161,7 @@ document.getElementById('uploadBtn').addEventListener('click', async function(){
 
   try{
     const formData = new FormData();
-    formData.append('video', selectedFile);
+    formData.append('file', selectedFile);
     formData.append('title', title);
     formData.append('description', document.getElementById('description').value.trim());
     formData.append('hashtags', tags.map(t => '#' + t).join(' '));
@@ -177,13 +177,37 @@ document.getElementById('uploadBtn').addEventListener('click', async function(){
       }
     };
 
-    xhr.onload = function(){
+    xhr.onload = async function(){
       if(xhr.status === 200 || xhr.status === 201){
-        setProgress(100, 'Upload complete!');
-        showStatus('🔥 Video uploaded successfully! Going live shortly.', 'success');
-        document.getElementById('uploadBtn').textContent = 'UPLOAD ANOTHER';
-        document.getElementById('uploadBtn').disabled = false;
-        document.getElementById('uploadBtn').onclick = () => location.reload();
+        setProgress(90, 'Saving video...');
+        try{
+          const d = JSON.parse(xhr.responseText);
+          const saveRes = await fetch('/api/upload/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+              title: title,
+              description: document.getElementById('description').value.trim(),
+              cloudflare_video_id: d.uid,
+              hashtags: tags.map(t => '#' + t).join(' ')
+            })
+          });
+          if(saveRes.ok){
+            setProgress(100, 'Upload complete!');
+            showStatus('🔥 Video uploaded successfully!', 'success');
+            document.getElementById('uploadBtn').textContent = 'UPLOAD ANOTHER';
+            document.getElementById('uploadBtn').disabled = false;
+            document.getElementById('uploadBtn').onclick = () => location.reload();
+          } else {
+            showStatus('Upload failed at save step. Try again.', 'error');
+            document.getElementById('uploadBtn').disabled = false;
+            document.getElementById('uploadBtn').textContent = 'RETRY UPLOAD 🔥';
+          }
+        }catch(e){
+          showStatus('Upload failed: ' + e.message, 'error');
+          document.getElementById('uploadBtn').disabled = false;
+          document.getElementById('uploadBtn').textContent = 'RETRY UPLOAD 🔥';
+        }
       } else {
         try{
           const d = JSON.parse(xhr.responseText);
