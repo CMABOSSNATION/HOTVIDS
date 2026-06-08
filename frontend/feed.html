@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HOTVID 🔥</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:#000;overflow:hidden;height:100vh;width:100vw;}
 
@@ -13,47 +14,115 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;}
 video{width:100%;height:100%;object-fit:cover;}
 
 /* OVERLAY */
-.overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 40%,transparent 70%,rgba(0,0,0,.3) 100%);pointer-events:none;}
+.overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,0.2) 35%,transparent 65%,rgba(0,0,0,.25) 100%);pointer-events:none;}
 
 /* VIDEO INFO */
-.vinfo{position:absolute;bottom:76px;left:16px;right:76px;}
-.vinfo .creator{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;cursor:pointer;}
-.vinfo .creator span{color:#ff2d55;}
-.vinfo .vtitle{font-size:13px;color:#ddd;margin-bottom:5px;line-height:1.5;}
-.vinfo .tags{font-size:12px;color:#ff2d55;line-height:1.8;}
+.vinfo{position:absolute;bottom:80px;left:16px;right:82px;}
+.vinfo .creator{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+.vinfo .creator span{color:#fff;}
+.vinfo .vtitle{font-size:13px;color:#e8e8e8;margin-bottom:5px;line-height:1.55;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.vinfo .tags{font-size:12px;color:#5bf5b0;line-height:1.9;text-shadow:0 1px 3px rgba(0,0,0,.8);}
 
-/* ACTIONS SIDEBAR */
-.actions{position:absolute;bottom:76px;right:10px;display:flex;flex-direction:column;gap:18px;align-items:center;}
-.abtn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.abtn .aicon{font-size:28px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));transition:transform .15s;}
+/* ACTIONS SIDEBAR — matches photo: avatar, heart/gradient, comment/blue, share/pink, gift */
+.actions{position:absolute;bottom:80px;right:8px;display:flex;flex-direction:column;gap:16px;align-items:center;}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.abtn .aicon{font-size:30px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.9));transition:transform .15s;}
 .abtn:active .aicon{transform:scale(1.3);}
-.abtn .acount{font-size:11px;color:#fff;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.8);}
-.abtn.liked .aicon{filter:drop-shadow(0 0 8px #ff2d55);}
+.abtn .acount{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);}
 
-/* AVATAR RING */
-.avatar-ring{width:42px;height:42px;border-radius:50%;border:2.5px solid #ff2d55;overflow:hidden;cursor:pointer;flex-shrink:0;}
+/* Heart icon — gradient pink/purple like photo */
+.abtn.like-btn .aicon{
+  background: linear-gradient(135deg,#ff6ec7,#c850c0,#a855f7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 8px rgba(200,80,192,.5));
+  font-size:32px;
+}
+.abtn.like-btn.liked .aicon{filter:drop-shadow(0 0 12px #ff2d55);}
+
+/* Comment — blue bubble */
+.abtn.comment-btn .aicon{
+  background:linear-gradient(135deg,#60cfff,#3b82f6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 8px rgba(59,130,246,.5));
+  font-size:32px;
+}
+
+/* Share — pink/magenta arrow */
+.abtn.share-btn .aicon{
+  background:linear-gradient(135deg,#ff9de2,#e879f9,#c026d3);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 8px rgba(192,38,211,.5));
+  font-size:30px;
+}
+
+/* Gift — orange/red */
+.abtn.gift-btn .aicon{font-size:28px;filter:drop-shadow(0 2px 8px rgba(255,120,0,.6));}
+
+/* AVATAR RING — matches photo: thick colored border, small green follow badge */
+.avatar-wrap{position:relative;margin-bottom:4px;cursor:pointer;}
+.avatar-ring{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,0.2);}
 .avatar-ring img{width:100%;height:100%;object-fit:cover;}
 .avatar-ring-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#ff2d55,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:white;}
+.follow-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#1da1f2;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;border:1.5px solid #000;}
 
-/* TOP BAR */
-#topbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);}
-.tlogo{color:#ff2d55;font-weight:900;font-size:21px;letter-spacing:2px;font-family:'Bebas Neue',Impact,sans-serif;}
-.ttabs{display:flex;gap:18px;}
-.ttab{color:#aaa;font-size:14px;font-weight:600;cursor:pointer;padding-bottom:3px;}
-.ttab.active{color:#fff;border-bottom:2px solid #ff2d55;}
-.tsearch{font-size:22px;cursor:pointer;}
+/* SEARCH BAR — matches photo: dark pill with grey text and X */
+#searchbar{position:fixed;top:10px;left:16px;right:16px;z-index:101;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);}
+#searchbar .sicon{font-size:15px;color:#bbb;}
+#searchbar input{flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;}
+#searchbar input::placeholder{color:#999;}
+#searchbar .sclose{font-size:15px;color:#bbb;cursor:pointer;}
 
-/* BOTTOM NAV */
-#botnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:58px;background:rgba(0,0,0,.95);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;}
-.nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:6px 12px;}
-.nbtn .ni{font-size:22px;}
-.nbtn .nl{font-size:10px;color:#555;}
-.nbtn.active .nl{color:#ff2d55;}
-.nbtn.active .ni{filter:drop-shadow(0 0 4px #ff2d55);}
-.upload-btn{background:#ff2d55;border:none;border-radius:10px;width:42px;height:30px;font-size:22px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* TOP TABS — pill shaped buttons like photo: HOTVIDS red, FM Radio purple, tv live purple */
+#toptabs{position:fixed;top:56px;left:0;right:0;z-index:100;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
+#toptabs::-webkit-scrollbar{display:none;}
+.ttab-pill{display:flex;align-items:center;gap:5px;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;white-space:nowrap;transition:all .2s;letter-spacing:.3px;}
+.ttab-pill.hotvids{background:rgba(200,30,30,0.15);border-color:#cc2200;color:#ff4422;}
+.ttab-pill.hotvids.active{background:rgba(200,30,30,0.35);border-color:#ff4422;}
+.ttab-pill.radio{background:rgba(100,60,120,0.15);border-color:#7c4a9e;color:#c084fc;}
+.ttab-pill.radio.active{background:rgba(100,60,120,0.35);}
+.ttab-pill.tvlive{background:rgba(60,60,140,0.15);border-color:#5b5bcc;color:#818cf8;}
+.ttab-pill.tvlive.active{background:rgba(60,60,140,0.35);}
+.ttab-pill .tab-emoji{font-size:14px;}
+
+/* LIVE TV HUB widget — bottom right card like photo */
+.livetv-card{position:absolute;bottom:155px;right:8px;background:rgba(255,255,245,0.95);border-radius:10px;padding:6px 8px;min-width:100px;cursor:pointer;}
+.livetv-card .ltitle{font-size:10px;font-weight:800;color:#111;margin-bottom:4px;text-align:center;}
+.livetv-logos{display:flex;gap:4px;align-items:center;justify-content:center;}
+.livetv-logos span{font-size:9px;font-weight:700;background:#eee;border-radius:4px;padding:2px 5px;color:#333;}
+
+/* GIFTING HUB widget — matches photo */
+.gift-hub-card{position:absolute;bottom:220px;right:8px;background:rgba(255,255,255,0.12);border-radius:10px;padding:6px 8px;min-width:95px;backdrop-filter:blur(8px);cursor:pointer;}
+.gift-hub-card .gh-title{font-size:9px;color:#ddd;text-align:center;margin-bottom:2px;}
+.gift-hub-card .gh-sub{font-size:8px;color:#aaa;text-align:center;margin-bottom:4px;}
+.gift-hub-card .gh-send{font-size:11px;font-weight:800;color:#ff6b00;text-align:center;}
+.gift-hub-card .gh-mposs{font-size:8px;color:#bbb;text-align:center;}
+
+/* BOTTOM NAV — matches photo: dark bg, teal home, flame trending, gold upload circle, bell notifications, avatar me */
+#botnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:62px;background:rgba(8,6,4,0.97);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;padding-bottom:2px;}
+.nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 10px;}
+.nbtn .ni{font-size:22px;line-height:1.2;}
+.nbtn .nl{font-size:9px;color:#666;font-weight:600;letter-spacing:.3px;}
+/* Home — teal color */
+.nbtn.active .ni{filter:none;}
+.nbtn.home-btn .ni{color:#4dd9ac;font-size:24px;}
+.nbtn.home-btn .nl{color:#4dd9ac;}
+/* Trending — flame orange */
+.nbtn.trend-btn .ni{font-size:24px;filter:drop-shadow(0 0 4px #ff6b00);}
+.nbtn.trend-btn .nl{color:#ff8c42;}
+/* Upload — gold circle button */
+.upload-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.upload-circle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00,#ff8800);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(255,180,0,.5);border:2.5px solid rgba(255,220,80,.4);}
+.upload-wrap .nl{font-size:9px;color:#aaa;font-weight:600;letter-spacing:.3px;}
+.upload-wrap .nl2{font-size:8px;color:#666;}
+/* Notifications bell */
+.nbtn.notif-btn .ni{font-size:22px;color:#ddd;}
+.nbtn.notif-btn .nl{color:#999;}
+/* Me — avatar style */
+.nbtn.me-btn .ni{font-size:24px;}
+.nbtn.me-btn .nl{color:#999;}
 
 /* MUTE */
-#mute-indicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
+#mute-indicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);border-radius:50%;width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
 
 /* LOADING */
 #loader{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
@@ -116,7 +185,7 @@ video{width:100%;height:100%;object-fit:cover;}
 .flying{position:absolute;font-size:50px;animation:fly 1.5s ease-out forwards;}
 @keyframes fly{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-60vh) scale(2.5);opacity:0;}}
 
-/* BACKDROP (dimmer behind panels) */
+/* BACKDROP */
 .panel-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290;display:none;}
 .panel-backdrop.open{display:block;}
 
@@ -129,24 +198,47 @@ video{width:100%;height:100%;object-fit:cover;}
 
 <div id="loader"><div class="spin"></div><div style="color:#666;font-size:13px;margin-top:12px;">Loading HOTVID...</div></div>
 
-<div id="topbar">
-  <span class="tlogo">🔥HOTVID</span>
-  <div class="ttabs">
-    <span class="ttab" id="tab-following" onclick="loadTab('following')">Following</span>
-    <span class="ttab active" id="tab-trending" onclick="loadTab('trending')">For You</span>
+<!-- SEARCH BAR -->
+<div id="searchbar" onclick="goSearch()">
+  <span class="sicon">🔍</span>
+  <input type="text" placeholder="Search for content or creators..." readonly>
+  <span class="sclose">✕</span>
+</div>
+
+<!-- TOP TABS -->
+<div id="toptabs">
+  <div class="ttab-pill hotvids active" id="tab-hotvids" onclick="loadTab('trending')">
+    <span class="tab-emoji">🔥</span> HOTVIDS
   </div>
-  <span class="tsearch" onclick="goSearch()">🔍</span>
+  <div class="ttab-pill radio" id="tab-radio" onclick="location.href='radio.html'">
+    <span class="tab-emoji">📻</span> FM Radio
+  </div>
+  <div class="ttab-pill tvlive" id="tab-tvlive" onclick="location.href='tvlive.html'">
+    <span class="tab-emoji">📺</span> tv live
+  </div>
 </div>
 
 <div id="feed"></div>
 <div id="mute-indicator">🔇</div>
 
 <div id="botnav">
-  <div class="nbtn active" onclick="location.href='index.html'"><span class="ni">🏠</span><span class="nl">Home</span></div>
-  <div class="nbtn" onclick="goSearch()"><span class="ni">🔍</span><span class="nl">Discover</span></div>
-  <button class="upload-btn" onclick="requireAuth('upload')">➕</button>
-  <div class="nbtn" onclick="requireAuth('inbox')"><span class="ni">🔔</span><span class="nl">Inbox</span></div>
-  <div class="nbtn" onclick="requireAuth('profile')"><span class="ni">👤</span><span class="nl">Me</span></div>
+  <div class="nbtn home-btn active" onclick="location.href='index.html'">
+    <span class="ni">🏠</span><span class="nl">Home</span>
+  </div>
+  <div class="nbtn trend-btn" onclick="goSearch()">
+    <span class="ni">🔥</span><span class="nl">Trending</span>
+  </div>
+  <div class="upload-wrap" onclick="requireAuth('upload')">
+    <div class="upload-circle">⚡</div>
+    <span class="nl">Upload</span>
+    <span class="nl2">Use Local Audio</span>
+  </div>
+  <div class="nbtn notif-btn" onclick="requireAuth('inbox')">
+    <span class="ni">🔔</span><span class="nl">Notifications</span>
+  </div>
+  <div class="nbtn me-btn" onclick="requireAuth('profile')">
+    <span class="ni">👤</span><span class="nl">Me</span>
+  </div>
 </div>
 
 <!-- LOGIN PROMPT -->
@@ -302,24 +394,33 @@ function renderAll(){
         <div class="tags">${v.hashtags||''}</div>
       </div>
       <div class="actions">
-        <div style="margin-bottom:4px;cursor:pointer" onclick="goProfile('${v.creator_id||v.user_id}')">
+        <div class="avatar-wrap" onclick="goProfile('${v.creator_id||v.user_id}')">
           <div class="avatar-ring">${avatarContent}</div>
+          <div class="follow-badge">+</div>
         </div>
-        <div class="abtn ${liked?'liked':''}" id="like-btn-${i}" onclick="handleLike('${v.id}',${i})">
-          <span class="aicon">${liked?'❤️':'🤍'}</span>
+        <div class="abtn like-btn ${liked?'liked':''}" id="like-btn-${i}" onclick="handleLike('${v.id}',${i})">
+          <span class="aicon">♥</span>
           <span class="acount" id="like-count-${i}">${fmt(v.likes||v.like_count||v.likes_count||0)}</span>
         </div>
-        <div class="abtn" onclick="openComments('${v.id}')">
+        <div class="abtn comment-btn" onclick="openComments('${v.id}')">
           <span class="aicon">💬</span>
           <span class="acount">${fmt(v.comments||v.comments_count||0)}</span>
         </div>
-        <div class="abtn" onclick="openShare('${v.id}')">
-          <span class="aicon">↗️</span>
+        <div class="abtn share-btn" onclick="openShare('${v.id}')">
+          <span class="aicon">➤</span>
           <span class="acount" id="share-count-${i}">${fmt(v.shares||v.shares_count||0)}</span>
         </div>
-        <div class="abtn" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
-          <span class="aicon">🎁</span>
-          <span class="acount">Gift</span>
+        <div class="gift-hub-card" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
+          <div class="gh-title">Gifting &amp;</div>
+          <div class="gh-sub">Tipping Hub</div>
+          <div class="gh-send">🎁 Tipping</div>
+          <div class="gh-mposs">Send Gift (M-Poss)</div>
+        </div>
+        <div class="livetv-card" onclick="location.href='tvlive.html'">
+          <div class="ltitle">Live TV Hub</div>
+          <div class="livetv-logos">
+            <span>UBC</span><span>SAT</span><span>DEN</span>
+          </div>
         </div>
       </div>`;
     feed.appendChild(slide);
@@ -627,8 +728,8 @@ function showLoginPrompt(){
 function goSearch(){ location.href='discover.html'; }
 
 function loadTab(type){
-  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+type)?.classList.add('active');
+  document.querySelectorAll('.ttab-pill').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-hotvids')?.classList.add('active');
   videos=[]; document.getElementById('feed').innerHTML='';
   loadFeed(type);
 }

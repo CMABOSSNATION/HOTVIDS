@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>HOTVID - Uganda's #1 Video Platform</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{--red:#e50000;}
+:root{--red:#cc2200;}
 body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;overflow:hidden;}
 
 #splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
-#splash .logo{font-size:56px;font-weight:900;color:var(--red);letter-spacing:4px;}
+#splash .logo{font-size:56px;font-weight:900;color:var(--red);letter-spacing:4px;font-family:'Bebas Neue',Impact,sans-serif;}
 #splash .tagline{color:#555;font-size:14px;margin-top:8px;}
 #splash .dot{width:10px;height:10px;background:var(--red);border-radius:50%;margin-top:20px;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
@@ -18,33 +19,78 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 #feed-page{position:fixed;inset:0;display:none;flex-direction:column;}
 #feed-container{flex:1;overflow:hidden;position:relative;background:#000;}
 
-#top-bar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);position:absolute;top:0;left:0;right:0;z-index:10;}
-#top-bar .logo{color:var(--red);font-weight:900;font-size:20px;letter-spacing:2px;}
-#top-bar .auth-btn{background:var(--red);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;}
+/* SEARCH BAR */
+#top-search{position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);}
+#top-search .sicon{font-size:15px;color:#bbb;}
+#top-search input{flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;}
+#top-search input::placeholder{color:#999;}
+#top-search .sclose{font-size:15px;color:#bbb;}
 
-#bottom-nav{height:56px;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:space-around;border-top:1px solid #222;flex-shrink:0;}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 16px;}
-.nav-btn .nicon{font-size:22px;}
-.nav-btn .nlabel{font-size:10px;color:#666;}
-.nav-btn.active .nlabel{color:var(--red);}
+/* TOP TABS */
+#top-tabs{position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
+#top-tabs::-webkit-scrollbar{display:none;}
+.ttab-pill{display:flex;align-items:center;gap:5px;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;white-space:nowrap;transition:all .2s;}
+.ttab-pill.hotvids{background:rgba(200,30,30,0.15);border-color:#cc2200;color:#ff4422;}
+.ttab-pill.hotvids.active{background:rgba(200,30,30,0.35);}
+.ttab-pill.radio{background:rgba(100,60,120,0.15);border-color:#7c4a9e;color:#c084fc;}
+.ttab-pill.tvlive{background:rgba(60,60,140,0.15);border-color:#5b5bcc;color:#818cf8;}
 
+/* VIDEO LAYOUT */
 .video-item{position:absolute;inset:0;width:100%;height:100%;background:#000;}
 .video-item video{width:100%;height:100%;object-fit:cover;}
-.video-overlay{position:absolute;inset:0;pointer-events:none;}
-.video-info{position:absolute;bottom:80px;left:16px;right:70px;pointer-events:auto;}
-.video-info .creator{font-weight:700;font-size:15px;margin-bottom:4px;}
-.video-info .creator span{color:var(--red);}
-.video-info .title{font-size:13px;color:#ddd;margin-bottom:6px;}
-.video-info .hashtags{font-size:12px;color:var(--red);}
-.video-actions{position:absolute;bottom:80px;right:12px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.video-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.15) 35%,transparent 65%,rgba(0,0,0,.25) 100%);pointer-events:none;}
+.video-info{position:absolute;bottom:85px;left:16px;right:82px;pointer-events:auto;}
+.video-info .creator{font-weight:800;font-size:15px;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+.video-info .creator span{color:#fff;}
+.video-info .title{font-size:13px;color:#e8e8e8;margin-bottom:6px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.video-info .hashtags{font-size:12px;color:#5bf5b0;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+
+/* ACTIONS */
+.video-actions{position:absolute;bottom:85px;right:8px;display:flex;flex-direction:column;gap:16px;align-items:center;}
 .action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;pointer-events:auto;}
-.action-btn .icon{font-size:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
-.action-btn .count{font-size:11px;color:#fff;font-weight:600;}
+.action-btn .icon{font-size:30px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.9));}
+.action-btn .count{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+/* Avatar ring */
+.av-wrap{position:relative;cursor:pointer;}
+.av-ring{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,0.2);}
+.av-ring img,.av-ring video{width:100%;height:100%;object-fit:cover;}
+.av-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#1da1f2;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;border:1.5px solid #000;}
+/* Like gradient */
+.like-icon{background:linear-gradient(135deg,#ff6ec7,#c850c0,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:32px !important;filter:drop-shadow(0 2px 8px rgba(200,80,192,.5)) !important;}
+/* Comment blue */
+.comment-icon{background:linear-gradient(135deg,#60cfff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:32px !important;}
+/* Share pink */
+.share-icon{background:linear-gradient(135deg,#ff9de2,#e879f9,#c026d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:30px !important;}
+/* Gift card */
+.gift-card{background:rgba(255,255,255,0.12);border-radius:10px;padding:6px 8px;min-width:95px;backdrop-filter:blur(8px);cursor:pointer;text-align:center;}
+.gift-card .gc-t{font-size:9px;color:#ddd;}
+.gift-card .gc-s{font-size:8px;color:#aaa;margin-bottom:3px;}
+.gift-card .gc-g{font-size:11px;font-weight:800;color:#ff6b00;}
+.gift-card .gc-m{font-size:8px;color:#bbb;}
+/* Live TV card */
+.livetv-card{background:rgba(255,255,245,0.95);border-radius:10px;padding:6px 8px;min-width:100px;cursor:pointer;}
+.livetv-card .lt-t{font-size:10px;font-weight:800;color:#111;margin-bottom:4px;text-align:center;}
+.livetv-logos{display:flex;gap:4px;align-items:center;justify-content:center;}
+.livetv-logos span{font-size:9px;font-weight:700;background:#eee;border-radius:4px;padding:2px 5px;color:#333;}
+
+/* BOTTOM NAV */
+#bottom-nav{height:65px;background:rgba(8,6,4,0.97);display:flex;align-items:center;justify-content:space-around;border-top:1px solid #1a1a1a;flex-shrink:0;padding-bottom:2px;}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 10px;}
+.nav-btn .nicon{font-size:22px;line-height:1.2;}
+.nav-btn .nlabel{font-size:9px;color:#666;font-weight:600;letter-spacing:.3px;}
+.nav-btn.home-n .nicon{color:#4dd9ac;font-size:24px;}
+.nav-btn.home-n .nlabel{color:#4dd9ac;}
+.nav-btn.trend-n .nicon{font-size:24px;filter:drop-shadow(0 0 4px #ff6b00);}
+.nav-btn.trend-n .nlabel{color:#ff8c42;}
+.upload-nav{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.upload-circle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00,#ff8800);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(255,180,0,.5);border:2.5px solid rgba(255,220,80,.4);}
+.upload-nav .nlabel{font-size:9px;color:#aaa;font-weight:600;}
+.upload-nav .nlabel2{font-size:8px;color:#666;}
 
 #auth-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
 #auth-modal.open{display:flex;}
 #auth-modal .modal-box{width:100%;max-width:400px;}
-#auth-modal .modal-logo{color:var(--red);font-size:36px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:8px;}
+#auth-modal .modal-logo{color:var(--red);font-size:36px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:8px;font-family:'Bebas Neue',Impact,sans-serif;}
 #auth-modal .modal-sub{color:#666;font-size:13px;text-align:center;margin-bottom:24px;}
 #auth-modal input{width:100%;background:#111;border:1px solid #333;border-radius:10px;padding:14px 16px;color:#fff;font-size:15px;margin-bottom:12px;outline:none;}
 #auth-modal input:focus{border-color:var(--red);}
@@ -73,20 +119,34 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 
 <div id="feed-page">
   <div id="feed-container">
+    <!-- Search bar -->
+    <div id="top-search" onclick="location.href='discover.html'">
+      <span class="sicon">🔍</span>
+      <input type="text" placeholder="Search for content or creators..." readonly>
+      <span class="sclose">✕</span>
+    </div>
+    <!-- Top tabs -->
+    <div id="top-tabs">
+      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
+      <div class="ttab-pill radio" onclick="location.href='radio.html'">📻 FM Radio</div>
+      <div class="ttab-pill tvlive" onclick="location.href='tvlive.html'">📺 tv live</div>
+    </div>
     <div class="loading-screen"><div class="spinner"></div></div>
   </div>
   <div id="bottom-nav">
-    <div class="nav-btn active" onclick="showFeed()">
+    <div class="nav-btn home-n active" onclick="showFeed()">
       <span class="nicon">🏠</span><span class="nlabel">Home</span>
     </div>
-    <div class="nav-btn" onclick="location.href='/discover.html'">
-      <span class="nicon">🔍</span><span class="nlabel">Discover</span>
+    <div class="nav-btn trend-n" onclick="location.href='/discover.html'">
+      <span class="nicon">🔥</span><span class="nlabel">Trending</span>
     </div>
-    <div class="nav-btn" onclick="location.href='/upload.html'">
-      <span class="nicon">➕</span><span class="nlabel">Upload</span>
+    <div class="upload-nav" onclick="location.href='/upload.html'">
+      <div class="upload-circle">⚡</div>
+      <span class="nlabel">Upload</span>
+      <span class="nlabel2">Use Local Audio</span>
     </div>
     <div class="nav-btn" onclick="requireLogin('inbox')">
-      <span class="nicon">🔔</span><span class="nlabel">Inbox</span>
+      <span class="nicon">🔔</span><span class="nlabel">Notifications</span>
     </div>
     <div class="nav-btn" onclick="requireLogin('profile')">
       <span class="nicon">👤</span><span class="nlabel">Me</span>
@@ -153,15 +213,21 @@ async function loadFeed(){
 
 function showEmpty(){
   document.getElementById('feed-container').innerHTML = `
-    <div id="top-bar">
-      <span class="logo">🔥HOTVID</span>
-      <button class="auth-btn" onclick="showAuthModal()">${user ? user.username : 'Sign In'}</button>
+    <div id="top-search" onclick="location.href='discover.html'" style="position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">
+      <span style="font-size:15px;color:#bbb;">🔍</span>
+      <input type="text" placeholder="Search for content or creators..." readonly style="flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;pointer-events:none;">
+      <span style="font-size:15px;color:#bbb;">✕</span>
+    </div>
+    <div style="position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;">
+      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
+      <div class="ttab-pill radio">📻 FM Radio</div>
+      <div class="ttab-pill tvlive">📺 tv live</div>
     </div>
     <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;">
       <div style="font-size:64px">🎬</div>
       <div style="color:#666;font-size:16px">No videos yet</div>
       <div style="color:#444;font-size:13px">Be the first creator on HOTVID Uganda!</div>
-      <button onclick="location.href='/upload.html'" style="background:#e50000;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload Video 🔥</button>
+      <button onclick="location.href='/upload.html'" style="background:#cc2200;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload Video 🔥</button>
     </div>`;
 }
 
@@ -171,37 +237,56 @@ function renderVideo(idx){
   const container = document.getElementById('feed-container');
   const videoSrc = v.video_url || (v.cloudflare_video_id ? '/uploads/videos/' + v.cloudflare_video_id : '');
   container.innerHTML = `
-    <div id="top-bar">
-      <span class="logo">🔥HOTVID</span>
-      <button class="auth-btn" onclick="showAuthModal()">${user ? user.username : 'Sign In'}</button>
+    <div id="top-search" onclick="location.href='discover.html'" style="position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">
+      <span style="font-size:15px;color:#bbb;">🔍</span>
+      <input type="text" placeholder="Search for content or creators..." readonly style="flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;pointer-events:none;">
+      <span style="font-size:15px;color:#bbb;">✕</span>
+    </div>
+    <div id="top-tabs" style="position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;">
+      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
+      <div class="ttab-pill radio" onclick="location.href='radio.html'">📻 FM Radio</div>
+      <div class="ttab-pill tvlive" onclick="location.href='tvlive.html'">📺 tv live</div>
     </div>
     <div class="video-item">
       ${videoSrc ?
         `<video src="${videoSrc}" autoplay loop playsinline muted onclick="toggleMute()" style="width:100%;height:100%;object-fit:cover;"></video>` :
         `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;font-size:80px;">🎬</div>`
       }
-      <div class="video-overlay">
-        <div class="video-info">
-          <div class="creator">@<span>${v.username || 'creator'}</span></div>
-          <div class="title">${v.title || ''}</div>
-          <div class="hashtags">${v.hashtags || ''}</div>
+      <div class="video-overlay"></div>
+      <div class="video-info">
+        <div class="creator">@<span>${v.username || 'creator'}</span></div>
+        <div class="title">${v.title || ''}</div>
+        <div class="hashtags">${v.hashtags || ''}</div>
+      </div>
+      <div class="video-actions">
+        <div class="av-wrap" onclick="void(0)">
+          <div class="av-ring" style="background:linear-gradient(135deg,#ff2d55,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;">
+            ${(v.username||'U')[0].toUpperCase()}
+          </div>
+          <div class="av-badge">+</div>
         </div>
-        <div class="video-actions">
-          <div class="action-btn" onclick="handleLike('${v.id}')">
-            <span class="icon">❤️</span>
-            <span class="count">${fmt(v.likes_count || 0)}</span>
-          </div>
-          <div class="action-btn" onclick="handleComment('${v.id}')">
-            <span class="icon">💬</span>
-            <span class="count">${fmt(v.comments_count || 0)}</span>
-          </div>
-          <div class="action-btn" onclick="shareVideo('${v.id}')">
-            <span class="icon">↗️</span>
-            <span class="count">Share</span>
-          </div>
-          <div class="action-btn" onclick="handleGift('${v.id}','${v.creator_id}')">
-            <span class="icon">🎁</span>
-            <span class="count">Gift</span>
+        <div class="action-btn" onclick="handleLike('${v.id}')">
+          <span class="icon like-icon">♥</span>
+          <span class="count">${fmt(v.likes_count || 0)}</span>
+        </div>
+        <div class="action-btn" onclick="handleComment('${v.id}')">
+          <span class="icon comment-icon">💬</span>
+          <span class="count">${fmt(v.comments_count || 0)}</span>
+        </div>
+        <div class="action-btn" onclick="shareVideo('${v.id}')">
+          <span class="icon share-icon">➤</span>
+          <span class="count">${fmt(v.shares_count || 0)}</span>
+        </div>
+        <div class="gift-card" onclick="handleGift('${v.id}','${v.creator_id}')">
+          <div class="gc-t">Gifting &amp;</div>
+          <div class="gc-s">Tipping Hub</div>
+          <div class="gc-g">🎁 Tipping</div>
+          <div class="gc-m">Send Gift (M-Poss)</div>
+        </div>
+        <div class="livetv-card" onclick="location.href='tvlive.html'">
+          <div class="lt-t">Live TV Hub</div>
+          <div class="livetv-logos">
+            <span>UBC</span><span>SAT</span><span>DEN</span>
           </div>
         </div>
       </div>
