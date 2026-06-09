@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HOTVID Live TV 📺</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#050510;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px;}
+.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;background:linear-gradient(135deg,#050520,#050510);}
+.back{font-size:22px;cursor:pointer;color:#818cf8;}
+.htitle{font-size:18px;font-weight:700;}
+.htitle span{color:#818cf8;}
+.live-pill{background:#ff2d55;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+/* TV PLAYER */
+.tv-player{background:#000;margin:16px;border-radius:16px;overflow:hidden;position:relative;aspect-ratio:16/9;border:2px solid #1a1a2e;}
+.tv-player video,.tv-player iframe{width:100%;height:100%;object-fit:cover;}
+.tv-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.7);}
+.tv-overlay .ch-logo{font-size:48px;margin-bottom:8px;}
+.tv-overlay .ch-name{font-size:18px;font-weight:700;color:#818cf8;}
+.tv-overlay .ch-sub{font-size:12px;color:#888;margin-top:4px;}
+.tv-overlay .ch-play{background:#818cf8;color:#000;border:none;border-radius:20px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;margin-top:12px;}
+.ch-info-bar{background:#0d0d2e;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.ch-now{font-size:13px;font-weight:700;color:#fff;}
+.ch-time{font-size:12px;color:#888;}
+.ch-controls{display:flex;gap:12px;}
+.ctrl-btn{background:rgba(129,140,248,.15);border:1px solid #2a2a4e;color:#818cf8;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;}
+
+.section-title{padding:14px 20px 8px;font-size:13px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;}
+
+/* CHANNEL GRID */
+.channels-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 16px;}
+.ch-card{background:#0d0d20;border:1px solid #1a1a3e;border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s;}
+.ch-card:active{transform:scale(.97);}
+.ch-card.active{border-color:#818cf8;}
+.ch-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,#0d0d30,#050515);display:flex;align-items:center;justify-content:center;position:relative;}
+.ch-thumb .ch-emoji{font-size:36px;}
+.ch-thumb .live-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ff2d55;border-radius:50%;animation:blink 1.5s infinite;}
+.ch-details{padding:10px;}
+.ch-details .cdn{font-size:13px;font-weight:700;color:#fff;}
+.ch-details .cds{font-size:11px;color:#818cf8;margin-top:2px;}
+.ch-details .cdp{font-size:11px;color:#666;margin-top:2px;}
+
+/* EPG / SCHEDULE */
+.epg-card{background:#0d0d20;border:1px solid #1a1a3e;border-radius:12px;margin:0 16px 10px;padding:14px;}
+.epg-time{font-size:11px;color:#818cf8;font-weight:700;margin-bottom:6px;}
+.epg-show{font-size:14px;font-weight:700;}
+.epg-desc{font-size:12px;color:#888;margin-top:3px;}
+.epg-bar{height:4px;background:#1a1a3e;border-radius:2px;margin-top:8px;}
+.epg-progress{height:100%;background:#818cf8;border-radius:2px;}
+
+.botnav{position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(5,5,16,.97);border-top:1px solid #111;display:flex;align-items:center;justify-content:space-around;}
+.bnbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.bnbtn .ni{font-size:22px;}
+.bnbtn .nl{font-size:9px;color:#666;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="back" onclick="history.back()">←</span>
+  <span class="htitle">📺 Live <span>TV</span></span>
+  <span class="live-pill">🔴 LIVE</span>
+</div>
+
+<!-- TV PLAYER -->
+<div class="tv-player" id="tvPlayer">
+  <div class="tv-overlay" id="tvOverlay">
+    <div class="ch-logo" id="overlayEmoji">📺</div>
+    <div class="ch-name" id="overlayName">Select a Channel</div>
+    <div class="ch-sub" id="overlaySub">Tap any channel below to watch</div>
+    <button class="ch-play" onclick="playSelected()">▶ Watch Live</button>
+  </div>
+  <iframe id="tvFrame" style="display:none;width:100%;height:100%;border:none;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class="ch-info-bar">
+  <div class="ch-now" id="chNow">Select a channel to watch</div>
+  <div class="ch-time" id="chTime"></div>
+</div>
+<div class="ch-controls" style="padding:8px 16px;gap:8px;display:flex;">
+  <button class="ctrl-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  <button class="ctrl-btn" onclick="shareChannel()">↗ Share</button>
+</div>
+
+<div class="section-title">📡 Uganda TV Channels</div>
+<div class="channels-grid" id="channelsGrid"></div>
+
+<div class="section-title">📋 Today's Schedule</div>
+<div id="epgList"></div>
+
+<div class="botnav">
+  <div class="bnbtn" onclick="location.href='index.html'"><span class="ni">🏠</span><span class="nl">Home</span></div>
+  <div class="bnbtn" onclick="location.href='feed.html'"><span class="ni">🔥</span><span class="nl">Videos</span></div>
+  <div class="bnbtn" onclick="location.href='radio.html'"><span class="ni">📻</span><span class="nl">Radio</span></div>
+  <div class="bnbtn" onclick="location.href='livestream.html'"><span class="ni">🔴</span><span class="nl">Go Live</span></div>
+</div>
+
+<script>
+const channels = [
+  {name:'UBC TV',sub:'Uganda Broadcasting',emoji:'📡',color:'#ffd700',stream:'https://www.youtube.com/embed/live_stream?channel=UCj3IWzRBBq7OwRkbSUq3gzg&autoplay=1',prog:'Morning News',category:'News'},
+  {name:'NBS TV',sub:'Next Media Group',emoji:'🗞️',color:'#3b82f6',stream:'https://www.youtube.com/embed/live_stream?channel=UCXwM6jLqBrGjUYFBQKHCVMQ&autoplay=1',prog:'NBS Morning Breeze',category:'News'},
+  {name:'NTV Uganda',sub:'Nation Media Group',emoji:'📺',color:'#10b981',stream:'https://www.youtube.com/embed/live_stream?channel=UCOhCd9QCDgSmNzDh7ixhzJg&autoplay=1',prog:'NTV Tonight',category:'News'},
+  {name:'Spark TV',sub:'Next Media Group',emoji:'⚡',color:'#f97316',stream:'https://www.youtube.com/embed/live_stream?channel=UCXwM6jLqBrGjUYFBQKHCVMQ&autoplay=1',prog:'The Beat',category:'Entertainment'},
+  {name:'WBS TV',sub:'Wavah Broadcasting',emoji:'🌊',color:'#06b6d4',stream:'https://www.youtube.com/embed/live_stream?channel=UCZT3CClWT4Nq5PGjRIALO1Q&autoplay=1',prog:'Good Morning Uganda',category:'News'},
+  {name:'Bukedde TV',sub:'New Vision Group',emoji:'🦅',color:'#8b5cf6',stream:'https://www.youtube.com/embed/live_stream?channel=UCBukedde&autoplay=1',prog:'Ekibiina ky\'omuziki',category:'Luganda'},
+  {name:'Record TV',sub:'Record Entertainment',emoji:'🎬',color:'#ec4899',stream:'https://www.youtube.com/embed/live_stream?channel=UCRecord&autoplay=1',prog:'Movies & Series',category:'Entertainment'},
+  {name:'Salt TV',sub:'Salt Media',emoji:'✝️',color:'#f59e0b',stream:'https://www.youtube.com/embed/live_stream?channel=UCSalt&autoplay=1',prog:'Gospel Hour',category:'Gospel'},
+];
+
+let selectedChannel = null;
+const tvFrame = document.getElementById('tvFrame');
+const tvOverlay = document.getElementById('tvOverlay');
+
+function renderChannels(){
+  document.getElementById('channelsGrid').innerHTML = channels.map((c,i)=>`
+    <div class="ch-card ${selectedChannel===i?'active':''}" onclick="selectChannel(${i})" id="cc-${i}">
+      <div class="ch-thumb" style="background:linear-gradient(135deg,${c.color}22,#050515)">
+        <span class="ch-emoji">${c.emoji}</span>
+        <div class="live-dot"></div>
+      </div>
+      <div class="ch-details">
+        <div class="cdn">${c.name}</div>
+        <div class="cds">${c.sub}</div>
+        <div class="cdp">▶ ${c.prog}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selectChannel(idx){
+  selectedChannel = idx;
+  const c = channels[idx];
+  document.getElementById('overlayEmoji').textContent = c.emoji;
+  document.getElementById('overlayName').textContent = c.name;
+  document.getElementById('overlaySub').textContent = c.prog + ' · LIVE';
+  tvOverlay.style.display = 'flex';
+  tvFrame.style.display = 'none';
+  document.getElementById('chNow').textContent = `${c.name} — ${c.prog}`;
+  document.getElementById('chTime').textContent = new Date().toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'});
+  renderChannels();
+}
+
+function playSelected(){
+  if(selectedChannel===null) return;
+  const c = channels[selectedChannel];
+  tvFrame.src = c.stream;
+  tvFrame.style.display = 'block';
+  tvOverlay.style.display = 'none';
+}
+
+function toggleFullscreen(){
+  const player = document.getElementById('tvPlayer');
+  if(document.fullscreenElement){ document.exitFullscreen(); }
+  else { player.requestFullscreen?.(); }
+}
+
+function shareChannel(){
+  if(selectedChannel===null) return;
+  const c = channels[selectedChannel];
+  if(navigator.share){ navigator.share({title:`Watch ${c.name} Live on HOTVID`,url:location.href}); }
+}
+
+function renderEPG(){
+  const now = new Date();
+  const epg = [
+    {time:'06:00',show:'Morning News',desc:'Breaking news from Uganda and East Africa',prog:85},
+    {time:'09:00',show:'Talk Show',desc:'Current affairs discussion',prog:45},
+    {time:'12:00',show:'Midday News',desc:'News at noon',prog:10},
+    {time:'14:00',show:'Afternoon Drama',desc:'Local drama series',prog:0},
+    {time:'19:00',show:'Prime Time News',desc:'The flagship news bulletin',prog:0},
+    {time:'21:00',show:'Night Show',desc:'Entertainment and lifestyle',prog:0},
+  ];
+  document.getElementById('epgList').innerHTML = epg.map(e=>`
+    <div class="epg-card">
+      <div class="epg-time">${e.time} EAT ${e.prog>0?'· NOW ON AIR':''}</div>
+      <div class="epg-show">${e.show}</div>
+      <div class="epg-desc">${e.desc}</div>
+      ${e.prog>0?`<div class="epg-bar"><div class="epg-progress" style="width:${e.prog}%"></div></div>`:''}
+    </div>`).join('');
+}
+
+setInterval(()=>{
+  if(document.getElementById('chTime').textContent)
+    document.getElementById('chTime').textContent = new Date().toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit'});
+},30000);
+
+renderChannels();
+renderEPG();
+</script>
+</body>
+</html>

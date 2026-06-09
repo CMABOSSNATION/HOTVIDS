@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HOTVID FM Radio 📻</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px;}
+.header{background:linear-gradient(135deg,#1a0030,#0a0a0a);padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #1a1a1a;}
+.back{font-size:22px;cursor:pointer;color:#c084fc;}
+.htitle{font-size:18px;font-weight:700;}
+.htitle span{color:#c084fc;}
+.live-badge{background:#c084fc;color:#000;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:8px;}
+
+/* NOW PLAYING */
+.now-playing{background:linear-gradient(135deg,#1a0030,#0d0020);border:1px solid #3d1f6e;margin:16px;border-radius:20px;padding:20px;text-align:center;}
+.np-wave{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:32px;margin-bottom:12px;}
+.np-wave .bar{width:4px;background:#c084fc;border-radius:2px;animation:wave 1s ease-in-out infinite;}
+.np-wave .bar:nth-child(1){animation-delay:0s;height:12px;}
+.np-wave .bar:nth-child(2){animation-delay:.1s;height:20px;}
+.np-wave .bar:nth-child(3){animation-delay:.2s;height:32px;}
+.np-wave .bar:nth-child(4){animation-delay:.3s;height:24px;}
+.np-wave .bar:nth-child(5){animation-delay:.4s;height:16px;}
+.np-wave.paused .bar{animation-play-state:paused;}
+@keyframes wave{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.5);}}
+.np-station{font-size:20px;font-weight:800;color:#c084fc;margin-bottom:4px;}
+.np-song{font-size:13px;color:#aaa;margin-bottom:12px;}
+.np-controls{display:flex;align-items:center;justify-content:center;gap:20px;}
+.np-btn{background:none;border:none;color:#fff;font-size:28px;cursor:pointer;}
+.play-btn{background:#c084fc;border:none;color:#000;width:56px;height:56px;border-radius:50%;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.volume-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding:0 10px;}
+.volume-row input{flex:1;accent-color:#c084fc;}
+
+/* STATIONS */
+.section-title{padding:16px 20px 8px;font-size:14px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;}
+.station-card{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #111;cursor:pointer;transition:background .2s;}
+.station-card:active{background:#111;}
+.station-card.playing{background:rgba(192,132,252,.08);}
+.station-logo{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0;}
+.station-info{flex:1;}
+.station-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.station-freq{font-size:12px;color:#888;}
+.station-genre{font-size:11px;color:#c084fc;margin-top:2px;}
+.station-live{background:#ff2d55;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;}
+.station-play{font-size:22px;color:#888;}
+.station-card.playing .station-play{color:#c084fc;}
+
+.botnav{position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(10,10,10,.97);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;}
+.bnbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.bnbtn .ni{font-size:22px;}
+.bnbtn .nl{font-size:9px;color:#666;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="back" onclick="history.back()">←</span>
+  <span class="htitle">📻 FM <span>Radio</span></span>
+  <span class="live-badge">LIVE</span>
+</div>
+
+<!-- NOW PLAYING -->
+<div class="now-playing" id="nowPlaying">
+  <div class="np-wave paused" id="npWave">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+  <div class="np-station" id="npStation">Select a Station</div>
+  <div class="np-song" id="npSong">Tap a station below to start</div>
+  <div class="np-controls">
+    <button class="np-btn" onclick="prevStation()">⏮</button>
+    <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+    <button class="np-btn" onclick="nextStation()">⏭</button>
+  </div>
+  <div class="volume-row">
+    <span>🔈</span>
+    <input type="range" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
+    <span>🔊</span>
+  </div>
+</div>
+
+<div class="section-title">🇺🇬 Uganda FM Stations</div>
+<div id="stationsList"></div>
+
+<div class="botnav">
+  <div class="bnbtn" onclick="location.href='index.html'"><span class="ni">🏠</span><span class="nl">Home</span></div>
+  <div class="bnbtn" onclick="location.href='feed.html'"><span class="ni">🔥</span><span class="nl">Videos</span></div>
+  <div class="bnbtn" onclick="location.href='tvlive.html'"><span class="ni">📺</span><span class="nl">TV Live</span></div>
+  <div class="bnbtn" onclick="location.href='livestream.html'"><span class="ni">🔴</span><span class="nl">Go Live</span></div>
+</div>
+
+<audio id="radioPlayer" preload="none"></audio>
+
+<script>
+const stations = [
+  {name:'Capital FM',freq:'91.3 FM',genre:'Top 40 / Urban',color:'#ff2d55',bg:'#1a0010',emoji:'🎵',stream:'https://stream.zeno.fm/capital-fm-uganda'},
+  {name:'CBS FM',freq:'88.8 FM',genre:'Luganda / News',color:'#ffd700',bg:'#1a1500',emoji:'📡',stream:'https://stream.zeno.fm/cbsfm-uganda'},
+  {name:'Radio One',freq:'90.0 FM',genre:'News / Talk',color:'#3b82f6',bg:'#00081a',emoji:'📻',stream:'https://stream.zeno.fm/radio-one-uganda'},
+  {name:'Simba FM',freq:'97.7 FM',genre:'Luganda Music',color:'#f97316',bg:'#1a0800',emoji:'🦁',stream:'https://stream.zeno.fm/simba-fm-uganda'},
+  {name:'NBS Radio',freq:'93.7 FM',genre:'News / Urban',color:'#10b981',bg:'#001a10',emoji:'🗞️',stream:'https://stream.zeno.fm/nbs-radio-uganda'},
+  {name:'Galaxy FM',freq:'100.2 FM',genre:'R&B / Soul',color:'#8b5cf6',bg:'#0d0020',emoji:'🌌',stream:'https://stream.zeno.fm/galaxy-fm-uganda'},
+  {name:'Hot 100 FM',freq:'100.0 FM',genre:'Hot Hits',color:'#ef4444',bg:'#1a0000',emoji:'🔥',stream:'https://stream.zeno.fm/hot100-uganda'},
+  {name:'Power FM',freq:'99.1 FM',genre:'Gospel',color:'#f59e0b',bg:'#1a1000',emoji:'✝️',stream:'https://stream.zeno.fm/power-fm-uganda'},
+  {name:'Spirit FM',freq:'91.7 FM',genre:'Gospel / Praise',color:'#06b6d4',bg:'#001520',emoji:'🙏',stream:'https://stream.zeno.fm/spirit-fm-uganda'},
+  {name:'Beat FM',freq:'103.3 FM',genre:'Afrobeats',color:'#ec4899',bg:'#1a0010',emoji:'🥁',stream:'https://stream.zeno.fm/beat-fm-uganda'},
+];
+
+let currentStation = -1;
+let isPlaying = false;
+const player = document.getElementById('radioPlayer');
+
+function renderStations(){
+  document.getElementById('stationsList').innerHTML = stations.map((s,i)=>`
+    <div class="station-card ${currentStation===i?'playing':''}" onclick="playStation(${i})" id="sc-${i}">
+      <div class="station-logo" style="background:${s.bg};color:${s.color}">${s.emoji}</div>
+      <div class="station-info">
+        <div class="station-name" style="color:${currentStation===i?s.color:'#fff'}">${s.name}</div>
+        <div class="station-freq">${s.freq}</div>
+        <div class="station-genre">${s.genre}</div>
+      </div>
+      ${currentStation===i?'<span class="station-live">LIVE</span>':'<span class="station-play">▶</span>'}
+    </div>`).join('');
+}
+
+function playStation(idx){
+  const s = stations[idx];
+  currentStation = idx;
+  player.src = s.stream;
+  player.volume = 0.8;
+  player.play().then(()=>{
+    isPlaying = true;
+    document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('npWave').classList.remove('paused');
+    document.getElementById('npStation').textContent = s.name;
+    document.getElementById('npSong').textContent = s.freq + ' · ' + s.genre;
+  }).catch(e=>{
+    document.getElementById('npSong').textContent = 'Tap play to listen (autoplay blocked)';
+  });
+  renderStations();
+}
+
+function togglePlay(){
+  if(!player.src || currentStation<0){ playStation(0); return; }
+  if(isPlaying){
+    player.pause(); isPlaying=false;
+    document.getElementById('playBtn').textContent='▶';
+    document.getElementById('npWave').classList.add('paused');
+  } else {
+    player.play(); isPlaying=true;
+    document.getElementById('playBtn').textContent='⏸';
+    document.getElementById('npWave').classList.remove('paused');
+  }
+}
+
+function prevStation(){ const i=(currentStation<=0?stations.length:currentStation)-1; playStation(i); }
+function nextStation(){ playStation((currentStation+1)%stations.length); }
+function setVolume(v){ player.volume=parseFloat(v); }
+
+renderStations();
+</script>
+</body>
+</html>

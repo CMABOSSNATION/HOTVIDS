@@ -13,66 +13,40 @@ body{background:#000;overflow:hidden;height:100vh;width:100vw;}
 .video-slide{position:absolute;top:0;left:0;width:100%;height:100%;transition:transform .3s ease;will-change:transform;}
 video{width:100%;height:100%;object-fit:cover;}
 
-/* OVERLAY */
 .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,0.2) 35%,transparent 65%,rgba(0,0,0,.25) 100%);pointer-events:none;}
 
-/* VIDEO INFO */
 .vinfo{position:absolute;bottom:80px;left:16px;right:82px;}
 .vinfo .creator{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.9);}
-.vinfo .creator span{color:#fff;}
 .vinfo .vtitle{font-size:13px;color:#e8e8e8;margin-bottom:5px;line-height:1.55;text-shadow:0 1px 3px rgba(0,0,0,.8);}
 .vinfo .tags{font-size:12px;color:#5bf5b0;line-height:1.9;text-shadow:0 1px 3px rgba(0,0,0,.8);}
 
-/* ACTIONS SIDEBAR — matches photo: avatar, heart/gradient, comment/blue, share/pink, gift */
 .actions{position:absolute;bottom:75px;right:8px;display:flex;flex-direction:column;gap:16px;align-items:center;}
-.abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
 .abtn .aicon{font-size:30px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.9));transition:transform .15s;}
 .abtn:active .aicon{transform:scale(1.3);}
 .abtn .acount{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);}
 
-/* Heart icon — gradient pink/purple like photo */
-.abtn.like-btn .aicon{
-  background: linear-gradient(135deg,#ff6ec7,#c850c0,#a855f7);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 2px 8px rgba(200,80,192,.5));
-  font-size:32px;
-}
+.abtn.like-btn .aicon{font-size:32px;filter:drop-shadow(0 2px 8px rgba(200,80,192,.5));}
 .abtn.like-btn.liked .aicon{filter:drop-shadow(0 0 12px #ff2d55);}
-
-/* Comment — blue bubble */
-.abtn.comment-btn .aicon{
-  background:linear-gradient(135deg,#60cfff,#3b82f6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 2px 8px rgba(59,130,246,.5));
-  font-size:32px;
-}
-
-/* Share — pink/magenta arrow */
-.abtn.share-btn .aicon{
-  background:linear-gradient(135deg,#ff9de2,#e879f9,#c026d3);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 2px 8px rgba(192,38,211,.5));
-  font-size:30px;
-}
-
-/* Gift — orange/red */
+.abtn.comment-btn .aicon{filter:drop-shadow(0 2px 8px rgba(59,130,246,.5));font-size:32px;}
+.abtn.share-btn .aicon{filter:drop-shadow(0 2px 8px rgba(192,38,211,.5));font-size:30px;}
 .abtn.gift-btn .aicon{font-size:28px;filter:drop-shadow(0 2px 8px rgba(255,120,0,.6));}
 
-/* AVATAR RING — matches photo: thick colored border, small green follow badge */
 .avatar-wrap{position:relative;margin-bottom:4px;cursor:pointer;}
-.avatar-ring{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,0.2);}
+.avatar-ring{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,0.2);}
 .avatar-ring img{width:100%;height:100%;object-fit:cover;}
 .avatar-ring-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#ff2d55,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:white;}
 .follow-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#1da1f2;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;border:1.5px solid #000;}
 
-/* SEARCH BAR — matches photo: dark pill with grey text and X */
+/* DOUBLE TAP HEART ANIMATION */
+.heart-anim{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:80px;pointer-events:none;z-index:999;animation:heartpop .8s ease-out forwards;}
+@keyframes heartpop{0%{transform:translate(-50%,-50%) scale(0);opacity:1;}50%{transform:translate(-50%,-50%) scale(1.4);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:0;}}
+
 #searchbar{position:fixed;top:10px;left:16px;right:16px;z-index:101;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);}
 #searchbar .sicon{font-size:15px;color:#bbb;}
 #searchbar input{flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;}
-#searchbar input::placeholder{color:#999;}
 #searchbar .sclose{font-size:15px;color:#bbb;cursor:pointer;}
 
-/* TOP TABS — pill shaped buttons like photo: HOTVIDS red, FM Radio purple, tv live purple */
 #toptabs{position:fixed;top:56px;left:0;right:0;z-index:100;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
 #toptabs::-webkit-scrollbar{display:none;}
 .ttab-pill{display:flex;align-items:center;gap:5px;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;white-space:nowrap;transition:all .2s;letter-spacing:.3px;}
@@ -82,59 +56,42 @@ video{width:100%;height:100%;object-fit:cover;}
 .ttab-pill.radio.active{background:rgba(100,60,120,0.35);}
 .ttab-pill.tvlive{background:rgba(60,60,140,0.15);border-color:#5b5bcc;color:#818cf8;}
 .ttab-pill.tvlive.active{background:rgba(60,60,140,0.35);}
+.ttab-pill.livestream{background:rgba(20,120,60,0.15);border-color:#16a34a;color:#4ade80;}
+.ttab-pill.livestream.active{background:rgba(20,120,60,0.35);}
 .ttab-pill .tab-emoji{font-size:14px;}
 
-/* LIVE TV HUB widget — bottom right, above gift button */
 .livetv-card{position:absolute;bottom:310px;right:8px;background:rgba(255,255,245,0.95);border-radius:8px;padding:4px 6px;cursor:pointer;z-index:10;}
 .livetv-card .ltitle{font-size:9px;font-weight:800;color:#111;margin-bottom:3px;text-align:center;}
 .livetv-logos{display:flex;gap:3px;align-items:center;justify-content:center;}
 .livetv-logos span{font-size:8px;font-weight:700;background:#eee;border-radius:3px;padding:1px 4px;color:#333;}
 
-/* GIFTING HUB widget — bottom right, above live tv */
 .gift-hub-card{position:absolute;bottom:390px;right:8px;background:rgba(40,20,0,0.75);border-radius:8px;padding:4px 6px;backdrop-filter:blur(8px);cursor:pointer;z-index:10;border:1px solid rgba(255,150,0,0.3);}
 .gift-hub-card .gh-title{font-size:8px;color:#ddd;text-align:center;}
 .gift-hub-card .gh-sub{font-size:7px;color:#aaa;text-align:center;margin-bottom:2px;}
 .gift-hub-card .gh-send{font-size:10px;font-weight:800;color:#ff6b00;text-align:center;}
-.gift-hub-card .gh-mposs{font-size:7px;color:#bbb;text-align:center;}
 
-/* BOTTOM NAV — matches photo: dark bg, teal home, flame trending, gold upload circle, bell notifications, avatar me */
 #botnav{position:fixed;bottom:0;left:0;right:0;z-index:100;height:62px;background:rgba(8,6,4,0.97);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;padding-bottom:2px;}
 .nbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 10px;}
 .nbtn .ni{font-size:22px;line-height:1.2;}
 .nbtn .nl{font-size:9px;color:#666;font-weight:600;letter-spacing:.3px;}
-/* Home — teal color */
-.nbtn.active .ni{filter:none;}
 .nbtn.home-btn .ni{color:#4dd9ac;font-size:24px;}
 .nbtn.home-btn .nl{color:#4dd9ac;}
-/* Trending — flame orange */
 .nbtn.trend-btn .ni{font-size:24px;filter:drop-shadow(0 0 4px #ff6b00);}
 .nbtn.trend-btn .nl{color:#ff8c42;}
-/* Upload — gold circle button */
 .upload-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
 .upload-circle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00,#ff8800);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(255,180,0,.5);border:2.5px solid rgba(255,220,80,.4);}
-.upload-wrap .nl{font-size:9px;color:#aaa;font-weight:600;letter-spacing:.3px;}
-.upload-wrap .nl2{font-size:8px;color:#666;}
-/* Notifications bell */
-.nbtn.notif-btn .ni{font-size:22px;color:#ddd;}
-.nbtn.notif-btn .nl{color:#999;}
-/* Me — avatar style */
-.nbtn.me-btn .ni{font-size:24px;}
-.nbtn.me-btn .nl{color:#999;}
+.upload-wrap .nl{font-size:9px;color:#aaa;font-weight:600;}
 
-/* MUTE */
 #mute-indicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);border-radius:50%;width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
 
-/* LOADING */
 #loader{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
 .spin{width:40px;height:40px;border:3px solid #222;border-top-color:#ff2d55;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* LOGIN PROMPT */
 #loginprompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid #ff2d55;border-radius:12px;padding:14px 20px;z-index:500;text-align:center;display:none;white-space:nowrap;}
 #loginprompt p{font-size:12px;color:#aaa;margin-bottom:8px;}
 #loginprompt button{background:#ff2d55;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;}
 
-/* COMMENTS PANEL */
 #comments-panel{position:fixed;bottom:0;left:0;right:0;height:72vh;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;}
 #comments-panel.open{transform:translateY(0);}
 .cp-header{padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;}
@@ -148,31 +105,26 @@ video{width:100%;height:100%;object-fit:cover;}
 .comment-body .cuser{font-size:12px;font-weight:700;color:#ff2d55;cursor:pointer;}
 .comment-body .ctext{font-size:13px;color:#ddd;margin-top:2px;line-height:1.5;}
 .comment-body .ctime{font-size:11px;color:#555;margin-top:3px;}
-.comment-body .clike{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#888;cursor:pointer;margin-top:3px;}
 .cp-input{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#111;border-top:1px solid #222;display:flex;gap:10px;align-items:center;}
 .cp-input input{flex:1;background:#1e1e1e;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-size:14px;outline:none;}
-.cp-input button{background:#ff2d55;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;}
+.cp-input button{background:#ff2d55;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;}
 
-/* SHARE PANEL */
-#share-panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:0;}
+#share-panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;}
 #share-panel.open{transform:translateY(0);}
 .sp-header{padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;}
-.sp-title{font-size:15px;font-weight:700;}
-.sp-close{font-size:20px;cursor:pointer;color:#666;}
 .share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:16px;}
-.share-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px 6px;border-radius:12px;transition:background .2s;}
+.share-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:10px 6px;border-radius:12px;}
 .share-item:active{background:#1a1a1a;}
 .share-item .si-icon{font-size:32px;}
 .share-item .si-name{font-size:11px;color:#ccc;}
 .share-link-row{padding:0 16px 16px;display:flex;gap:8px;}
 .share-link-input{flex:1;background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:10px 12px;color:#aaa;font-size:12px;outline:none;}
-.share-copy-btn{background:#ff2d55;border:none;border-radius:8px;padding:10px 16px;color:white;font-weight:700;cursor:pointer;font-size:13px;}
+.share-copy-btn{background:#ff2d55;border:none;border-radius:8px;padding:10px 16px;color:white;font-weight:700;cursor:pointer;}
 
-/* GIFTS PANEL */
 #gifts-panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;padding:20px;}
 #gifts-panel.open{transform:translateY(0);}
 .gifts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
-.gift-item{text-align:center;cursor:pointer;padding:10px 4px;border-radius:12px;border:2px solid transparent;transition:.2s;}
+.gift-item{text-align:center;cursor:pointer;padding:10px 4px;border-radius:12px;border:2px solid transparent;}
 .gift-item.sel{border-color:#ff2d55;background:#1a0000;}
 .gift-item .ge{font-size:26px;}
 .gift-item .gn{font-size:10px;color:#aaa;margin-top:3px;}
@@ -180,16 +132,13 @@ video{width:100%;height:100%;object-fit:cover;}
 .send-gift-btn{width:100%;background:#ff2d55;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;}
 .wallet-bal{font-size:12px;color:#888;text-align:center;margin-top:8px;}
 
-/* GIFT ANIMATION */
 #giftanim{position:fixed;inset:0;pointer-events:none;z-index:9998;}
 .flying{position:absolute;font-size:50px;animation:fly 1.5s ease-out forwards;}
 @keyframes fly{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-60vh) scale(2.5);opacity:0;}}
 
-/* BACKDROP */
 .panel-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290;display:none;}
 .panel-backdrop.open{display:block;}
 
-/* TOAST */
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#222;color:white;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid #333;}
 #toast.show{opacity:1;}
 </style>
@@ -198,14 +147,12 @@ video{width:100%;height:100%;object-fit:cover;}
 
 <div id="loader"><div class="spin"></div><div style="color:#666;font-size:13px;margin-top:12px;">Loading HOTVID...</div></div>
 
-<!-- SEARCH BAR -->
 <div id="searchbar" onclick="goSearch()">
   <span class="sicon">🔍</span>
   <input type="text" placeholder="Search for content or creators..." readonly>
   <span class="sclose">✕</span>
 </div>
 
-<!-- TOP TABS -->
 <div id="toptabs">
   <div class="ttab-pill hotvids active" id="tab-hotvids" onclick="loadTab('trending')">
     <span class="tab-emoji">🔥</span> HOTVIDS
@@ -214,7 +161,10 @@ video{width:100%;height:100%;object-fit:cover;}
     <span class="tab-emoji">📻</span> FM Radio
   </div>
   <div class="ttab-pill tvlive" id="tab-tvlive" onclick="location.href='tvlive.html'">
-    <span class="tab-emoji">📺</span> tv live
+    <span class="tab-emoji">📺</span> TV Live
+  </div>
+  <div class="ttab-pill livestream" id="tab-live" onclick="location.href='livestream.html'">
+    <span class="tab-emoji">🔴</span> Go Live
   </div>
 </div>
 
@@ -231,7 +181,6 @@ video{width:100%;height:100%;object-fit:cover;}
   <div class="upload-wrap" onclick="requireAuth('upload')">
     <div class="upload-circle">⚡</div>
     <span class="nl">Upload</span>
-    <span class="nl2">Use Local Audio</span>
   </div>
   <div class="nbtn notif-btn" onclick="requireAuth('inbox')">
     <span class="ni">🔔</span><span class="nl">Notifications</span>
@@ -241,16 +190,13 @@ video{width:100%;height:100%;object-fit:cover;}
   </div>
 </div>
 
-<!-- LOGIN PROMPT -->
 <div id="loginprompt">
   <p>Join HOTVID to interact with creators 🔥</p>
   <button onclick="location.href='index.html?login=1'">Sign Up Free</button>
 </div>
 
-<!-- BACKDROP -->
 <div class="panel-backdrop" id="backdrop" onclick="closeAllPanels()"></div>
 
-<!-- COMMENTS PANEL -->
 <div id="comments-panel">
   <div class="cp-header">
     <h3 id="cp-title">Comments (0)</h3>
@@ -264,19 +210,16 @@ video{width:100%;height:100%;object-fit:cover;}
   </div>
 </div>
 
-<!-- SHARE PANEL -->
 <div id="share-panel">
   <div class="sp-header">
-    <div class="sp-title">Share Video</div>
-    <span class="sp-close" onclick="closeShare()">✕</span>
+    <div class="sp-title" style="font-size:15px;font-weight:700;">Share Video</div>
+    <span onclick="closeShare()" style="font-size:20px;cursor:pointer;color:#666;">✕</span>
   </div>
   <div class="share-grid">
     <div class="share-item" onclick="shareToWhatsApp()"><div class="si-icon">💬</div><div class="si-name">WhatsApp</div></div>
     <div class="share-item" onclick="shareToTelegram()"><div class="si-icon">✈️</div><div class="si-name">Telegram</div></div>
     <div class="share-item" onclick="shareToFacebook()"><div class="si-icon">👤</div><div class="si-name">Facebook</div></div>
-    <div class="share-item" onclick="shareToTwitter()"><div class="si-icon">🐦</div><div class="si-name">X / Twitter</div></div>
-    <div class="share-item" onclick="shareToTikTok()"><div class="si-icon">🎵</div><div class="si-name">TikTok</div></div>
-    <div class="share-item" onclick="shareToInstagram()"><div class="si-icon">📸</div><div class="si-name">Instagram</div></div>
+    <div class="share-item" onclick="shareToTwitter()"><div class="si-icon">🐦</div><div class="si-name">X/Twitter</div></div>
     <div class="share-item" onclick="shareNative()"><div class="si-icon">↗️</div><div class="si-name">More...</div></div>
     <div class="share-item" onclick="copyShareLink()"><div class="si-icon">🔗</div><div class="si-name">Copy Link</div></div>
   </div>
@@ -286,7 +229,6 @@ video{width:100%;height:100%;object-fit:cover;}
   </div>
 </div>
 
-<!-- GIFTS PANEL -->
 <div id="gifts-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;">
     <h3 style="font-size:15px;font-weight:700;">Send a Gift 🎁</h3>
@@ -301,7 +243,8 @@ video{width:100%;height:100%;object-fit:cover;}
 <div id="toast"></div>
 
 <script>
-const API = 'http://178.105.190.123:3000';
+// ✅ FIXED: Use relative URL so Nginx proxy works correctly
+const API = '';
 let token = localStorage.getItem('hvt');
 let user = null;
 try { user = JSON.parse(localStorage.getItem('hvu')); } catch(e) {}
@@ -316,6 +259,10 @@ let currentCreatorId = null;
 let selectedGift = null;
 let likedSet = new Set();
 let walletBalance = 0;
+
+// Double tap detection
+let lastTap = 0;
+const DOUBLE_TAP_DELAY = 300;
 
 const GIFTS = {
   rose:{name:'Rose',emoji:'🌹',price:500},
@@ -332,6 +279,10 @@ function toast(msg, dur=2200){
   setTimeout(()=>el.classList.remove('show'),dur);
 }
 
+// Load liked set from localStorage
+const cachedLiked = JSON.parse(localStorage.getItem('hv_liked')||'[]');
+cachedLiked.forEach(id=>likedSet.add(id));
+
 // ---------- FEED ----------
 async function loadFeed(type='trending'){
   document.getElementById('loader').style.display='flex';
@@ -341,8 +292,6 @@ async function loadFeed(type='trending'){
     const r = await fetch(url, {headers});
     const d = await r.json();
     videos = d.videos || d.data || [];
-    // Fetch liked status for logged-in users
-    if(token && videos.length) fetchLikedStatus();
   }catch(e){ videos=[]; }
   document.getElementById('loader').style.display='none';
   if(!videos.length){ showEmpty(); return; }
@@ -361,14 +310,6 @@ function showEmpty(){
     </div>`;
 }
 
-async function fetchLikedStatus(){
-  // Best-effort: check which videos current user has liked
-  // Uses the like endpoint returning liked:true/false if the backend supports it
-  // Otherwise we track locally via localStorage
-  const cached = JSON.parse(localStorage.getItem('hv_liked')||'[]');
-  cached.forEach(id=>likedSet.add(id));
-}
-
 function renderAll(){
   const feed=document.getElementById('feed');
   feed.innerHTML='';
@@ -385,7 +326,7 @@ function renderAll(){
 
     slide.innerHTML=`
       ${videoSrc
-        ? `<video id="vid-${i}" src="${videoSrc}" loop playsinline ${isMuted?'muted':''} onclick="toggleMute()" preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video>`
+        ? `<video id="vid-${i}" src="${videoSrc}" loop playsinline ${isMuted?'muted':''} preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video>`
         : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;"><span style="font-size:80px">🎬</span></div>`}
       <div class="overlay"></div>
       <div class="vinfo">
@@ -399,16 +340,16 @@ function renderAll(){
           <div class="follow-badge">+</div>
         </div>
         <div class="abtn like-btn ${liked?'liked':''}" id="like-btn-${i}" onclick="handleLike('${v.id}',${i})">
-          <span class="aicon">♥</span>
-          <span class="acount" id="like-count-${i}">${fmt(v.likes||v.like_count||v.likes_count||0)}</span>
+          <span class="aicon">${liked?'❤️':'🤍'}</span>
+          <span class="acount" id="like-count-${i}">${fmt(v.likes_count||0)}</span>
         </div>
         <div class="abtn comment-btn" onclick="openComments('${v.id}')">
           <span class="aicon">💬</span>
-          <span class="acount">${fmt(v.comments||v.comments_count||0)}</span>
+          <span class="acount" id="comment-count-${i}">${fmt(v.comments_count||0)}</span>
         </div>
         <div class="abtn share-btn" onclick="openShare('${v.id}')">
           <span class="aicon">➤</span>
-          <span class="acount" id="share-count-${i}">${fmt(v.shares||v.shares_count||0)}</span>
+          <span class="acount" id="share-count-${i}">${fmt(v.shares_count||0)}</span>
         </div>
         <div class="abtn gift-btn" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
           <span class="aicon">🎁</span>
@@ -418,14 +359,11 @@ function renderAll(){
       <div class="gift-hub-card" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
         <div class="gh-title">Gifting &amp;</div>
         <div class="gh-sub">Tipping Hub</div>
-        <div class="gh-send">🎁 Tipping</div>
-        <div class="gh-mposs">Send Gift (M-Poss)</div>
+        <div class="gh-send">🎁 Send Gift</div>
       </div>
       <div class="livetv-card" onclick="location.href='tvlive.html'">
         <div class="ltitle">Live TV Hub</div>
-        <div class="livetv-logos">
-          <span>UBC</span><span>SAT</span><span>DEN</span>
-        </div>
+        <div class="livetv-logos"><span>UBC</span><span>SAT</span><span>DEN</span></div>
       </div>`;
     feed.appendChild(slide);
   });
@@ -448,14 +386,45 @@ function setupSwipe(){
     touchStartY=e.touches[0].clientY;
     touchStartX=e.touches[0].clientX;
   },{passive:true});
+
   feed.addEventListener('touchend',e=>{
     const diffY=touchStartY-e.changedTouches[0].clientY;
     const diffX=touchStartX-e.changedTouches[0].clientX;
+
+    // Double tap detection for like
+    const now = Date.now();
+    if(Math.abs(diffY) < 10 && Math.abs(diffX) < 10){
+      if(now - lastTap < DOUBLE_TAP_DELAY){
+        // Double tap — like!
+        doubleTapLike();
+        lastTap = 0;
+        return;
+      }
+      lastTap = now;
+    }
+
     if(Math.abs(diffY)>Math.abs(diffX) && Math.abs(diffY)>50){
       if(diffY>0 && currentIdx<videos.length-1) goTo(currentIdx+1);
       else if(diffY<0 && currentIdx>0) goTo(currentIdx-1);
     }
   },{passive:true});
+}
+
+function doubleTapLike(){
+  if(!currentVideoId) return;
+  // Show heart animation
+  const slide = document.getElementById('slide-'+currentIdx);
+  if(slide){
+    const heart = document.createElement('div');
+    heart.className = 'heart-anim';
+    heart.textContent = '❤️';
+    slide.appendChild(heart);
+    setTimeout(()=>heart.remove(), 800);
+  }
+  // Like if not already liked
+  if(!likedSet.has(String(currentVideoId))){
+    handleLike(currentVideoId, currentIdx);
+  }
 }
 
 function goTo(idx){
@@ -482,7 +451,12 @@ function toggleMute(){
   setTimeout(()=>ind.style.opacity='0',800);
 }
 
-// ---------- LIKE (toggle) ----------
+// Click video to toggle mute
+document.getElementById('feed').addEventListener('click', e=>{
+  if(e.target.tagName==='VIDEO') toggleMute();
+});
+
+// ---------- LIKE (toggle + save to server) ----------
 async function handleLike(videoId, slideIdx){
   if(!token){ showLoginPrompt(); return; }
   const btn=document.getElementById('like-btn-'+slideIdx);
@@ -490,7 +464,7 @@ async function handleLike(videoId, slideIdx){
   const countEl=document.getElementById('like-count-'+slideIdx);
   const alreadyLiked=likedSet.has(String(videoId));
 
-  // Optimistic UI
+  // Optimistic UI update
   if(alreadyLiked){
     likedSet.delete(String(videoId));
     btn?.classList.remove('liked');
@@ -505,14 +479,20 @@ async function handleLike(videoId, slideIdx){
     if(countEl) countEl.textContent=fmt(c+1);
   }
 
-  // Persist liked to localStorage
+  // ✅ Save to localStorage
   localStorage.setItem('hv_liked', JSON.stringify([...likedSet]));
 
+  // ✅ Save to server
   try{
-    await fetch(`${API}/api/videos/${videoId}/like`,{
+    const r = await fetch(`${API}/api/videos/${videoId}/like`,{
       method:'POST',
-      headers:{Authorization:'Bearer '+token}
+      headers:{Authorization:'Bearer '+token, 'Content-Type':'application/json'}
     });
+    const d = await r.json();
+    // Update count with server's actual count
+    if(d.likes_count !== undefined && countEl){
+      countEl.textContent = fmt(d.likes_count);
+    }
   }catch(e){ console.error('like error',e); }
 }
 
@@ -525,66 +505,27 @@ function openShare(videoId){
   document.getElementById('shareLinkInput').value=url;
   document.getElementById('share-panel').classList.add('open');
   document.getElementById('backdrop').classList.add('open');
-  // Increment share count optimistically
-  const slideIdx=videos.findIndex(v=>String(v.id)===String(videoId));
-  if(slideIdx>=0){
-    const el=document.getElementById('share-count-'+slideIdx);
-    if(el){ const c=parseInt(el.textContent)||0; el.textContent=fmt(c+1); }
-  }
-  // Record on server
   fetch(`${API}/api/videos/${videoId}/share`,{method:'POST',headers:token?{Authorization:'Bearer '+token}:{}}).catch(()=>{});
 }
 
 function getShareUrl(id){ return `${location.origin}/feed.html?v=${id}`; }
-
 function closeShare(){ document.getElementById('share-panel').classList.remove('open'); closeBackdrop(); }
 
-function shareToWhatsApp(){
-  const url=getShareUrl(shareVideoId);
-  window.open(`https://wa.me/?text=${encodeURIComponent('Watch this on HOTVID 🔥 '+url)}`, '_blank');
-  closeShare();
-}
-function shareToTelegram(){
-  const url=getShareUrl(shareVideoId);
-  window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent('Watch this on HOTVID 🔥')}`, '_blank');
-  closeShare();
-}
-function shareToFacebook(){
-  const url=getShareUrl(shareVideoId);
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-  closeShare();
-}
-function shareToTwitter(){
-  const url=getShareUrl(shareVideoId);
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Watch this on HOTVID 🔥')}&url=${encodeURIComponent(url)}`, '_blank');
-  closeShare();
-}
-function shareToTikTok(){
-  toast('Copy the link and share on TikTok!');
-  copyShareLink();
-}
-function shareToInstagram(){
-  toast('Copy the link and share in your Instagram story!');
-  copyShareLink();
-}
+function shareToWhatsApp(){ window.open(`https://wa.me/?text=${encodeURIComponent('Watch this on HOTVID 🔥 '+getShareUrl(shareVideoId))}`, '_blank'); closeShare(); }
+function shareToTelegram(){ window.open(`https://t.me/share/url?url=${encodeURIComponent(getShareUrl(shareVideoId))}&text=${encodeURIComponent('Watch this on HOTVID 🔥')}`, '_blank'); closeShare(); }
+function shareToFacebook(){ window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl(shareVideoId))}`, '_blank'); closeShare(); }
+function shareToTwitter(){ window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Watch this on HOTVID 🔥')}&url=${encodeURIComponent(getShareUrl(shareVideoId))}`, '_blank'); closeShare(); }
 function shareNative(){
-  const url=getShareUrl(shareVideoId);
-  if(navigator.share){
-    navigator.share({title:'Watch on HOTVID 🔥',url}).catch(()=>{});
-    closeShare();
-  } else { copyShareLink(); }
+  if(navigator.share){ navigator.share({title:'Watch on HOTVID 🔥',url:getShareUrl(shareVideoId)}).catch(()=>{}); closeShare(); }
+  else { copyShareLink(); }
 }
 function copyShareLink(){
   const url=getShareUrl(shareVideoId||currentVideoId);
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!'));
-  } else {
-    const inp=document.getElementById('shareLinkInput');
-    inp.select(); document.execCommand('copy'); toast('🔗 Link copied!');
-  }
+  if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!')); }
+  else { document.getElementById('shareLinkInput').select(); document.execCommand('copy'); toast('🔗 Link copied!'); }
 }
 
-// ---------- COMMENTS ----------
+// ---------- COMMENTS (saves to server) ----------
 async function openComments(videoId){
   currentVideoId=videoId;
   document.getElementById('comments-panel').classList.add('open');
@@ -603,10 +544,10 @@ async function openComments(videoId){
     list.innerHTML=comments.map(c=>`
       <div class="comment-item">
         <div class="comment-avatar">
-          ${c.avatar_url?`<img src="${c.avatar_url}" alt="${c.username}" onerror="this.style.display='none'">`:( (c.username||'U')[0].toUpperCase())}
+          ${c.avatar_url?`<img src="${c.avatar_url}" alt="${c.username}" onerror="this.style.display='none'">`:(c.username||'U')[0].toUpperCase()}
         </div>
         <div class="comment-body">
-          <div class="cuser" onclick="goProfile('${c.user_id}')" >@${c.username||'user'}</div>
+          <div class="cuser">@${c.username||'user'}</div>
           <div class="ctext">${escHtml(c.content||c.text||'')}</div>
           <div class="ctime">${timeSince(c.created_at)}</div>
         </div>
@@ -616,34 +557,51 @@ async function openComments(videoId){
 
 function closeComments(){ document.getElementById('comments-panel').classList.remove('open'); closeBackdrop(); }
 
+// ✅ FIXED: postComment saves to server
 async function postComment(){
   if(!token){ showLoginPrompt(); return; }
   const input=document.getElementById('cp-input');
   const text=input.value.trim();
   if(!text) return;
   input.value='';
+  input.disabled=true;
   try{
-    await fetch(`${API}/api/videos/${currentVideoId}/comments`,{
+    const r = await fetch(`${API}/api/videos/${currentVideoId}/comments`,{
       method:'POST',
-      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
-      body:JSON.stringify({text, content:text})
+      headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},
+      body:JSON.stringify({content:text, text:text})
     });
-    openComments(currentVideoId);
-  }catch(e){ toast('Failed to post comment'); }
+    const d = await r.json();
+    if(d.success || d.data){
+      toast('Comment posted! 💬');
+      openComments(currentVideoId);
+      // Update comment count in feed
+      const idx = videos.findIndex(v=>String(v.id)===String(currentVideoId));
+      if(idx>=0){
+        const el = document.getElementById('comment-count-'+idx);
+        if(el){ const c=parseInt(el.textContent)||0; el.textContent=fmt(c+1); }
+      }
+    } else {
+      toast(d.error||'Failed to post');
+      input.value = text;
+    }
+  }catch(e){
+    toast('Failed to post comment');
+    input.value = text;
+  }
+  input.disabled=false;
 }
 
 // ---------- GIFTS ----------
 async function openGifts(videoId, creatorId){
   if(!token){ showLoginPrompt(); return; }
   currentVideoId=videoId; currentCreatorId=creatorId; selectedGift=null;
-  // Load wallet balance
   try{
     const r=await fetch(`${API}/api/gifts/wallet`,{headers:{Authorization:'Bearer '+token}});
     const d=await r.json();
-    walletBalance=d.balance||0;
+    walletBalance=d.balance||d.balance_ugx||0;
   }catch(e){ walletBalance=0; }
   document.getElementById('wallet-bal-info').textContent=`Your balance: ${walletBalance.toLocaleString()} UGX`;
-
   const grid=document.getElementById('gifts-grid');
   grid.innerHTML=Object.entries(GIFTS).map(([key,g])=>`
     <div class="gift-item" onclick="selectGift('${key}',this)">
@@ -655,17 +613,13 @@ async function openGifts(videoId, creatorId){
   document.getElementById('backdrop').classList.add('open');
 }
 
-function selectGift(key,el){
-  document.querySelectorAll('.gift-item').forEach(i=>i.classList.remove('sel'));
-  el.classList.add('sel'); selectedGift=key;
-}
-
+function selectGift(key,el){ document.querySelectorAll('.gift-item').forEach(i=>i.classList.remove('sel')); el.classList.add('sel'); selectedGift=key; }
 function closeGifts(){ document.getElementById('gifts-panel').classList.remove('open'); closeBackdrop(); }
 
 async function sendGift(){
   if(!selectedGift){ toast('Select a gift first'); return; }
   const g=GIFTS[selectedGift];
-  if(walletBalance<g.price){ toast(`Insufficient balance. Top up wallet first.`); window.location='wallet.html'; return; }
+  if(walletBalance<g.price){ toast('Insufficient balance. Top up wallet!'); location.href='wallet.html'; return; }
   try{
     const r=await fetch(`${API}/api/gifts/send`,{
       method:'POST',
@@ -674,9 +628,7 @@ async function sendGift(){
     });
     const d=await r.json();
     if(d.error){ toast(d.error); return; }
-    closeGifts();
-    animateGift(g.emoji);
-    toast(`🎁 ${g.name} sent!`);
+    closeGifts(); animateGift(g.emoji); toast(`🎁 ${g.name} sent!`);
     walletBalance-=g.price;
   }catch(e){ toast('Failed to send gift'); }
 }
@@ -687,32 +639,27 @@ function animateGift(emoji){
     setTimeout(()=>{
       const el=document.createElement('div');
       el.className='flying'; el.textContent=emoji;
-      el.style.left=(15+Math.random()*70)+'%';
-      el.style.bottom='15%';
-      container.appendChild(el);
-      setTimeout(()=>el.remove(),1500);
+      el.style.left=(15+Math.random()*70)+'%'; el.style.bottom='15%';
+      container.appendChild(el); setTimeout(()=>el.remove(),1500);
     },i*180);
   }
 }
 
 // ---------- UTILS ----------
 function closeBackdrop(){
-  // Only close if no panel is open
   const panels=['comments-panel','share-panel','gifts-panel'];
   const anyOpen=panels.some(id=>document.getElementById(id).classList.contains('open'));
   if(!anyOpen) document.getElementById('backdrop').classList.remove('open');
 }
 
 function closeAllPanels(){
-  ['comments-panel','share-panel','gifts-panel'].forEach(id=>{
-    document.getElementById(id).classList.remove('open');
-  });
+  ['comments-panel','share-panel','gifts-panel'].forEach(id=>document.getElementById(id).classList.remove('open'));
   document.getElementById('backdrop').classList.remove('open');
 }
 
 function goProfile(userId){
   if(!userId||userId==='undefined') return;
-  window.location='profile.html?id='+userId;
+  location.href='profile.html?id='+userId;
 }
 
 function requireAuth(action){
@@ -739,6 +686,7 @@ function loadTab(type){
 }
 
 function escHtml(s){
+  if(!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
@@ -751,7 +699,6 @@ function timeSince(dateStr){
   return Math.floor(diff/86400)+'d ago';
 }
 
-// Open to specific video if URL has ?v=ID
 const urlV=new URLSearchParams(location.search).get('v');
 if(urlV){ currentVideoId=urlV; }
 

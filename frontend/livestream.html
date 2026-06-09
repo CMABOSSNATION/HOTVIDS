@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>HOTVID Go Live 🔴</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#050a05;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px;}
+.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #0a1a0a;background:linear-gradient(135deg,#051205,#050a05);}
+.back{font-size:22px;cursor:pointer;color:#4ade80;}
+.htitle{font-size:18px;font-weight:700;}
+.htitle span{color:#4ade80;}
+
+.hero{background:linear-gradient(135deg,#051a0a,#050a05);margin:16px;border-radius:20px;padding:24px;text-align:center;border:1px solid #0a2a0f;}
+.hero .big-icon{font-size:64px;margin-bottom:12px;}
+.hero h2{font-size:22px;font-weight:800;margin-bottom:8px;}
+.hero p{color:#888;font-size:14px;line-height:1.6;margin-bottom:20px;}
+.go-live-btn{background:linear-gradient(135deg,#ff2d55,#ff6b35);color:#fff;border:none;border-radius:14px;padding:16px 36px;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 20px rgba(255,45,85,.4);}
+.go-live-btn:active{transform:scale(.97);}
+
+/* SETUP FORM */
+.setup-form{background:#0d160d;border:1px solid #1a2e1a;border-radius:16px;margin:0 16px 16px;padding:16px;}
+.setup-form h3{font-size:15px;font-weight:700;color:#4ade80;margin-bottom:14px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:12px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:#111;border:1px solid #1a2e1a;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;}
+.form-group input:focus,.form-group select:focus{border-color:#4ade80;}
+.form-group select option{background:#111;}
+.start-btn{width:100%;background:#4ade80;color:#000;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;}
+
+/* CAMERA PREVIEW */
+.camera-preview{background:#000;border-radius:16px;margin:0 16px 16px;overflow:hidden;aspect-ratio:9/16;position:relative;border:2px solid #0a2a0f;max-height:50vh;}
+.camera-preview video{width:100%;height:100%;object-fit:cover;}
+.cam-overlay{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:8px;}
+.cam-btn{background:rgba(0,0,0,.7);border:1px solid #333;color:#fff;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.live-indicator{position:absolute;top:12px;left:12px;background:#ff2d55;color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;animation:pulse 1.5s infinite;display:none;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.viewer-count{position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,.7);color:#fff;font-size:12px;padding:4px 10px;border-radius:20px;display:none;}
+.end-live-btn{position:absolute;bottom:12px;right:12px;background:#ff2d55;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;display:none;}
+
+/* RTMP INFO */
+.rtmp-card{background:#0d160d;border:1px solid #1a2e1a;border-radius:14px;margin:0 16px 16px;padding:16px;}
+.rtmp-card h3{font-size:14px;font-weight:700;color:#4ade80;margin-bottom:12px;}
+.rtmp-row{display:flex;gap:8px;margin-bottom:10px;}
+.rtmp-input{flex:1;background:#111;border:1px solid #1a2e1a;border-radius:8px;padding:10px 12px;color:#aaa;font-size:12px;outline:none;}
+.rtmp-copy{background:#1a2e1a;border:none;color:#4ade80;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:700;cursor:pointer;}
+.rtmp-note{font-size:11px;color:#666;margin-top:8px;line-height:1.6;}
+.app-badges{display:flex;gap:8px;margin-top:10px;}
+.app-badge{background:#111;border:1px solid #1a2e1a;border-radius:8px;padding:8px 12px;font-size:11px;color:#888;cursor:pointer;display:flex;align-items:center;gap:6px;}
+
+/* LIVE STREAMS LIST */
+.section-title{padding:14px 20px 8px;font-size:13px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;}
+.stream-card{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #0a1a0a;cursor:pointer;}
+.stream-thumb{width:80px;height:56px;border-radius:8px;background:#111;flex-shrink:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.stream-live-badge{position:absolute;top:4px;left:4px;background:#ff2d55;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;}
+.stream-info .st{font-size:14px;font-weight:700;}
+.stream-info .ss{font-size:12px;color:#888;margin-top:2px;}
+.stream-info .sv{font-size:11px;color:#4ade80;margin-top:3px;}
+
+.botnav{position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(5,10,5,.97);border-top:1px solid #0a1a0a;display:flex;align-items:center;justify-content:space-around;}
+.bnbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.bnbtn .ni{font-size:22px;}
+.bnbtn .nl{font-size:9px;color:#666;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="back" onclick="history.back()">←</span>
+  <span class="htitle">🔴 Go <span>Live</span></span>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <div class="big-icon">🎙️</div>
+  <h2>Go Live on HOTVID</h2>
+  <p>Broadcast to your followers in real-time. Share events, music, gaming, news, comedy and more. Uganda's biggest live audience awaits!</p>
+  <button class="go-live-btn" onclick="showSetup()">🔴 Start Live Stream</button>
+</div>
+
+<!-- SETUP FORM -->
+<div class="setup-form" id="setupForm" style="display:none;">
+  <h3>🎬 Stream Setup</h3>
+  <div class="form-group">
+    <label>Stream Title</label>
+    <input type="text" id="streamTitle" placeholder="What are you streaming today?" maxlength="80">
+  </div>
+  <div class="form-group">
+    <label>Category</label>
+    <select id="streamCategory">
+      <option value="entertainment">🎭 Entertainment</option>
+      <option value="music">🎵 Music & Performance</option>
+      <option value="gaming">🎮 Gaming</option>
+      <option value="news">📰 News & Talk</option>
+      <option value="sports">⚽ Sports</option>
+      <option value="comedy">😂 Comedy</option>
+      <option value="gospel">✝️ Gospel & Church</option>
+      <option value="education">📚 Education</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Stream Method</label>
+    <select id="streamMethod" onchange="toggleStreamMethod()">
+      <option value="camera">📱 Phone Camera</option>
+      <option value="rtmp">💻 RTMP (OBS/External)</option>
+    </select>
+  </div>
+  <button class="start-btn" onclick="startStream()">Start Streaming 🔴</button>
+</div>
+
+<!-- CAMERA STREAM -->
+<div class="camera-preview" id="cameraPreview" style="display:none;">
+  <video id="cameraFeed" autoplay muted playsinline></video>
+  <div class="live-indicator" id="liveIndicator">🔴 LIVE</div>
+  <div class="viewer-count" id="viewerCount">👁 0 watching</div>
+  <div class="cam-overlay">
+    <button class="cam-btn" onclick="flipCamera()">🔄</button>
+    <button class="cam-btn" onclick="toggleMic()">🎤</button>
+  </div>
+  <button class="end-live-btn" id="endBtn" onclick="endStream()">End Live</button>
+</div>
+
+<!-- RTMP INFO -->
+<div class="rtmp-card" id="rtmpCard" style="display:none;">
+  <h3>📡 RTMP Stream Key</h3>
+  <div style="font-size:12px;color:#888;margin-bottom:10px;">Use these in OBS Studio, StreamLabs, or any RTMP app</div>
+  <div class="form-group">
+    <label>RTMP Server URL</label>
+    <div class="rtmp-row">
+      <input class="rtmp-input" id="rtmpUrl" value="rtmp://178.105.190.123/live" readonly>
+      <button class="rtmp-copy" onclick="copyRtmp('rtmpUrl')">Copy</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Stream Key</label>
+    <div class="rtmp-row">
+      <input class="rtmp-input" id="rtmpKey" value="" readonly>
+      <button class="rtmp-copy" onclick="copyRtmp('rtmpKey')">Copy</button>
+    </div>
+  </div>
+  <div class="rtmp-note">1. Open OBS or StreamLabs on your device<br>2. Go to Settings → Stream → Custom RTMP<br>3. Paste the URL and Key above<br>4. Click Start Streaming in OBS</div>
+  <div class="app-badges">
+    <div class="app-badge">📱 StreamLabs</div>
+    <div class="app-badge">🎬 OBS Studio</div>
+    <div class="app-badge">📷 Prism Live</div>
+  </div>
+</div>
+
+<!-- LIVE NOW -->
+<div class="section-title" id="liveNowTitle">🔴 Live Now</div>
+<div id="liveList"></div>
+
+<div class="botnav">
+  <div class="bnbtn" onclick="location.href='index.html'"><span class="ni">🏠</span><span class="nl">Home</span></div>
+  <div class="bnbtn" onclick="location.href='feed.html'"><span class="ni">🔥</span><span class="nl">Videos</span></div>
+  <div class="bnbtn" onclick="location.href='radio.html'"><span class="ni">📻</span><span class="nl">Radio</span></div>
+  <div class="bnbtn" onclick="location.href='tvlive.html'"><span class="ni">📺</span><span class="nl">TV</span></div>
+</div>
+
+<script>
+const API = '';
+const token = localStorage.getItem('hvt');
+let cameraStream = null;
+let facingMode = 'user';
+let micEnabled = true;
+let streamId = null;
+let viewerInterval = null;
+
+function showSetup(){
+  if(!token){ alert('Please sign in to go live'); location.href='index.html?login=1'; return; }
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('setupForm').style.display = 'block';
+}
+
+function toggleStreamMethod(){
+  const method = document.getElementById('streamMethod').value;
+  if(method === 'rtmp'){
+    document.getElementById('rtmpCard').style.display = 'block';
+    const key = 'hvlive_' + Math.random().toString(36).substr(2,12);
+    document.getElementById('rtmpKey').value = key;
+  } else {
+    document.getElementById('rtmpCard').style.display = 'none';
+  }
+}
+
+async function startStream(){
+  const title = document.getElementById('streamTitle').value.trim();
+  const category = document.getElementById('streamCategory').value;
+  const method = document.getElementById('streamMethod').value;
+  if(!title){ alert('Enter a stream title'); return; }
+
+  // Create stream on backend
+  try{
+    const r = await fetch(`${API}/api/live/start`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},
+      body:JSON.stringify({title, category})
+    });
+    const d = await r.json();
+    streamId = d.id || d.stream_id || 'local_'+Date.now();
+  }catch(e){ streamId = 'local_'+Date.now(); }
+
+  document.getElementById('setupForm').style.display = 'none';
+
+  if(method === 'camera'){
+    startCamera();
+  } else {
+    document.getElementById('rtmpCard').style.display = 'block';
+    document.getElementById('rtmpKey').value = 'hvlive_'+streamId;
+    document.getElementById('liveNowTitle').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+async function startCamera(){
+  try{
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode},
+      audio:true
+    });
+    const vid = document.getElementById('cameraFeed');
+    vid.srcObject = cameraStream;
+    document.getElementById('cameraPreview').style.display = 'block';
+    document.getElementById('liveIndicator').style.display = 'block';
+    document.getElementById('viewerCount').style.display = 'block';
+    document.getElementById('endBtn').style.display = 'block';
+    // Simulate viewer count
+    let viewers = 0;
+    viewerInterval = setInterval(()=>{
+      viewers += Math.floor(Math.random()*3);
+      document.getElementById('viewerCount').textContent = `👁 ${viewers} watching`;
+    }, 5000);
+  }catch(e){
+    alert('Could not access camera: '+e.message);
+  }
+}
+
+async function flipCamera(){
+  facingMode = facingMode==='user'?'environment':'user';
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); }
+  await startCamera();
+}
+
+function toggleMic(){
+  const audioTrack = cameraStream?.getAudioTracks()[0];
+  if(audioTrack){
+    audioTrack.enabled = !audioTrack.enabled;
+    micEnabled = audioTrack.enabled;
+    document.querySelector('.cam-btn:nth-child(2)').textContent = micEnabled?'🎤':'🔇';
+  }
+}
+
+async function endStream(){
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); }
+  clearInterval(viewerInterval);
+  document.getElementById('cameraPreview').style.display = 'none';
+  document.getElementById('heroSection').style.display = 'block';
+  try{
+    await fetch(`${API}/api/live/${streamId}/end`,{method:'POST',headers:{Authorization:'Bearer '+token}});
+  }catch(e){}
+  alert('Stream ended! Your replay will be saved.');
+}
+
+function copyRtmp(fieldId){
+  const val = document.getElementById(fieldId).value;
+  navigator.clipboard?.writeText(val).then(()=>alert('Copied!')).catch(()=>{
+    document.getElementById(fieldId).select();
+    document.execCommand('copy');
+  });
+}
+
+async function loadLiveStreams(){
+  try{
+    const r = await fetch(`${API}/api/live/streams`);
+    const d = await r.json();
+    const streams = d.streams||d.data||[];
+    const list = document.getElementById('liveList');
+    if(!streams.length){
+      list.innerHTML='<div style="text-align:center;padding:30px;color:#444;">No live streams right now.<br><span style="font-size:12px">Be the first to go live!</span></div>';
+      return;
+    }
+    list.innerHTML = streams.map(s=>`
+      <div class="stream-card" onclick="watchStream('${s.id}')">
+        <div class="stream-thumb">${s.emoji||'🎙️'}<div class="stream-live-badge">LIVE</div></div>
+        <div class="stream-info">
+          <div class="st">${s.title}</div>
+          <div class="ss">@${s.username}</div>
+          <div class="sv">👁 ${s.viewers||0} watching</div>
+        </div>
+      </div>`).join('');
+  }catch(e){
+    document.getElementById('liveList').innerHTML='<div style="text-align:center;padding:30px;color:#444;">Could not load live streams</div>';
+  }
+}
+
+function watchStream(id){ location.href='watch-live.html?id='+id; }
+
+loadLiveStreams();
+</script>
+</body>
+</html>
