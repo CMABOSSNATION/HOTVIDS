@@ -170,7 +170,8 @@ function playSelected(){
       hls.loadSource(CMA_STREAM);
       hls.attachMedia(tvVideo);
       hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
-        tvVideo.play().catch(()=>{});
+        tvVideo.muted = false;
+        tvVideo.play().catch(()=>{ tvVideo.muted = true; tvVideo.play().catch(()=>{}); });
       });
       hls.on(Hls.Events.ERROR, (e, data)=>{
         if(data.fatal){
@@ -234,8 +235,9 @@ setInterval(()=>{
 renderChannels();
 renderEPG();
 
-// Auto select CMA TV
+// Auto select and play CMA TV immediately
 selectChannel(0);
+setTimeout(()=>playSelected(), 500);
 </script>
 </body>
 </html>
