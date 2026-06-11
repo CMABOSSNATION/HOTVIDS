@@ -54,6 +54,30 @@ body{background:#050510;color:#fff;font-family:'Segoe UI',sans-serif;min-height:
 .epg-bar{height:4px;background:#1a1a3e;border-radius:2px;margin-top:8px;}
 .epg-progress{height:100%;background:#818cf8;border-radius:2px;}
 
+/* CMA TV LOGO on video */
+.cma-logo-overlay{position:absolute;top:10px;left:12px;z-index:10;display:none;align-items:center;gap:6px;pointer-events:none;}
+.cma-logo-box{background:rgba(255,45,85,0.92);border-radius:8px;padding:4px 10px;display:flex;align-items:center;gap:5px;}
+.cma-logo-box .cma-fire{font-size:16px;}
+.cma-logo-box .cma-txt{font-size:12px;font-weight:900;color:#fff;letter-spacing:1px;}
+.cma-live-badge{background:rgba(0,0,0,0.7);border:1px solid #ff2d55;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:800;color:#ff2d55;animation:blink 1.5s infinite;}
+/* LIVE CLOCK */
+.video-clock{position:absolute;top:10px;right:12px;z-index:10;display:none;background:rgba(0,0,0,0.6);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700;color:#fff;pointer-events:none;font-variant-numeric:tabular-nums;}
+/* CHANNEL BANNER */
+.ch-banner{position:absolute;bottom:0;left:0;right:0;z-index:20;background:linear-gradient(transparent,rgba(0,0,0,0.93));padding:12px 14px 10px;display:none;pointer-events:none;}
+.ch-banner-top{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.ch-banner-emoji{font-size:26px;}
+.ch-banner-info{flex:1;}
+.ch-banner-name{font-size:15px;font-weight:900;color:#fff;}
+.ch-banner-prog{font-size:11px;color:#bbb;margin-top:1px;}
+.ch-banner-live{background:#ff2d55;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;}
+.ch-banner-bar{height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:6px;}
+.ch-banner-bar-fill{height:100%;background:#ff2d55;border-radius:2px;}
+/* NEWS TICKER */
+.news-ticker{background:#ff2d55;overflow:hidden;white-space:nowrap;padding:5px 0;font-size:12px;font-weight:700;color:#fff;}
+.news-ticker-inner{display:inline-block;animation:ticker 50s linear infinite;}
+.news-ticker-label{background:#fff;color:#ff2d55;font-size:10px;font-weight:900;padding:2px 8px;margin-right:12px;border-radius:3px;}
+@keyframes ticker{0%{transform:translateX(100vw);}100%{transform:translateX(-100%);}}
+
 .botnav{position:fixed;bottom:0;left:0;right:0;height:60px;background:rgba(5,5,16,.97);border-top:1px solid #111;display:flex;align-items:center;justify-content:space-around;}
 .bnbtn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
 .bnbtn .ni{font-size:22px;}
@@ -78,6 +102,29 @@ body{background:#050510;color:#fff;font-family:'Segoe UI',sans-serif;min-height:
   </div>
   <video id="tvVideo" style="display:none;width:100%;height:100%;" controls playsinline muted></video>
   <iframe id="tvFrame" style="display:none;width:100%;height:100%;border:none;" allowfullscreen allow="autoplay"></iframe>
+  <div class="cma-logo-overlay" id="cmaLogoOverlay">
+    <div class="cma-logo-box"><span class="cma-fire">🔥</span><span class="cma-txt">CMA TV</span></div>
+    <span class="cma-live-badge">● LIVE</span>
+  </div>
+  <div class="video-clock" id="videoClock"></div>
+  <div class="ch-banner" id="chBanner">
+    <div class="ch-banner-top">
+      <span class="ch-banner-emoji" id="bannerEmoji">🔥</span>
+      <div class="ch-banner-info">
+        <div class="ch-banner-name" id="bannerName">CMA TV</div>
+        <div class="ch-banner-prog" id="bannerProg">Now Streaming Live</div>
+      </div>
+      <span class="ch-banner-live">● LIVE</span>
+    </div>
+    <div class="ch-banner-bar"><div class="ch-banner-bar-fill" id="bannerBarFill" style="width:60%"></div></div>
+  </div>
+</div>
+
+<div class="news-ticker">
+  <span class="news-ticker-inner">
+    <span class="news-ticker-label">CMA TV NEWS</span>
+    Uganda's premier music &amp; entertainment channel 🔥 &nbsp;|&nbsp; Stream the best Ugandan hits 24/7 &nbsp;|&nbsp; Afrobeats, Bongo, Gospel &amp; more &nbsp;|&nbsp; Follow us on HOTVID &nbsp;|&nbsp; <span class="news-ticker-label">NOW LIVE</span> CMA TV — Music &amp; Entertainment &nbsp;|&nbsp; East African music non-stop 🎵 &nbsp;|&nbsp;
+  </span>
 </div>
 
 <div class="ch-info-bar">
@@ -170,8 +217,7 @@ function playSelected(){
       hls.loadSource(CMA_STREAM);
       hls.attachMedia(tvVideo);
       hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
-        tvVideo.muted = false;
-        tvVideo.play().catch(()=>{ tvVideo.muted = true; tvVideo.play().catch(()=>{}); });
+        tvVideo.play().catch(()=>{});
       });
       hls.on(Hls.Events.ERROR, (e, data)=>{
         if(data.fatal){
@@ -238,6 +284,82 @@ renderEPG();
 // Auto select and play CMA TV immediately
 selectChannel(0);
 setTimeout(()=>playSelected(), 500);
+
+// === REAL TV FEATURES ===
+
+// Live clock on video
+function updateVideoClock(){
+  const el = document.getElementById('videoClock');
+  if(el) el.textContent = new Date().toLocaleTimeString('en-UG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateVideoClock, 1000);
+updateVideoClock();
+
+// Show/hide CMA logo & clock when video plays
+function showVideoOverlays(isCMA){
+  const logo = document.getElementById('cmaLogoOverlay');
+  const clock = document.getElementById('videoClock');
+  logo.style.display = isCMA ? 'flex' : 'none';
+  clock.style.display = isCMA ? 'block' : 'none';
+}
+
+// Channel banner — shows 5s on channel switch like real TV
+let bannerTimer = null;
+function showChannelBanner(c){
+  const banner = document.getElementById('chBanner');
+  document.getElementById('bannerEmoji').textContent = c.emoji;
+  document.getElementById('bannerName').textContent = c.name;
+  document.getElementById('bannerProg').textContent = c.prog + ' · LIVE';
+  banner.style.display = 'block';
+  if(bannerTimer) clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(()=>{ banner.style.display='none'; }, 5000);
+}
+
+// Patch playSelected to trigger overlays + banner
+const _origPlay = playSelected;
+window.playSelected = function(){
+  _origPlay();
+  if(selectedChannel !== null){
+    const c = channels[selectedChannel];
+    showChannelBanner(c);
+    showVideoOverlays(!!c.isCMA);
+  }
+};
+
+// EPG with real-time NOW ON AIR highlight
+function renderEPGLive(){
+  const now = new Date();
+  const mins = now.getHours()*60 + now.getMinutes();
+  const epg = [
+    {time:'00:00',h:0,m:0,show:'Midnight Vibes',desc:'Chill music through the night',dur:360},
+    {time:'06:00',h:6,m:0,show:'Morning Music',desc:'Top hits to start your day',dur:180},
+    {time:'09:00',h:9,m:0,show:'Ugandan Hits',desc:'Best of Ugandan music',dur:180},
+    {time:'12:00',h:12,m:0,show:'Afrobeats Mix',desc:'East African & Afrobeats',dur:120},
+    {time:'14:00',h:14,m:0,show:'Gospel Hour',desc:'Inspirational music',dur:60},
+    {time:'15:00',h:15,m:0,show:'Afternoon Hits',desc:'Keep the energy going',dur:240},
+    {time:'19:00',h:19,m:0,show:'Prime Time Mix',desc:'Top trending videos',dur:120},
+    {time:'21:00',h:21,m:0,show:'Late Night Vibes',desc:'Chill music to end the day',dur:180},
+  ];
+  document.getElementById('epgList').innerHTML = epg.map(function(e){
+    const start = e.h*60+e.m;
+    const end = start+e.dur;
+    const isNow = mins>=start && mins<end;
+    const prog = isNow ? Math.round(((mins-start)/e.dur)*100) : (mins>=end?100:0);
+    const nowBadge = isNow ? '<span style="background:#ff2d55;color:#fff;font-size:9px;padding:2px 6px;border-radius:8px;margin-left:6px;">NOW ON AIR</span>' : '';
+    const barColor = isNow ? '#ff2d55' : '#818cf8';
+    const cardStyle = isNow ? 'border-color:#ff2d55;background:#1a0010;' : '';
+    const barHtml = prog>0 ? '<div class="epg-bar"><div class="epg-progress" style="width:'+prog+'%;background:'+barColor+'"></div></div>' : '';
+    return '<div class="epg-card" style="'+cardStyle+'">'
+      +'<div class="epg-time">'+e.time+' EAT '+nowBadge+'</div>'
+      +'<div class="epg-show">'+e.show+'</div>'
+      +'<div class="epg-desc">'+e.desc+'</div>'
+      +barHtml
+      +'</div>';
+  }).join('');
+}
+renderEPGLive();
+setInterval(renderEPGLive, 60000);
+
 </script>
 </body>
 </html>
