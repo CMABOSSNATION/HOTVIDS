@@ -2,394 +2,512 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>HOTVID - Uganda's #1 Video Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOTVID 🔥 Uganda's #1 Video Platform</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{--red:#cc2200;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;overflow:hidden;}
-
 #splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
-#splash .logo{font-size:56px;font-weight:900;color:var(--red);letter-spacing:4px;font-family:'Bebas Neue',Impact,sans-serif;}
-#splash .tagline{color:#555;font-size:14px;margin-top:8px;}
-#splash .dot{width:10px;height:10px;background:var(--red);border-radius:50%;margin-top:20px;animation:pulse 1s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-
-#feed-page{position:fixed;inset:0;display:none;flex-direction:column;}
-#feed-container{flex:1;overflow:hidden;position:relative;background:#000;}
-
-/* SEARCH BAR */
-#top-search{position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);}
-#top-search .sicon{font-size:15px;color:#bbb;}
-#top-search input{flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;}
-#top-search input::placeholder{color:#999;}
-#top-search .sclose{font-size:15px;color:#bbb;}
-
-/* TOP TABS */
-#top-tabs{position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;}
-#top-tabs::-webkit-scrollbar{display:none;}
-.ttab-pill{display:flex;align-items:center;gap:5px;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;white-space:nowrap;transition:all .2s;}
-.ttab-pill.hotvids{background:rgba(200,30,30,0.15);border-color:#cc2200;color:#ff4422;}
-.ttab-pill.hotvids.active{background:rgba(200,30,30,0.35);}
-.ttab-pill.radio{background:rgba(100,60,120,0.15);border-color:#7c4a9e;color:#c084fc;}
-.ttab-pill.tvlive{background:rgba(60,60,140,0.15);border-color:#5b5bcc;color:#818cf8;}
-
-/* VIDEO LAYOUT */
-.video-item{position:absolute;inset:0;width:100%;height:100%;background:#000;}
-.video-item video{width:100%;height:100%;object-fit:cover;}
-.video-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.15) 35%,transparent 65%,rgba(0,0,0,.25) 100%);pointer-events:none;}
-.video-info{position:absolute;bottom:85px;left:16px;right:82px;pointer-events:auto;}
-.video-info .creator{font-weight:800;font-size:15px;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.9);}
-.video-info .creator span{color:#fff;}
-.video-info .title{font-size:13px;color:#e8e8e8;margin-bottom:6px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
-.video-info .hashtags{font-size:12px;color:#5bf5b0;text-shadow:0 1px 3px rgba(0,0,0,.8);}
-
-/* ACTIONS */
-.video-actions{position:absolute;bottom:85px;right:8px;display:flex;flex-direction:column;gap:16px;align-items:center;}
-.action-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;pointer-events:auto;}
-.action-btn .icon{font-size:30px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.9));}
-.action-btn .count{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);}
-/* Avatar ring */
-.av-wrap{position:relative;cursor:pointer;}
-.av-ring{width:46px;height:46px;border-radius:50%;border:2.5px solid #fff;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,0.2);}
-.av-ring img,.av-ring video{width:100%;height:100%;object-fit:cover;}
-.av-badge{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#1da1f2;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900;border:1.5px solid #000;}
-/* Like gradient */
-.like-icon{background:linear-gradient(135deg,#ff6ec7,#c850c0,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:32px !important;filter:drop-shadow(0 2px 8px rgba(200,80,192,.5)) !important;}
-/* Comment blue */
-.comment-icon{background:linear-gradient(135deg,#60cfff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:32px !important;}
-/* Share pink */
-.share-icon{background:linear-gradient(135deg,#ff9de2,#e879f9,#c026d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:30px !important;}
-/* Gift card */
-.gift-card{background:rgba(255,255,255,0.12);border-radius:10px;padding:6px 8px;min-width:95px;backdrop-filter:blur(8px);cursor:pointer;text-align:center;}
-.gift-card .gc-t{font-size:9px;color:#ddd;}
-.gift-card .gc-s{font-size:8px;color:#aaa;margin-bottom:3px;}
-.gift-card .gc-g{font-size:11px;font-weight:800;color:#ff6b00;}
-.gift-card .gc-m{font-size:8px;color:#bbb;}
-/* Live TV card */
-.livetv-card{background:rgba(255,255,245,0.95);border-radius:10px;padding:6px 8px;min-width:100px;cursor:pointer;}
-.livetv-card .lt-t{font-size:10px;font-weight:800;color:#111;margin-bottom:4px;text-align:center;}
-.livetv-logos{display:flex;gap:4px;align-items:center;justify-content:center;}
-.livetv-logos span{font-size:9px;font-weight:700;background:#eee;border-radius:4px;padding:2px 5px;color:#333;}
-
-/* BOTTOM NAV */
-#bottom-nav{height:65px;background:rgba(8,6,4,0.97);display:flex;align-items:center;justify-content:space-around;border-top:1px solid #1a1a1a;flex-shrink:0;padding-bottom:2px;}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 10px;}
-.nav-btn .nicon{font-size:22px;line-height:1.2;}
-.nav-btn .nlabel{font-size:9px;color:#666;font-weight:600;letter-spacing:.3px;}
-.nav-btn.home-n .nicon{color:#4dd9ac;font-size:24px;}
-.nav-btn.home-n .nlabel{color:#4dd9ac;}
-.nav-btn.trend-n .nicon{font-size:24px;filter:drop-shadow(0 0 4px #ff6b00);}
-.nav-btn.trend-n .nlabel{color:#ff8c42;}
-.upload-nav{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
-.upload-circle{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00,#ff8800);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 16px rgba(255,180,0,.5);border:2.5px solid rgba(255,220,80,.4);}
-.upload-nav .nlabel{font-size:9px;color:#aaa;font-weight:600;}
-.upload-nav .nlabel2{font-size:8px;color:#666;}
-
-#auth-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
-#auth-modal.open{display:flex;}
-#auth-modal .modal-box{width:100%;max-width:400px;}
-#auth-modal .modal-logo{color:var(--red);font-size:36px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:8px;font-family:'Bebas Neue',Impact,sans-serif;}
-#auth-modal .modal-sub{color:#666;font-size:13px;text-align:center;margin-bottom:24px;}
-#auth-modal input{width:100%;background:#111;border:1px solid #333;border-radius:10px;padding:14px 16px;color:#fff;font-size:15px;margin-bottom:12px;outline:none;}
-#auth-modal input:focus{border-color:var(--red);}
-#auth-modal .auth-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:16px;}
-#auth-modal .auth-toggle{text-align:center;color:#666;font-size:13px;cursor:pointer;}
-#auth-modal .auth-toggle b{color:var(--red);}
-#auth-modal .close-modal{position:absolute;top:20px;right:20px;font-size:28px;cursor:pointer;color:#888;z-index:2001;}
-#auth-modal .auth-err{color:#ff4444;font-size:13px;margin-bottom:12px;text-align:center;display:none;}
-
-#login-prompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid var(--red);border-radius:12px;padding:16px 24px;z-index:500;display:none;text-align:center;white-space:nowrap;}
-#login-prompt p{font-size:13px;color:#aaa;margin-bottom:8px;}
-#login-prompt button{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;}
-
-.loading-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
-.spinner{width:36px;height:36px;border:3px solid #333;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
+#splash.hide{opacity:0;pointer-events:none;}
+.splash-logo{font-size:58px;font-weight:900;color:#ff2d55;letter-spacing:4px;text-shadow:0 0 30px rgba(255,45,85,.5);}
+.splash-tag{color:#444;font-size:14px;margin-top:8px;letter-spacing:1px;}
+.splash-dot{width:8px;height:8px;background:#ff2d55;border-radius:50%;margin-top:24px;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+#app{position:fixed;inset:0;display:none;flex-direction:column;}
+#searchbar{position:absolute;top:0;left:0;right:0;z-index:50;padding:10px 14px 0;}
+.sb-inner{background:rgba(20,10,10,.75);border:1px solid rgba(255,255,255,.08);border-radius:22px;display:flex;align-items:center;gap:8px;padding:8px 14px;backdrop-filter:blur(10px);cursor:pointer;}
+.sb-inner input{flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;cursor:pointer;}
+.sb-inner input::placeholder{color:#555;}
+#toptabs{position:absolute;top:54px;left:0;right:0;z-index:50;display:flex;gap:8px;padding:6px 12px;overflow-x:auto;scrollbar-width:none;}
+#toptabs::-webkit-scrollbar{display:none;}
+.ttab{border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;white-space:nowrap;transition:.2s;}
+.ttab.foryou{background:rgba(255,45,85,.12);border-color:#ff2d55;color:#ff6b8a;}
+.ttab.foryou.active{background:rgba(255,45,85,.3);}
+.ttab.following{background:rgba(255,159,10,.1);border-color:#ff9f0a;color:#ffb340;}
+.ttab.following.active{background:rgba(255,159,10,.25);}
+.ttab.radio{background:rgba(192,132,252,.1);border-color:#7c4a9e;color:#c084fc;}
+.ttab.tv{background:rgba(99,102,241,.1);border-color:#5b5bcc;color:#818cf8;}
+.ttab.golive{background:rgba(22,163,74,.1);border-color:#16a34a;color:#4ade80;}
+#feed-wrap{position:absolute;inset:0;}
+.vslide{position:absolute;inset:0;width:100%;height:100%;will-change:transform;transition:transform .28s ease;}
+.vslide video{width:100%;height:100%;object-fit:cover;display:block;}
+.vgrad{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.3) 100%);pointer-events:none;}
+.vinfo{position:absolute;bottom:76px;left:14px;right:90px;}
+.vinfo .vcreator{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.9);}
+.vinfo .vtitle{font-size:13px;color:#e0e0e0;line-height:1.55;margin-bottom:4px;text-shadow:0 1px 3px rgba(0,0,0,.8);}
+.vinfo .vtags{font-size:12px;color:#5bf5b0;}
+.vactions{position:absolute;bottom:76px;right:8px;display:flex;flex-direction:column;gap:14px;align-items:center;}
+.abtn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-width:44px;}
+.abtn .aico{font-size:30px;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));transition:transform .15s;}
+.abtn:active .aico{transform:scale(1.25);}
+.abtn .acnt{font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.9);text-align:center;}
+.av-wrap{position:relative;margin-bottom:2px;cursor:pointer;}
+.av-ring{width:44px;height:44px;border-radius:50%;border:2px solid #fff;overflow:hidden;}
+.av-ring img{width:100%;height:100%;object-fit:cover;}
+.av-ph{width:100%;height:100%;background:linear-gradient(135deg,#ff2d55,#ff9f0a);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;}
+.av-plus{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:#ff2d55;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;border:1.5px solid #000;}
+.heart-pop{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:88px;pointer-events:none;z-index:200;animation:hpop .75s ease-out forwards;}
+@keyframes hpop{0%{transform:translate(-50%,-50%) scale(0);opacity:1;}50%{transform:translate(-50%,-50%) scale(1.5);opacity:1;}100%{transform:translate(-50%,-50%) scale(1.1);opacity:0;}}
+#botnav{position:absolute;bottom:0;left:0;right:0;height:62px;background:rgba(6,4,4,.97);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;z-index:50;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 10px;}
+.nb .ni{font-size:22px;line-height:1.2;}
+.nb .nl{font-size:9px;color:#555;font-weight:600;}
+.nb.active .nl{color:#ff2d55;}
+.upload-nb{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.upload-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff2d55,#ff9f0a);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 14px rgba(255,45,85,.5);}
+.upload-nb .nl{font-size:9px;color:#888;font-weight:600;}
+#muteindicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;}
+#authmodal{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+#authmodal.open{display:flex;}
+.am-box{width:100%;max-width:400px;}
+.am-logo{color:#ff2d55;font-size:38px;font-weight:900;letter-spacing:3px;text-align:center;margin-bottom:6px;}
+.am-sub{color:#555;font-size:13px;text-align:center;margin-bottom:22px;}
+.am-err{color:#ff4444;font-size:13px;margin-bottom:10px;text-align:center;display:none;padding:8px;background:#1a0000;border-radius:8px;}
+.am-input{width:100%;background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:13px 15px;color:#fff;font-size:15px;margin-bottom:11px;outline:none;transition:.2s;}
+.am-input:focus{border-color:#ff2d55;}
+.am-btn{width:100%;background:#ff2d55;color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:14px;}
+.am-toggle{text-align:center;color:#666;font-size:13px;cursor:pointer;}
+.am-toggle b{color:#ff2d55;}
+.am-close{position:absolute;top:18px;right:18px;font-size:26px;cursor:pointer;color:#777;z-index:2001;}
+#loginprompt{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111;border:1px solid #ff2d55;border-radius:12px;padding:13px 20px;z-index:500;text-align:center;display:none;white-space:nowrap;}
+#loginprompt p{font-size:12px;color:#aaa;margin-bottom:8px;}
+#loginprompt button{background:#ff2d55;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;}
+.panel-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:290;display:none;}
+.panel-bg.open{display:block;}
+.panel{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;z-index:300;transform:translateY(100%);transition:transform .3s ease;}
+.panel.open{transform:translateY(0);}
+.ph{padding:13px 16px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;}
+.ph h3{font-size:15px;font-weight:700;}
+.ph-close{font-size:20px;cursor:pointer;color:#666;}
+#comments-panel{height:72vh;}
+.cp-list{height:calc(72vh - 118px);overflow-y:auto;padding:10px 15px;}
+.ci{display:flex;gap:10px;margin-bottom:14px;}
+.ci-av{width:32px;height:32px;border-radius:50%;background:#222;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;}
+.ci-av img{width:100%;height:100%;object-fit:cover;}
+.ci-body .cuser{font-size:12px;font-weight:700;color:#ff2d55;}
+.ci-body .ctext{font-size:13px;color:#ddd;margin-top:2px;line-height:1.5;}
+.ci-body .ctime{font-size:11px;color:#444;margin-top:3px;}
+.cp-inp{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#111;border-top:1px solid #1e1e1e;display:flex;gap:8px;align-items:center;}
+.cp-inp input{flex:1;background:#1a1a1a;border:none;border-radius:20px;padding:10px 15px;color:#fff;font-size:14px;outline:none;}
+.cp-inp button{background:#ff2d55;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;}
+#share-panel{padding-bottom:20px;}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:14px;}
+.si{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:10px 6px;border-radius:10px;}
+.si:active{background:#1a1a1a;}
+.si .sico{font-size:30px;}
+.si .snm{font-size:11px;color:#ccc;}
+.sl-row{padding:0 14px;display:flex;gap:8px;}
+.sl-inp{flex:1;background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:9px 12px;color:#888;font-size:12px;outline:none;}
+.sl-copy{background:#ff2d55;border:none;border-radius:8px;padding:9px 14px;color:#fff;font-weight:700;cursor:pointer;}
+#gifts-panel{padding:18px 16px 24px;}
+.gg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0;}
+.gi{text-align:center;cursor:pointer;padding:10px 4px;border-radius:12px;border:2px solid transparent;}
+.gi.sel{border-color:#ff2d55;background:#1a0008;}
+.gi .ge{font-size:26px;}
+.gi .gn{font-size:10px;color:#aaa;margin-top:3px;}
+.gi .gp{font-size:10px;color:#ff2d55;font-weight:700;}
+.sg-btn{width:100%;background:#ff2d55;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;}
+.gbwallet{font-size:12px;color:#666;text-align:center;margin-top:8px;}
+#giftanim{position:fixed;inset:0;pointer-events:none;z-index:9000;}
+.gfly{position:absolute;font-size:52px;animation:gflyup 1.5s ease-out forwards;}
+@keyframes gflyup{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-65vh) scale(2.5);opacity:0;}}
+#toast{position:fixed;top:22px;left:50%;transform:translateX(-50%);background:#1e1e1e;border:1px solid #333;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
+.empty-state{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;}
+.empty-state .ei{font-size:64px;}
+.empty-state h2{font-size:20px;font-weight:700;}
+.empty-state p{color:#555;font-size:14px;}
+.empty-state button{background:#ff2d55;color:#fff;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;}
+#loader{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:800;}
+.spin{width:36px;height:36px;border:3px solid #1a1a1a;border-top-color:#ff2d55;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
 <div id="splash">
-  <div class="logo">HOTVID</div>
-  <div class="tagline">Uganda's #1 Video Platform</div>
-  <div class="dot" style="margin-top:20px"></div>
+  <div class="splash-logo">HOTVID</div>
+  <div class="splash-tag">Uganda's #1 Video Platform 🇺🇬</div>
+  <div class="splash-dot"></div>
 </div>
 
-<div id="feed-page">
-  <div id="feed-container">
-    <!-- Search bar -->
-    <div id="top-search" onclick="location.href='discover.html'">
-      <span class="sicon">🔍</span>
-      <input type="text" placeholder="Search for content or creators..." readonly>
-      <span class="sclose">✕</span>
-    </div>
-    <!-- Top tabs -->
-    <div id="top-tabs">
-      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
-      <div class="ttab-pill radio" onclick="location.href='radio.html'">📻 FM Radio</div>
-      <div class="ttab-pill tvlive" onclick="location.href='tvlive.html'">📺 tv live</div>
-    </div>
-    <div class="loading-screen"><div class="spinner"></div></div>
+<div id="app">
+  <div id="feed-wrap">
+    <div id="loader"><div class="spin"></div></div>
   </div>
-  <div id="bottom-nav">
-    <div class="nav-btn home-n active" onclick="showFeed()">
-      <span class="nicon">🏠</span><span class="nlabel">Home</span>
+  <div id="searchbar">
+    <div class="sb-inner" onclick="location.href='discover.html'">
+      <span style="font-size:15px;color:#888;">🔍</span>
+      <input type="text" placeholder="Search videos, creators..." readonly>
     </div>
-    <div class="nav-btn trend-n" onclick="location.href='/discover.html'">
-      <span class="nicon">🔥</span><span class="nlabel">Trending</span>
-    </div>
-    <div class="upload-nav" onclick="location.href='/upload.html'">
+  </div>
+  <div id="toptabs">
+    <div class="ttab foryou active" id="tab-foryou" onclick="switchTab('trending',this)">🔥 For You</div>
+    <div class="ttab following" id="tab-following" onclick="switchTab('following',this)">👥 Following</div>
+    <div class="ttab radio" onclick="location.href='radio.html'">📻 FM Radio</div>
+    <div class="ttab tv" onclick="location.href='tvlive.html'">📺 TV Live</div>
+    <div class="ttab golive" onclick="location.href='livestream.html'">🔴 Go Live</div>
+  </div>
+  <div id="botnav">
+    <div class="nb active"><span class="ni">🏠</span><span class="nl">Home</span></div>
+    <div class="nb" onclick="location.href='discover.html'"><span class="ni">🔥</span><span class="nl">Discover</span></div>
+    <div class="upload-nb" onclick="goUpload()">
       <div class="upload-circle">⚡</div>
-      <span class="nlabel">Upload</span>
-      <span class="nlabel2">Use Local Audio</span>
+      <span class="nl">Upload</span>
     </div>
-    <div class="nav-btn" onclick="requireLogin('inbox')">
-      <span class="nicon">🔔</span><span class="nlabel">Notifications</span>
-    </div>
-    <div class="nav-btn" onclick="requireLogin('profile')">
-      <span class="nicon">👤</span><span class="nlabel">Me</span>
-    </div>
+    <div class="nb" onclick="goInbox()"><span class="ni">🔔</span><span class="nl">Inbox</span></div>
+    <div class="nb" onclick="goProfile()"><span class="ni">👤</span><span class="nl">Me</span></div>
   </div>
 </div>
 
-<div id="auth-modal">
-  <span class="close-modal" onclick="closeAuthModal()">✕</span>
-  <div class="modal-box">
-    <div class="modal-logo">HOTVID</div>
-    <div class="modal-sub" id="auth-sub">Your world. Your videos.</div>
-    <div class="auth-err" id="auth-err"></div>
-    <input type="text" id="auser" placeholder="Username" style="display:none">
-    <input type="email" id="aemail" placeholder="Email address">
-    <input type="password" id="apass" placeholder="Password">
-    <button class="auth-submit" id="auth-submit" onclick="doAuth()">Sign In</button>
-    <div class="auth-toggle" id="auth-toggle" onclick="toggleAuth()">
-      New to HOTVID? <b>Create Account</b>
-    </div>
+<div id="authmodal">
+  <span class="am-close" onclick="closeAuth()">✕</span>
+  <div class="am-box">
+    <div class="am-logo">HOTVID</div>
+    <div class="am-sub" id="am-sub">Your world. Your videos. 🔥</div>
+    <div class="am-err" id="am-err"></div>
+    <input class="am-input" type="text" id="am-user" placeholder="Username" style="display:none">
+    <input class="am-input" type="email" id="am-email" placeholder="Email address">
+    <input class="am-input" type="password" id="am-pass" placeholder="Password">
+    <button class="am-btn" id="am-btn" onclick="doAuth()">Sign In</button>
+    <div class="am-toggle" id="am-toggle" onclick="toggleAuthMode()">New to HOTVID? <b>Create Account</b></div>
   </div>
 </div>
 
-<div id="login-prompt">
-  <p>Sign up to interact with creators</p>
-  <button onclick="showAuthModal()">Join HOTVID 🔥</button>
+<div id="loginprompt">
+  <p>Join HOTVID to interact 🔥</p>
+  <button onclick="openAuth()">Sign Up Free</button>
 </div>
+
+<div class="panel-bg" id="panelbg" onclick="closeAllPanels()"></div>
+
+<div class="panel" id="comments-panel">
+  <div class="ph">
+    <h3 id="cp-title">Comments</h3>
+    <span class="ph-close" onclick="closeComments()">✕</span>
+  </div>
+  <div class="cp-list" id="cp-list"></div>
+  <div class="cp-inp">
+    <input type="text" id="cp-input" placeholder="Add a comment..." maxlength="500"
+      onkeydown="if(event.key==='Enter')postComment()">
+    <button onclick="postComment()">Post</button>
+  </div>
+</div>
+
+<div class="panel" id="share-panel">
+  <div class="ph">
+    <h3>Share Video</h3>
+    <span class="ph-close" onclick="closeShare()">✕</span>
+  </div>
+  <div class="sg">
+    <div class="si" onclick="shareWA()"><div class="sico">💬</div><div class="snm">WhatsApp</div></div>
+    <div class="si" onclick="shareTG()"><div class="sico">✈️</div><div class="snm">Telegram</div></div>
+    <div class="si" onclick="shareFB()"><div class="sico">👤</div><div class="snm">Facebook</div></div>
+    <div class="si" onclick="shareTW()"><div class="sico">🐦</div><div class="snm">Twitter</div></div>
+    <div class="si" onclick="shareNative()"><div class="sico">↗️</div><div class="snm">More</div></div>
+    <div class="si" onclick="copyLink()"><div class="sico">🔗</div><div class="snm">Copy Link</div></div>
+  </div>
+  <div class="sl-row">
+    <input class="sl-inp" id="sl-inp" readonly>
+    <button class="sl-copy" onclick="copyLink()">Copy</button>
+  </div>
+</div>
+
+<div class="panel" id="gifts-panel">
+  <div class="ph">
+    <h3>Send a Gift 🎁</h3>
+    <span class="ph-close" onclick="closeGifts()">✕</span>
+  </div>
+  <div class="gg" id="gifts-grid"></div>
+  <button class="sg-btn" onclick="sendGift()">Send Gift 🎁</button>
+  <div class="gbwallet" id="gbwallet"></div>
+</div>
+
+<div id="giftanim"></div>
+<div id="muteindicator">🔇</div>
+<div id="toast"></div>
 
 <script>
-const API = '';
-let token = localStorage.getItem('hvt') || '';
-let user = null;
-try{ user = JSON.parse(localStorage.getItem('hvu')); }catch(e){}
-let videos = [];
-let currentIdx = 0;
-let touchStartY = 0;
-let pendingAction = null;
-let authMode = 'login';
+const API='';
+let token=localStorage.getItem('hvt')||'';
+let currentUser=null;
+try{currentUser=JSON.parse(localStorage.getItem('hvu')||'null');}catch(e){}
+let videos=[],curIdx=0,isMuted=true,touchStartY=0,touchStartX=0,lastTap=0;
+let currentVideoId=null,currentCreatorId=null,shareVideoId=null,selectedGift=null,walletBal=0;
+let authMode='login',pendingAction=null;
+let likedSet=new Set(JSON.parse(localStorage.getItem('hv_liked')||'[]'));
+const GIFTS={rose:{name:'Rose',emoji:'🌹',price:500},trophy:{name:'Trophy',emoji:'🏆',price:5000},rocket:{name:'Rocket',emoji:'🚀',price:25000},crown:{name:'Crown',emoji:'👑',price:100000},diamond:{name:'Diamond',emoji:'💎',price:500000}};
 
-// SPLASH - simple timeout, no waiting for events
-window.onload = function(){
-  setTimeout(function(){
-    var s = document.getElementById('splash');
-    var fp = document.getElementById('feed-page');
-    s.style.opacity = '0';
-    setTimeout(function(){
-      s.style.display = 'none';
-      fp.style.display = 'flex';
-      loadFeed();
-    }, 500);
-  }, 2000);
-};
+window.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(()=>{
+    const s=document.getElementById('splash');
+    s.classList.add('hide');
+    setTimeout(()=>{
+      s.style.display='none';
+      document.getElementById('app').style.display='flex';
+      loadFeed('trending');
+    },500);
+  },2000);
+  if(new URLSearchParams(location.search).get('login')) setTimeout(()=>openAuth(),2600);
+});
 
-async function loadFeed(){
+async function loadFeed(type='trending'){
+  document.getElementById('loader').style.display='flex';
   try{
-    const r = await fetch(API + '/api/feed/trending');
-    const d = await r.json();
-    videos = d.videos || [];
-    if(videos.length === 0){ showEmpty(); return; }
-    renderVideo(0);
-    setupSwipe();
-  }catch(e){ showEmpty(); }
+    const url=type==='following'&&token?`${API}/api/feed`:`${API}/api/feed/trending`;
+    const h=token?{Authorization:'Bearer '+token}:{};
+    const r=await fetch(url,{headers:h});
+    const d=await r.json();
+    videos=d.videos||d.data||[];
+  }catch(e){videos=[];}
+  document.getElementById('loader').style.display='none';
+  if(!videos.length){showEmpty();return;}
+  renderAll();playVideo(0);setupSwipe();
 }
 
 function showEmpty(){
-  document.getElementById('feed-container').innerHTML = `
-    <div id="top-search" onclick="location.href='discover.html'" style="position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">
-      <span style="font-size:15px;color:#bbb;">🔍</span>
-      <input type="text" placeholder="Search for content or creators..." readonly style="flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;pointer-events:none;">
-      <span style="font-size:15px;color:#bbb;">✕</span>
-    </div>
-    <div style="position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;">
-      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
-      <div class="ttab-pill radio">📻 FM Radio</div>
-      <div class="ttab-pill tvlive">📺 tv live</div>
-    </div>
-    <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;">
-      <div style="font-size:64px">🎬</div>
-      <div style="color:#666;font-size:16px">No videos yet</div>
-      <div style="color:#444;font-size:13px">Be the first creator on HOTVID Uganda!</div>
-      <button onclick="location.href='/upload.html'" style="background:#cc2200;color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;">Upload Video 🔥</button>
-    </div>`;
+  document.getElementById('feed-wrap').innerHTML=`<div class="empty-state"><div class="ei">🎬</div><h2>No videos yet</h2><p>Be the first creator on HOTVID Uganda!</p><button onclick="goUpload()">Upload First Video 🔥</button></div>`;
 }
 
-function renderVideo(idx){
-  if(!videos[idx]) return;
-  const v = videos[idx];
-  const container = document.getElementById('feed-container');
-  const videoSrc = v.video_url || (v.cloudflare_video_id ? '/uploads/videos/' + v.cloudflare_video_id : '');
-  container.innerHTML = `
-    <div id="top-search" onclick="location.href='discover.html'" style="position:absolute;top:10px;left:16px;right:16px;z-index:10;display:flex;align-items:center;background:rgba(60,30,30,0.72);border-radius:24px;padding:9px 16px;gap:8px;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">
-      <span style="font-size:15px;color:#bbb;">🔍</span>
-      <input type="text" placeholder="Search for content or creators..." readonly style="flex:1;background:none;border:none;outline:none;color:#ccc;font-size:14px;pointer-events:none;">
-      <span style="font-size:15px;color:#bbb;">✕</span>
-    </div>
-    <div id="top-tabs" style="position:absolute;top:56px;left:0;right:0;z-index:10;display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none;">
-      <div class="ttab-pill hotvids active">🔥 HOTVIDS</div>
-      <div class="ttab-pill radio" onclick="location.href='radio.html'">📻 FM Radio</div>
-      <div class="ttab-pill tvlive" onclick="location.href='tvlive.html'">📺 tv live</div>
-    </div>
-    <div class="video-item">
-      ${videoSrc ?
-        `<video src="${videoSrc}" autoplay loop playsinline muted onclick="toggleMute()" style="width:100%;height:100%;object-fit:cover;"></video>` :
-        `<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;font-size:80px;">🎬</div>`
-      }
-      <div class="video-overlay"></div>
-      <div class="video-info">
-        <div class="creator">@<span>${v.username || 'creator'}</span></div>
-        <div class="title">${v.title || ''}</div>
-        <div class="hashtags">${v.hashtags || ''}</div>
+function renderAll(){
+  const wrap=document.getElementById('feed-wrap');
+  wrap.innerHTML='';
+  videos.forEach((v,i)=>{
+    const slide=document.createElement('div');
+    slide.className='vslide';slide.id='slide-'+i;
+    slide.style.transform=`translateY(${i*100}%)`;
+    const src=v.video_url||(v.cloudflare_video_id?'https://pub-42a11558e202483aa9635cfba1d86138.r2.dev/'+v.cloudflare_video_id:'');
+    const liked=likedSet.has(String(v.id));
+    const avC=v.avatar_url?`<img src="${v.avatar_url}" alt="${esc(v.username||'U')}" onerror="this.parentElement.innerHTML='<div class=av-ph>${(v.username||'U')[0].toUpperCase()}</div>'">`:`<div class="av-ph">${(v.username||'U')[0].toUpperCase()}</div>`;
+    slide.innerHTML=`
+      ${src?`<video id="vid-${i}" src="${src}" loop playsinline ${isMuted?'muted':''} preload="metadata"></video>`:`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0000,#000);display:flex;align-items:center;justify-content:center;font-size:80px;">🎬</div>`}
+      <div class="vgrad"></div>
+      <div class="vinfo">
+        <div class="vcreator" onclick="openUserProfile('${v.creator_id||v.user_id}')">@${esc(v.username||'creator')}</div>
+        <div class="vtitle">${esc(v.title||'')}</div>
+        <div class="vtags">${esc(v.hashtags||'')}</div>
       </div>
-      <div class="video-actions">
-        <div class="av-wrap" onclick="void(0)">
-          <div class="av-ring" style="background:linear-gradient(135deg,#ff2d55,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;">
-            ${(v.username||'U')[0].toUpperCase()}
-          </div>
-          <div class="av-badge">+</div>
+      <div class="vactions">
+        <div class="av-wrap" onclick="openUserProfile('${v.creator_id||v.user_id}')">
+          <div class="av-ring">${avC}</div>
+          <div class="av-plus">+</div>
         </div>
-        <div class="action-btn" onclick="handleLike('${v.id}')">
-          <span class="icon like-icon">♥</span>
-          <span class="count">${fmt(v.likes_count || 0)}</span>
+        <div class="abtn" id="like-btn-${i}" onclick="handleLike('${v.id}',${i})">
+          <span class="aico">${liked?'❤️':'🤍'}</span>
+          <span class="acnt" id="lc-${i}">${fmt(v.likes_count||0)}</span>
         </div>
-        <div class="action-btn" onclick="handleComment('${v.id}')">
-          <span class="icon comment-icon">💬</span>
-          <span class="count">${fmt(v.comments_count || 0)}</span>
+        <div class="abtn" onclick="openComments('${v.id}')">
+          <span class="aico">💬</span>
+          <span class="acnt" id="cc-${i}">${fmt(v.comments_count||0)}</span>
         </div>
-        <div class="action-btn" onclick="shareVideo('${v.id}')">
-          <span class="icon share-icon">➤</span>
-          <span class="count">${fmt(v.shares_count || 0)}</span>
+        <div class="abtn" onclick="openShare('${v.id}')">
+          <span class="aico">➤</span>
+          <span class="acnt" id="sc-${i}">${fmt(v.shares_count||0)}</span>
         </div>
-        <div class="gift-card" onclick="handleGift('${v.id}','${v.creator_id}')">
-          <div class="gc-t">Gifting &amp;</div>
-          <div class="gc-s">Tipping Hub</div>
-          <div class="gc-g">🎁 Tipping</div>
-          <div class="gc-m">Send Gift (M-Poss)</div>
+        <div class="abtn" onclick="openGifts('${v.id}','${v.creator_id||v.user_id}')">
+          <span class="aico">🎁</span>
+          <span class="acnt">Gift</span>
         </div>
-        <div class="livetv-card" onclick="location.href='tvlive.html'">
-          <div class="lt-t">Live TV Hub</div>
-          <div class="livetv-logos">
-            <span>UBC</span><span>SAT</span><span>DEN</span>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  setupSwipe();
+      </div>`;
+    wrap.appendChild(slide);
+  });
 }
 
-function fmt(n){ return n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : String(n||0); }
-
-function toggleMute(){
-  const v = document.querySelector('video');
-  if(v) v.muted = !v.muted;
+function playVideo(idx){
+  document.querySelectorAll('video').forEach(v=>{try{v.pause();}catch(e){}});
+  curIdx=idx;currentVideoId=videos[idx]?.id;currentCreatorId=videos[idx]?.creator_id||videos[idx]?.user_id;
+  const vid=document.getElementById('vid-'+idx);
+  if(vid){vid.muted=isMuted;try{vid.play();}catch(e){}}
+  if(currentVideoId) fetch(`${API}/api/videos/${currentVideoId}/view`,{method:'POST'}).catch(()=>{});
 }
 
 function setupSwipe(){
-  const c = document.getElementById('feed-container');
-  c.ontouchstart = e => { touchStartY = e.touches[0].clientY; };
-  c.ontouchend = e => {
-    const diff = touchStartY - e.changedTouches[0].clientY;
-    if(Math.abs(diff) > 50){
-      if(diff > 0 && currentIdx < videos.length-1){ currentIdx++; renderVideo(currentIdx); }
-      else if(diff < 0 && currentIdx > 0){ currentIdx--; renderVideo(currentIdx); }
+  const wrap=document.getElementById('feed-wrap');
+  wrap.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY;touchStartX=e.touches[0].clientX;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dy=touchStartY-e.changedTouches[0].clientY;
+    const dx=touchStartX-e.changedTouches[0].clientX;
+    const now=Date.now();
+    if(Math.abs(dy)<12&&Math.abs(dx)<12){
+      if(now-lastTap<280){doubleTapLike();lastTap=0;return;}
+      lastTap=now;toggleMute();return;
     }
-  };
+    if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>45){
+      if(dy>0&&curIdx<videos.length-1) goSlide(curIdx+1);
+      else if(dy<0&&curIdx>0) goSlide(curIdx-1);
+    }
+  },{passive:true});
 }
 
-function handleLike(id){
-  if(!token){ showLoginPrompt(); return; }
-  fetch(API + '/api/videos/' + id + '/like', {method:'POST', headers:{Authorization:'Bearer '+token}});
+function goSlide(idx){
+  const prev=document.getElementById('slide-'+curIdx);
+  const next=document.getElementById('slide-'+idx);
+  if(prev) prev.style.transform=`translateY(${(curIdx-idx)*-100}%)`;
+  if(next) next.style.transform='translateY(0)';
+  videos.forEach((_,i)=>{
+    if(i!==curIdx&&i!==idx){const s=document.getElementById('slide-'+i);if(s)s.style.transform=`translateY(${(i-idx)*100}%)`;}
+  });
+  playVideo(idx);
 }
 
-function handleComment(id){
-  if(!token){ showLoginPrompt(); return; }
+function doubleTapLike(){
+  const slide=document.getElementById('slide-'+curIdx);
+  if(slide){const h=document.createElement('div');h.className='heart-pop';h.textContent='❤️';slide.appendChild(h);setTimeout(()=>h.remove(),800);}
+  if(currentVideoId&&!likedSet.has(String(currentVideoId))) handleLike(currentVideoId,curIdx);
 }
 
-function handleGift(vid, cid){
-  if(!token){ showLoginPrompt(); return; }
-  location.href = '/gifts.html?video='+vid+'&creator='+cid;
+function toggleMute(){
+  isMuted=!isMuted;
+  const vid=document.getElementById('vid-'+curIdx);
+  if(vid) vid.muted=isMuted;
+  const el=document.getElementById('muteindicator');
+  el.textContent=isMuted?'🔇':'🔊';el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',800);
 }
 
-function shareVideo(id){
-  if(navigator.share) navigator.share({title:'Watch on HOTVID', url: window.location.origin + '/?v=' + id});
-}
-
-function requireLogin(action){
-  if(!token){ pendingAction = action; showAuthModal(); return; }
-  if(action === 'profile') location.href = '/profile.html';
-  if(action === 'inbox') location.href = '/notifications.html';
-}
-
-function showFeed(){ loadFeed(); }
-
-function showLoginPrompt(){
-  const p = document.getElementById('login-prompt');
-  p.style.display = 'block';
-  setTimeout(() => p.style.display = 'none', 3000);
-}
-
-function showAuthModal(){
-  document.getElementById('auth-modal').classList.add('open');
-}
-
-function closeAuthModal(){
-  document.getElementById('auth-modal').classList.remove('open');
-}
-
-function toggleAuth(){
-  authMode = authMode === 'login' ? 'register' : 'login';
-  document.getElementById('auser').style.display = authMode === 'register' ? 'block' : 'none';
-  document.getElementById('auth-submit').textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
-  document.getElementById('auth-toggle').innerHTML = authMode === 'login' ?
-    'New to HOTVID? <b>Create Account</b>' : 'Already have account? <b>Sign In</b>';
-}
-
-async function doAuth(){
-  const email = document.getElementById('aemail').value.trim();
-  const pass = document.getElementById('apass').value.trim();
-  const uname = document.getElementById('auser').value.trim();
-  const errEl = document.getElementById('auth-err');
-  errEl.style.display = 'none';
-  if(!email || !pass){ errEl.textContent = 'Please fill all fields'; errEl.style.display = 'block'; return; }
-  const btn = document.getElementById('auth-submit');
-  btn.textContent = 'Please wait...'; btn.disabled = true;
+async function handleLike(videoId,slideIdx){
+  if(!token){showLoginPrompt();return;}
+  const ico=document.querySelector('#like-btn-'+slideIdx+' .aico');
+  const cnt=document.getElementById('lc-'+slideIdx);
+  const wasLiked=likedSet.has(String(videoId));
+  if(wasLiked){likedSet.delete(String(videoId));if(ico)ico.textContent='🤍';if(cnt)cnt.textContent=fmt(Math.max((parseInt(cnt.textContent)||0)-1,0));}
+  else{likedSet.add(String(videoId));if(ico)ico.textContent='❤️';if(cnt)cnt.textContent=fmt((parseInt(cnt.textContent)||0)+1);}
+  localStorage.setItem('hv_liked',JSON.stringify([...likedSet]));
   try{
-    const url = authMode === 'login' ? API+'/api/auth/login' : API+'/api/auth/register';
-    const body = authMode === 'login' ? {email, password:pass} : {username:uname, email, password:pass};
-    const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    const d = await r.json();
-    if(d.error){
-      errEl.textContent = d.error; errEl.style.display = 'block';
-      btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account'; btn.disabled = false; return;
+    const r=await fetch(`${API}/api/videos/${videoId}/like`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
+    const d=await r.json();
+    if(d.likes_count!==undefined&&cnt) cnt.textContent=fmt(d.likes_count);
+    if(d.liked!==undefined){
+      if(d.liked) likedSet.add(String(videoId)); else likedSet.delete(String(videoId));
+      localStorage.setItem('hv_liked',JSON.stringify([...likedSet]));
+      if(ico) ico.textContent=d.liked?'❤️':'🤍';
     }
-    token = d.token; user = d.user;
-    localStorage.setItem('hvt', token);
-    localStorage.setItem('hvu', JSON.stringify(user));
-    closeAuthModal();
-    if(pendingAction){ requireLogin(pendingAction); pendingAction = null; }
-    loadFeed();
-  }catch(e){
-    errEl.textContent = 'Connection error. Try again.'; errEl.style.display = 'block';
-    btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account'; btn.disabled = false;
-  }
+  }catch(e){}
 }
+
+async function openComments(videoId){
+  if(!token){showLoginPrompt();return;}
+  currentVideoId=videoId;openPanel('comments-panel');
+  const list=document.getElementById('cp-list');
+  list.innerHTML='<div style="text-align:center;padding:20px;color:#555;">Loading...</div>';
+  try{
+    const r=await fetch(`${API}/api/videos/${videoId}/comments`);
+    const d=await r.json();
+    const comments=Array.isArray(d)?d:(d.data||d.comments||[]);
+    document.getElementById('cp-title').textContent=`Comments (${comments.length})`;
+    if(!comments.length){list.innerHTML='<div style="text-align:center;padding:30px;color:#444;">No comments yet 💬<br><span style="font-size:12px;color:#555;">Be the first!</span></div>';return;}
+    list.innerHTML=comments.map(c=>`<div class="ci"><div class="ci-av">${c.avatar_url?`<img src="${c.avatar_url}" alt="${esc(c.username||'U')}" onerror="this.style.display='none'">`:(c.username||'U')[0].toUpperCase()}</div><div class="ci-body"><div class="cuser">@${esc(c.username||'user')}</div><div class="ctext">${esc(c.content||c.text||'')}</div><div class="ctime">${timeSince(c.created_at)}</div></div></div>`).join('');
+  }catch(e){list.innerHTML='<div style="color:#ff4444;text-align:center;padding:20px;">Failed to load</div>';}
+}
+function closeComments(){closePanel('comments-panel');}
+
+async function postComment(){
+  if(!token){showLoginPrompt();return;}
+  const input=document.getElementById('cp-input');
+  const text=input.value.trim();if(!text)return;
+  input.value='';input.disabled=true;
+  try{
+    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:text,text:text})});
+    const d=await r.json();
+    if(d.success||d.data){
+      toast('Comment posted! 💬');openComments(currentVideoId);
+      const idx=videos.findIndex(v=>String(v.id)===String(currentVideoId));
+      if(idx>=0){const el=document.getElementById('cc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
+    }else{toast(d.error||'Failed to post');input.value=text;}
+  }catch(e){toast('Connection error');input.value=text;}
+  input.disabled=false;
+}
+
+function openShare(videoId){
+  shareVideoId=videoId;
+  document.getElementById('sl-inp').value=`${location.origin}/?v=${videoId}`;
+  openPanel('share-panel');
+  fetch(`${API}/api/videos/${videoId}/share`,{method:'POST',headers:token?{Authorization:'Bearer '+token}:{}}).catch(()=>{});
+  const idx=videos.findIndex(v=>String(v.id)===String(videoId));
+  if(idx>=0){const el=document.getElementById('sc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
+}
+function closeShare(){closePanel('share-panel');}
+function getShareUrl(){return`${location.origin}/?v=${shareVideoId||currentVideoId}`;}
+function shareWA(){window.open(`https://wa.me/?text=${encodeURIComponent('Watch on HOTVID 🔥 '+getShareUrl())}`,'_blank');closeShare();}
+function shareTG(){window.open(`https://t.me/share/url?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent('Watch on HOTVID 🔥')}`,'_blank');closeShare();}
+function shareFB(){window.open(`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`,'_blank');closeShare();}
+function shareTW(){window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent('Watch on HOTVID 🔥')}`,'_blank');closeShare();}
+function shareNative(){if(navigator.share){navigator.share({title:'Watch on HOTVID 🔥',url:getShareUrl()});closeShare();}else copyLink();}
+function copyLink(){const url=getShareUrl();if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!'));else{document.getElementById('sl-inp').select();document.execCommand('copy');toast('🔗 Link copied!');}}
+
+async function openGifts(videoId,creatorId){
+  if(!token){showLoginPrompt();return;}
+  currentVideoId=videoId;currentCreatorId=creatorId;selectedGift=null;
+  try{const r=await fetch(`${API}/api/gifts/wallet`,{headers:{Authorization:'Bearer '+token}});const d=await r.json();walletBal=d.balance||d.balance_ugx||0;}catch(e){walletBal=0;}
+  document.getElementById('gbwallet').textContent=`Balance: ${walletBal.toLocaleString()} UGX`;
+  document.getElementById('gifts-grid').innerHTML=Object.entries(GIFTS).map(([k,g])=>`<div class="gi" onclick="selectGift('${k}',this)"><div class="ge">${g.emoji}</div><div class="gn">${g.name}</div><div class="gp">${g.price.toLocaleString()}</div></div>`).join('');
+  openPanel('gifts-panel');
+}
+function selectGift(k,el){document.querySelectorAll('.gi').forEach(g=>g.classList.remove('sel'));el.classList.add('sel');selectedGift=k;}
+function closeGifts(){closePanel('gifts-panel');}
+async function sendGift(){
+  if(!selectedGift){toast('Select a gift first');return;}
+  const g=GIFTS[selectedGift];
+  if(walletBal<g.price){toast('Insufficient balance! Top up 👛');location.href='wallet.html';return;}
+  try{
+    const r=await fetch(`${API}/api/gifts/send`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({recipient_id:currentCreatorId,gift_type:selectedGift,video_id:currentVideoId})});
+    const d=await r.json();
+    if(d.error){toast(d.error);return;}
+    closeGifts();animGift(g.emoji);toast(`🎁 ${g.name} sent!`);walletBal-=g.price;
+  }catch(e){toast('Failed to send gift');}
+}
+function animGift(emoji){
+  const c=document.getElementById('giftanim');
+  for(let i=0;i<7;i++){setTimeout(()=>{const el=document.createElement('div');el.className='gfly';el.textContent=emoji;el.style.left=(10+Math.random()*80)+'%';el.style.bottom='15%';c.appendChild(el);setTimeout(()=>el.remove(),1500);},i*160);}
+}
+
+function openAuth(action){pendingAction=action||null;document.getElementById('authmodal').classList.add('open');}
+function closeAuth(){document.getElementById('authmodal').classList.remove('open');}
+function toggleAuthMode(){
+  authMode=authMode==='login'?'register':'login';
+  document.getElementById('am-user').style.display=authMode==='register'?'block':'none';
+  document.getElementById('am-btn').textContent=authMode==='login'?'Sign In':'Create Account';
+  document.getElementById('am-toggle').innerHTML=authMode==='login'?'New to HOTVID? <b>Create Account</b>':'Already have account? <b>Sign In</b>';
+  document.getElementById('am-sub').textContent=authMode==='login'?'Your world. Your videos. 🔥':'Join Uganda\'s #1 platform 🇺🇬';
+  document.getElementById('am-err').style.display='none';
+}
+async function doAuth(){
+  const email=document.getElementById('am-email').value.trim();
+  const pass=document.getElementById('am-pass').value.trim();
+  const uname=document.getElementById('am-user').value.trim();
+  const errEl=document.getElementById('am-err');errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='Fill all fields';errEl.style.display='block';return;}
+  const btn=document.getElementById('am-btn');btn.textContent='Please wait...';btn.disabled=true;
+  try{
+    const url=authMode==='login'?`${API}/api/auth/login`:`${API}/api/auth/register`;
+    const body=authMode==='login'?{email,password:pass}:{username:uname,email,password:pass};
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error){errEl.textContent=d.error;errEl.style.display='block';btn.textContent=authMode==='login'?'Sign In':'Create Account';btn.disabled=false;return;}
+    token=d.token;currentUser=d.user;
+    localStorage.setItem('hvt',token);localStorage.setItem('hvu',JSON.stringify(d.user));
+    closeAuth();toast('Welcome to HOTVID! 🔥');
+    if(pendingAction==='upload') location.href='upload.html';
+    else if(pendingAction==='profile') location.href='profile.html';
+    else loadFeed('trending');
+  }catch(e){errEl.textContent='Connection error. Try again.';errEl.style.display='block';btn.textContent=authMode==='login'?'Sign In':'Create Account';btn.disabled=false;}
+}
+
+function goUpload(){if(!token){openAuth('upload');return;}location.href='upload.html';}
+function goProfile(){if(!token){openAuth('profile');return;}location.href='profile.html';}
+function goInbox(){if(!token){openAuth('inbox');return;}location.href='notifications.html';}
+function openUserProfile(id){if(!id||id==='undefined')return;location.href='profile.html?id='+id;}
+function switchTab(type,el){document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));el.classList.add('active');loadFeed(type);}
+function openPanel(id){document.getElementById(id).classList.add('open');document.getElementById('panelbg').classList.add('open');}
+function closePanel(id){document.getElementById(id).classList.remove('open');const any=['comments-panel','share-panel','gifts-panel'].some(p=>document.getElementById(p).classList.contains('open'));if(!any)document.getElementById('panelbg').classList.remove('open');}
+function closeAllPanels(){['comments-panel','share-panel','gifts-panel'].forEach(id=>document.getElementById(id).classList.remove('open'));document.getElementById('panelbg').classList.remove('open');}
+function showLoginPrompt(){const p=document.getElementById('loginprompt');p.style.display='block';clearTimeout(p._t);p._t=setTimeout(()=>p.style.display='none',3000);}
+function toast(msg,dur=2200){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),dur);}
+function fmt(n){n=parseInt(n)||0;return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function timeSince(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+const urlV=new URLSearchParams(location.search).get('v');
+if(urlV) currentVideoId=urlV;
 </script>
 </body>
 </html>
