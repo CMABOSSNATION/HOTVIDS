@@ -287,6 +287,7 @@
 <div class="tabs">
   <div class="tab active" onclick="switchTab('videos', this)">📹 Videos</div>
   <div class="tab" onclick="switchTab('liked', this)">❤️ Liked</div>
+  <div class="tab" onclick="switchTab('saved', this)">🔖 Saved</div>
 </div>
 
 <!-- VIDEO GRID -->
@@ -619,7 +620,9 @@ async function loadVideos() {
   const grid = document.getElementById('videosGrid');
   grid.innerHTML = `<div style="grid-column:1/-1;padding:30px;text-align:center;color:#333;">Loading...</div>`;
   try {
-    const res = await fetch(`${API}/api/videos?user_id=${profileUserId}&limit=30`);
+    const token = localStorage.getItem('hvt');
+    const headers = token ? { Authorization: 'Bearer ' + token } : {};
+    const res = await fetch(`${API}/api/users/${profileUserId}/videos`, { headers });
     const data = await res.json();
     if (!data.success || !data.data?.length) {
       grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)">
@@ -637,7 +640,7 @@ async function loadVideos() {
 
 function renderGrid(vids) {
   document.getElementById('videosGrid').innerHTML = vids.map(v => `
-    <div class="video-thumb" onclick="window.location='feed.html?v=${v.id}'">
+    <div class="video-thumb" onclick="window.location='index.html?v=${v.id}'">
       <img src="${v.thumbnail_url || 'https://placehold.co/200x355/141414/333?text=▶'}"
         alt="${v.title || ''}" loading="lazy"
         onerror="this.src='https://placehold.co/200x355/141414/333?text=▶'"/>
@@ -672,12 +675,36 @@ async function loadLikedVideos() {
   }
 }
 
+async function loadSavedVideos() {
+  const grid = document.getElementById('videosGrid');
+  grid.innerHTML = `<div style="grid-column:1/-1;padding:30px;text-align:center;color:#333;">Loading...</div>`;
+  const token = localStorage.getItem('hvt');
+  if (!token) {
+    grid.innerHTML = `<div class="liked-empty" style="grid-column:1/-1"><div class="icon">🔖</div><div>Login to see saved videos</div></div>`;
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/users/${profileUserId}/saved-videos`, {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!data.success || !data.data?.length) {
+      grid.innerHTML = `<div class="liked-empty" style="grid-column:1/-1"><div class="icon">🔖</div><div>No saved videos yet</div></div>`;
+      return;
+    }
+    renderGrid(data.data);
+  } catch(e) {
+    grid.innerHTML = `<div class="liked-empty" style="grid-column:1/-1"><div class="icon">🔖</div><div>Could not load saved videos</div></div>`;
+  }
+}
+
 function switchTab(tab, el) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   if (tab === 'videos') loadVideos();
   else if (tab === 'liked') loadLikedVideos();
+  else if (tab === 'saved') loadSavedVideos();
 }
 
 // ---- MODALS ----
