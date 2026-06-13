@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CMA TV Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0a0f;--card:#12121a;--border:#1e1e2e;
+  --gold:#FFD700;--red:#CC0000;--green:#22c55e;
+  --text:#e2e2e2;--muted:#666;--danger:#ff4444;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:360px;text-align:center;}
+.login-box .logo{font-size:32px;font-weight:900;color:var(--gold);margin-bottom:4px;}
+.login-box .sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+.login-box input{width:100%;background:#0a0a0f;border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none;}
+.login-box input:focus{border-color:var(--gold);}
+.btn{width:100%;background:var(--gold);color:#000;font-weight:800;padding:13px;border:none;border-radius:10px;font-size:15px;cursor:pointer;transition:opacity .2s;}
+.btn:hover{opacity:.85;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.green{background:var(--green);color:#fff;}
+.btn.dark{background:var(--border);color:var(--text);}
+.btn.sm{padding:8px 14px;font-size:12px;width:auto;border-radius:8px;}
+.err{color:var(--danger);font-size:13px;margin-top:8px;}
+
+/* APP */
+.app{display:none;}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar .brand{font-size:18px;font-weight:900;color:var(--gold);}
+.topbar .brand span{color:#fff;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.status-dot.red{background:var(--danger);}
+
+/* TABS */
+.tabs{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--border);padding:0 8px;}
+.tab{padding:12px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* CONTENT */
+.content{padding:16px;max-width:600px;margin:0 auto;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;}
+.card h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat{background:var(--bg);border-radius:10px;padding:12px;text-align:center;}
+.stat .val{font-size:22px;font-weight:900;color:var(--gold);}
+.stat .lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* STREAM CONTROLS */
+.ctrl-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* FORM */
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;margin-top:14px;}
+label:first-child{margin-top:0;}
+input[type=text],input[type=number],textarea,select{
+  width:100%;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px;outline:none;
+}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;font-family:inherit;}
+
+/* PLAYLIST */
+.pl-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:grab;}
+.pl-item.dragging{opacity:.5;}
+.pl-num{background:var(--gold);color:#000;font-weight:900;font-size:11px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pl-name{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pl-arrows{display:flex;flex-direction:column;gap:2px;}
+.pl-arrows button{background:var(--border);border:none;color:var(--text);width:22px;height:18px;border-radius:4px;cursor:pointer;font-size:11px;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:#333;border-radius:12px;cursor:pointer;transition:.3s;}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
+input:checked + .slider{background:var(--green);}
+input:checked + .slider:before{transform:translateX(20px);}
+
+/* LOGS */
+.log-box{background:#000;border-radius:8px;padding:12px;font-family:monospace;font-size:11px;color:#0f0;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;display:none;border:1px solid var(--gold);}
+
+/* COLOR PREVIEW */
+.color-preview{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-left:6px;}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+.badge.online{background:#052e16;color:var(--green);}
+.badge.stopped{background:#2d0000;color:var(--danger);}
+
+.save-btn{margin-top:16px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="logo">🔥 CMA TV</div>
+    <div class="sub">Admin Dashboard</div>
+    <input type="password" id="pwInput" placeholder="Enter admin password" />
+    <button class="btn" onclick="doLogin()">Login</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appWrap">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">🔥 CMA <span>TV Admin</span></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="status-dot" id="streamDot"></span>
+      <span style="font-size:12px;" id="streamStatus">Checking...</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
+    <div class="tab" onclick="switchTab('stream',this)">Stream</div>
+    <div class="tab" onclick="switchTab('playlist',this)">Playlist</div>
+    <div class="tab" onclick="switchTab('ticker',this)">Ticker</div>
+    <div class="tab" onclick="switchTab('branding',this)">Branding</div>
+    <div class="tab" onclick="switchTab('logs',this)">Logs</div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="card">
+        <h3>Stream Status</h3>
+        <div class="stat-row">
+          <div class="stat"><div class="val" id="d-status">-</div><div class="lbl">Status</div></div>
+          <div class="stat"><div class="val" id="d-uptime">-</div><div class="lbl">Uptime</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="val" id="d-segs">-</div><div class="lbl">Segments</div></div>
+          <div class="stat"><div class="val" id="d-restarts">-</div><div class="lbl">Restarts</div></div>
+        </div>
+        <div class="ctrl-row">
+          <button class="btn green sm" onclick="streamAction('restart')">↺ Restart</button>
+          <button class="btn red sm" onclick="streamAction('stop')">■ Stop</button>
+          <button class="btn dark sm" onclick="streamAction('start')">▶ Start</button>
+          <button class="btn dark sm" onclick="doSync()">⟳ Sync R2</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>System Resources</h3>
+        <div class="stat-row">
+          <div class="stat"><div class="val" id="d-cpu">-</div><div class="lbl">CPU %</div></div>
+          <div class="stat"><div class="val" id="d-mem">-</div><div class="lbl">RAM Used (MB)</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="val" id="d-disk">-</div><div class="lbl">Disk Used</div></div>
+          <div class="stat"><div class="val" id="d-diskp">-</div><div class="lbl">Disk %</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div class="ctrl-row">
+          <button class="btn dark sm" onclick="syncReset()">🗑 Clear R2 + Resync</button>
+          <button class="btn dark sm" onclick="loadLogs()">📋 View Logs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STREAM -->
+    <div class="section" id="sec-stream">
+      <div class="card">
+        <h3>Stream Control</h3>
+        <div class="ctrl-row" style="margin-bottom:12px;">
+          <button class="btn green sm" onclick="streamAction('restart')">↺ Restart Stream</button>
+          <button class="btn red sm" onclick="streamAction('stop')">■ Stop Stream</button>
+          <button class="btn dark sm" onclick="streamAction('start')">▶ Start Stream</button>
+        </div>
+        <div class="ctrl-row">
+          <button class="btn dark sm" onclick="doSync()">⟳ Sync R2 Now</button>
+          <button class="btn dark sm" onclick="syncReset()">🗑 Clear R2 + Fresh Sync</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Stream Info</h3>
+        <div id="streamInfo" style="font-size:13px;color:var(--muted);line-height:1.8;">Loading...</div>
+      </div>
+    </div>
+
+    <!-- PLAYLIST -->
+    <div class="section" id="sec-playlist">
+      <div class="card">
+        <h3>Video Playlist — Drag to reorder</h3>
+        <div id="playlistItems"></div>
+        <button class="btn save-btn" onclick="savePlaylist()">💾 Save & Apply Playlist</button>
+      </div>
+    </div>
+
+    <!-- TICKER -->
+    <div class="section" id="sec-ticker">
+      <div class="card">
+        <h3>News Ticker</h3>
+        <label>Ticker Text</label>
+        <textarea id="tickerText" rows="5"></textarea>
+        <label>Scroll Speed (50=fast, 150=slow)</label>
+        <input type="number" id="tickerSpeed" min="30" max="300" value="100" />
+        <label>Text Color (hex e.g. 0xFFD700)</label>
+        <input type="text" id="tickerColor" value="0xFFD700" />
+        <label>Background Color (hex e.g. 0x0a0a1a)</label>
+        <input type="text" id="tickerBg" value="0x0a0a1a" />
+        <button class="btn save-btn" onclick="saveTicker()">💾 Save & Apply (restarts stream)</button>
+      </div>
+    </div>
+
+    <!-- BRANDING -->
+    <div class="section" id="sec-branding">
+      <div class="card">
+        <h3>On-Screen Branding</h3>
+        <label>Channel Name (top-left logo)</label>
+        <input type="text" id="logoText" value="CMA TV" />
+        <label>Logo Text Color (hex)</label>
+        <input type="text" id="logoColor" value="0xFFD700" />
+        <label>Logo Background Color (hex)</label>
+        <input type="text" id="logoBg" value="0x1a0a2e" />
+        <div class="toggle-row">
+          <span style="font-size:14px;">Show LIVE Badge</span>
+          <label class="toggle"><input type="checkbox" id="showLive" checked /><span class="slider"></span></label>
+        </div>
+        <button class="btn save-btn" onclick="saveBranding()">💾 Save & Apply (restarts stream)</button>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="section" id="sec-logs">
+      <div class="card">
+        <h3>Stream Logs <button class="btn dark sm" style="margin-left:8px;" onclick="loadLogs()">↺ Refresh</button></h3>
+        <div class="log-box" id="logBox">Press Refresh to load logs...</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://178.105.190.123:4500';
+let TOKEN = '';
+let playlistOrder = [];
+
+// ── LOGIN ────────────────────────────────────────────────────────────
+function doLogin() {
+  TOKEN = document.getElementById('pwInput').value;
+  fetch(`${API}/api/status`, { headers: { Authorization: TOKEN } })
+    .then(r => r.json())
+    .then(d => {
+      if (d.error === 'Unauthorized') { document.getElementById('loginErr').textContent = 'Wrong password'; return; }
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('appWrap').style.display = 'block';
+      loadAll();
+      setInterval(loadStatus, 10000);
+    })
+    .catch(() => { document.getElementById('loginErr').textContent = 'Cannot connect to API'; });
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── TAB SWITCH ───────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sec-'+name).classList.add('active');
+  if(name==='logs') loadLogs();
+  if(name==='playlist') loadVideos();
+}
+
+// ── LOAD ALL ─────────────────────────────────────────────────────────
+function loadAll() {
+  loadStatus();
+  loadSystem();
+  loadVideos();
+}
+
+function loadStatus() {
+  fetch(`${API}/api/status`, { headers: { Authorization: TOKEN } })
+    .then(r => r.json())
+    .then(d => {
+      const online = d.cmatv?.status === 'online';
+      document.getElementById('streamDot').className = 'status-dot' + (online ? '' : ' red');
+      document.getElementById('streamStatus').textContent = online ? 'Online' : 'Offline';
+      document.getElementById('d-status').textContent = d.cmatv?.status || '-';
+      document.getElementById('d-status').style.color = online ? 'var(--green)' : 'var(--danger)';
+      document.getElementById('d-uptime').textContent = d.cmatv?.uptime ? fmtUptime(Date.now() - d.cmatv.uptime) : '-';
+      document.getElementById('d-segs').textContent = d.segments || 0;
+      document.getElementById('d-restarts').textContent = d.cmatv?.restarts || 0;
+      document.getElementById('streamInfo').innerHTML =
+        `Status: <span style="color:${online?'var(--green)':'var(--danger)'}">${d.cmatv?.status||'-'}</span><br>` +
+        `Restarts: ${d.cmatv?.restarts||0}<br>` +
+        `CPU: ${d.cmatv?.cpu||0}%<br>` +
+        `Memory: ${d.cmatv?.memory||0} MB<br>` +
+        `Segments on disk: ${d.segments||0}<br>` +
+        `Sequence: ${d.sequence||'?'}`;
+      // Load settings into forms
+      if(d.settings) {
+        const s = d.settings;
+        setVal('tickerText', s.ticker);
+        setVal('tickerSpeed', s.tickerSpeed);
+        setVal('tickerColor', s.tickerColor);
+        setVal('tickerBg', s.tickerBg);
+        setVal('logoText', s.logoText);
+        setVal('logoColor', s.logoColor);
+        setVal('logoBg', s.logoBg);
+        document.getElementById('showLive').checked = s.showLive !== false;
+      }
+    }).catch(()=>{});
+}
+
+function loadSystem() {
+  fetch(`${API}/api/system`, { headers: { Authorization: TOKEN } })
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('d-cpu').textContent = d.cpu ? d.cpu.replace('%us,','').trim() : '-';
+      document.getElementById('d-mem').textContent = d.memory?.used || '-';
+      document.getElementById('d-disk').textContent = d.disk?.used || '-';
+      document.getElementById('d-diskp').textContent = d.disk?.percent || '-';
+    }).catch(()=>{});
+}
+
+function loadVideos() {
+  fetch(`${API}/api/videos`, { headers: { Authorization: TOKEN } })
+    .then(r => r.json())
+    .then(d => {
+      playlistOrder = d.playlist?.length ? d.playlist : d.files;
+      renderPlaylist();
+    }).catch(()=>{});
+}
+
+function renderPlaylist() {
+  const el = document.getElementById('playlistItems');
+  el.innerHTML = '';
+  playlistOrder.forEach((f, i) => {
+    const name = f.replace(/\.[^/.]+$/, '').replace(/_/g,' ').substring(0,50);
+    const div = document.createElement('div');
+    div.className = 'pl-item';
+    div.draggable = true;
+    div.dataset.idx = i;
+    div.innerHTML = `
+      <div class="pl-num">${i+1}</div>
+      <div class="pl-name" title="${f}">${name}</div>
+      <div class="pl-arrows">
+        <button onclick="moveUp(${i})">▲</button>
+        <button onclick="moveDn(${i})">▼</button>
+      </div>`;
+    // Drag events
+    div.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); div.classList.add('dragging'); });
+    div.addEventListener('dragend', () => div.classList.remove('dragging'));
+    div.addEventListener('dragover', e => e.preventDefault());
+    div.addEventListener('drop', e => {
+      e.preventDefault();
+      const from = parseInt(e.dataTransfer.getData('text/plain'));
+      const to = i;
+      if(from !== to) { const item = playlistOrder.splice(from, 1)[0]; playlistOrder.splice(to, 0, item); renderPlaylist(); }
+    });
+    el.appendChild(div);
+  });
+}
+
+function moveUp(i) { if(i>0){ const t=playlistOrder[i]; playlistOrder[i]=playlistOrder[i-1]; playlistOrder[i-1]=t; renderPlaylist(); } }
+function moveDn(i) { if(i<playlistOrder.length-1){ const t=playlistOrder[i]; playlistOrder[i]=playlistOrder[i+1]; playlistOrder[i+1]=t; renderPlaylist(); } }
+
+function savePlaylist() {
+  fetch(`${API}/api/playlist`, { method:'POST', headers:{ Authorization:TOKEN,'Content-Type':'application/json' }, body: JSON.stringify({ playlist: playlistOrder }) })
+    .then(r => r.json()).then(() => toast('✅ Playlist saved! Restart stream to apply.'));
+}
+
+// ── STREAM ACTIONS ───────────────────────────────────────────────────
+function streamAction(action) {
+  fetch(`${API}/api/stream/${action}`, { method:'POST', headers:{ Authorization:TOKEN } })
+    .then(r => r.json()).then(() => { toast(`✅ Stream ${action}ed`); setTimeout(loadStatus, 3000); });
+}
+
+function doSync() {
+  toast('⟳ Syncing to R2...');
+  fetch(`${API}/api/sync`, { method:'POST', headers:{ Authorization:TOKEN } })
+    .then(r => r.json()).then(() => toast('✅ R2 Sync done'));
+}
+
+function syncReset() {
+  if(!confirm('Clear all R2 segments and resync? This causes a brief outage.')) return;
+  toast('⟳ Clearing R2...');
+  fetch(`${API}/api/sync/reset`, { method:'POST', headers:{ Authorization:TOKEN } })
+    .then(r => r.json()).then(() => toast('✅ R2 Reset & Resynced'));
+}
+
+// ── SAVE TICKER ──────────────────────────────────────────────────────
+function saveTicker() {
+  const body = {
+    ticker: getVal('tickerText'),
+    tickerSpeed: parseInt(getVal('tickerSpeed')),
+    tickerColor: getVal('tickerColor'),
+    tickerBg: getVal('tickerBg')
+  };
+  toast('💾 Saving ticker...');
+  fetch(`${API}/api/ticker`, { method:'POST', headers:{ Authorization:TOKEN,'Content-Type':'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json()).then(() => toast('✅ Ticker saved & stream restarting'));
+}
+
+// ── SAVE BRANDING ────────────────────────────────────────────────────
+function saveBranding() {
+  const body = {
+    logoText: getVal('logoText'),
+    logoColor: getVal('logoColor'),
+    logoBg: getVal('logoBg'),
+    showLive: document.getElementById('showLive').checked
+  };
+  toast('💾 Saving branding...');
+  fetch(`${API}/api/branding`, { method:'POST', headers:{ Authorization:TOKEN,'Content-Type':'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json()).then(() => toast('✅ Branding saved & stream restarting'));
+}
+
+// ── LOGS ─────────────────────────────────────────────────────────────
+function loadLogs() {
+  document.getElementById('logBox').textContent = 'Loading...';
+  fetch(`${API}/api/logs`, { headers:{ Authorization:TOKEN } })
+    .then(r => r.json()).then(d => {
+      document.getElementById('logBox').textContent = d.logs || 'No logs';
+      document.getElementById('logBox').scrollTop = 99999;
+    });
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────
+function getVal(id) { return document.getElementById(id)?.value || ''; }
+function setVal(id, v) { const el = document.getElementById(id); if(el) el.value = v; }
+function fmtUptime(ms) {
+  const s = Math.floor(ms/1000); const m = Math.floor(s/60); const h = Math.floor(m/60);
+  if(h>0) return `${h}h ${m%60}m`;
+  if(m>0) return `${m}m`;
+  return `${s}s`;
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
