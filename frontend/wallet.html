@@ -2,174 +2,327 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HOTVID - Creator Wallet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOTVID - Wallet</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;}
-.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;padding-bottom:40px;}
+.header{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #111;position:sticky;top:0;background:#000;z-index:10;}
 .back{color:#fff;font-size:22px;cursor:pointer;}
 .htitle{font-size:18px;font-weight:700;}
-.container{padding:20px;max-width:500px;margin:0 auto;}
+.container{padding:16px;max-width:500px;margin:0 auto;}
 
-.wallet-card{background:linear-gradient(135deg,#1a0000,#2d0000);border:1px solid #e50000;border-radius:20px;padding:28px 24px;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;}
-.wallet-card::before{content:'💎';position:absolute;top:-10px;right:-10px;font-size:80px;opacity:.1;}
-.wallet-label{color:#aaa;font-size:13px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
-.wallet-amount{font-size:42px;font-weight:900;color:#e50000;margin-bottom:4px;}
-.wallet-usd{color:#666;font-size:13px;margin-bottom:20px;}
-.wallet-actions{display:flex;gap:12px;justify-content:center;}
-.waction{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;color:#fff;}
-.waction.primary{background:#e50000;border-color:#e50000;}
+/* TABS */
+.main-tabs{display:flex;background:#111;border-radius:12px;padding:4px;margin-bottom:20px;gap:4px;}
+.mtab{flex:1;padding:10px;text-align:center;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:#666;transition:.2s;}
+.mtab.active{background:#e50000;color:#fff;}
 
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
-.stat-box{background:#111;border:1px solid #222;border-radius:12px;padding:14px;text-align:center;}
-.stat-box .sv{font-size:18px;font-weight:700;color:#e50000;}
-.stat-box .sl{font-size:11px;color:#666;margin-top:4px;}
+/* COIN BALANCE CARD */
+.coin-card{background:linear-gradient(135deg,#1a0000,#2d0000);border:1px solid #e50000;border-radius:20px;padding:24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;}
+.coin-card::before{content:'🪙';position:absolute;top:-10px;right:-10px;font-size:90px;opacity:.08;}
+.coin-label{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.coin-amount{font-size:48px;font-weight:900;color:#ffd700;margin-bottom:2px;text-shadow:0 0 20px rgba(255,215,0,.4);}
+.coin-sub{color:#888;font-size:13px;margin-bottom:16px;}
+.coin-actions{display:flex;gap:10px;justify-content:center;}
+.caction{flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;border:none;text-align:center;}
+.caction.primary{background:#e50000;color:#fff;}
+.caction.secondary{background:#1a1a1a;color:#fff;border:1px solid #333;}
 
-.section-title{font-size:15px;font-weight:700;margin-bottom:12px;color:#aaa;text-transform:uppercase;letter-spacing:1px;}
+/* UGX BALANCE */
+.ugx-card{background:#111;border:1px solid #222;border-radius:16px;padding:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.ugx-left .ul{color:#888;font-size:12px;margin-bottom:4px;}
+.ugx-left .uv{font-size:22px;font-weight:800;color:#4caf50;}
+.withdraw-btn-sm{background:#e50000;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;}
 
-.withdraw-form{background:#111;border:1px solid #222;border-radius:16px;padding:20px;margin-bottom:24px;}
-.form-group{margin-bottom:16px;}
-.form-group label{display:block;color:#aaa;font-size:12px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
-.form-group input,.form-group select{width:100%;background:#000;border:1px solid #333;border-radius:10px;padding:12px 16px;color:#fff;font-size:15px;outline:none;}
-.form-group input:focus,.form-group select:focus{border-color:#e50000;}
-.form-group select option{background:#000;}
-.provider-row{display:flex;gap:10px;margin-bottom:16px;}
-.provider-opt{flex:1;background:#000;border:2px solid #222;border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.stat-box{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:12px;text-align:center;}
+.sv{font-size:16px;font-weight:700;color:#e50000;}
+.sl{font-size:10px;color:#555;margin-top:3px;}
+
+/* COIN PACKAGES */
+.section-title{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.packages-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+.pkg{background:#111;border:2px solid #1a1a1a;border-radius:16px;padding:16px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.pkg:active{transform:scale(.97);}
+.pkg.popular{border-color:#ffd700;}
+.pkg.popular::before{content:'🔥 POPULAR';position:absolute;top:0;left:0;right:0;background:#ffd700;color:#000;font-size:9px;font-weight:900;padding:3px;text-align:center;}
+.pkg .pcoins{font-size:26px;font-weight:900;color:#ffd700;margin-bottom:2px;}
+.pkg .pcoins-label{font-size:11px;color:#888;margin-bottom:8px;}
+.pkg .pprice{font-size:15px;font-weight:700;color:#fff;}
+.pkg .pdiscount{font-size:10px;color:#4caf50;margin-top:2px;}
+.pkg-custom{background:#111;border:2px dashed #333;border-radius:16px;padding:16px;margin-bottom:20px;}
+.pkg-custom .pc-title{font-size:13px;color:#888;margin-bottom:10px;}
+.pkg-custom input{width:100%;background:#000;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:15px;outline:none;margin-bottom:10px;}
+.pkg-custom input:focus{border-color:#e50000;}
+.pkg-custom .pc-note{font-size:11px;color:#555;margin-bottom:10px;}
+.buy-btn{width:100%;background:linear-gradient(135deg,#e50000,#ff4444);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.pay-methods{display:flex;gap:8px;margin-bottom:20px;}
+.pm{flex:1;background:#111;border:2px solid #222;border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:.2s;}
+.pm.sel{border-color:#ffd700;background:#1a1500;}
+.pm .pmi{font-size:20px;margin-bottom:3px;}
+.pm .pmn{font-size:11px;font-weight:700;}
+.pm.mtn .pmn{color:#ffd700;}
+.pm.airtel .pmn{color:#e50000;}
+.pm.donate .pmn{color:#4caf50;}
+
+/* GIFTS PANEL */
+.gifts-section{background:#111;border:1px solid #1a1a1a;border-radius:20px;padding:16px;margin-bottom:20px;}
+.gifts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.gift-item{text-align:center;cursor:pointer;padding:10px 4px;border-radius:14px;border:2px solid transparent;transition:.2s;}
+.gift-item:active{transform:scale(.92);}
+.gift-item.sel{border-color:#ffd700;background:rgba(255,215,0,.1);box-shadow:0 0 12px rgba(255,215,0,.3);}
+.gift-item .ge{font-size:32px;line-height:1.2;}
+.gift-item .gn{font-size:10px;color:#aaa;margin-top:3px;}
+.gift-item .gp{font-size:11px;color:#ffd700;font-weight:700;margin-top:1px;}
+.send-gift-btn{width:100%;background:linear-gradient(135deg,#e50000,#ff6b6b);color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.send-gift-btn:disabled{background:#333;cursor:not-allowed;}
+.gift-balance{text-align:center;color:#555;font-size:12px;margin-top:8px;}
+
+/* WITHDRAW */
+.withdraw-form{background:#111;border:1px solid #222;border-radius:16px;padding:18px;margin-bottom:20px;}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;color:#888;font-size:11px;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.form-group input{width:100%;background:#000;border:1px solid #333;border-radius:10px;padding:12px 14px;color:#fff;font-size:15px;outline:none;}
+.form-group input:focus{border-color:#e50000;}
+.provider-row{display:flex;gap:8px;margin-bottom:14px;}
+.provider-opt{flex:1;background:#000;border:2px solid #222;border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;}
 .provider-opt.sel{border-color:#e50000;background:#1a0000;}
-.provider-opt .pi{font-size:24px;margin-bottom:4px;}
-.provider-opt .pn{font-size:12px;font-weight:700;}
-.amount-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-.amount-opt{background:#000;border:2px solid #222;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;}
+.provider-opt .pi{font-size:22px;margin-bottom:3px;}
+.provider-opt .pn{font-size:11px;font-weight:700;}
+.amount-opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.amount-opt{background:#000;border:2px solid #222;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;}
 .amount-opt.sel{border-color:#e50000;color:#e50000;}
-.withdraw-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;}
-.withdraw-btn:disabled{background:#333;cursor:not-allowed;}
-.min-note{text-align:center;color:#555;font-size:12px;margin-top:10px;}
+.wdraw-btn{width:100%;background:#e50000;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.min-note{text-align:center;color:#444;font-size:11px;margin-top:8px;}
 
-.history-item{background:#111;border:1px solid #222;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.hi-left .hi-type{font-size:14px;font-weight:600;}
-.hi-left .hi-date{font-size:12px;color:#666;margin-top:2px;}
-.hi-right .hi-amount{font-size:16px;font-weight:700;}
-.hi-right .hi-status{font-size:11px;text-align:right;margin-top:2px;}
-.hi-right .hi-amount.credit{color:#4caf50;}
-.hi-right .hi-amount.debit{color:#e50000;}
+/* HISTORY */
+.history-item{background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.hi-left .hi-type{font-size:13px;font-weight:600;}
+.hi-left .hi-date{font-size:11px;color:#555;margin-top:2px;}
+.hi-right .hi-amount{font-size:15px;font-weight:700;text-align:right;}
+.hi-right .hi-status{font-size:10px;text-align:right;margin-top:2px;}
+.credit{color:#4caf50;}
+.debit{color:#e50000;}
+.coin-tx{color:#ffd700;}
 .status-pending{color:#ffcc00;}
 .status-success{color:#4caf50;}
 .status-failed{color:#e50000;}
 
-.earning-breakdown{background:#111;border:1px solid #222;border-radius:16px;padding:20px;margin-bottom:24px;}
-.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a1a;}
-.breakdown-row:last-child{border-bottom:none;}
-.br-label{font-size:14px;color:#aaa;}
-.br-value{font-size:15px;font-weight:700;}
+/* EARNINGS */
+.earn-card{background:#111;border:1px solid #1a1a1a;border-radius:16px;padding:18px;margin-bottom:16px;}
+.brow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1a1a1a;}
+.brow:last-child{border-bottom:none;}
+.bl{font-size:13px;color:#aaa;}
+.bv{font-size:14px;font-weight:700;}
 
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
 .modal.show{display:flex;}
-.modal-box{width:100%;max-width:400px;text-align:center;}
-.modal-icon{font-size:64px;margin-bottom:16px;}
-.modal-title{font-size:22px;font-weight:700;margin-bottom:8px;}
-.modal-msg{color:#888;font-size:14px;margin-bottom:24px;line-height:1.5;}
-.modal-btn{background:#e50000;color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:16px;font-weight:700;cursor:pointer;}
+.modal-box{width:100%;max-width:380px;text-align:center;}
 .spinner{width:48px;height:48px;border:4px solid #222;border-top-color:#e50000;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
 @keyframes spin{to{transform:rotate(360deg)}}
+.modal-icon{font-size:64px;margin-bottom:16px;display:none;}
+.modal-title{font-size:20px;font-weight:700;margin-bottom:8px;}
+.modal-msg{color:#888;font-size:13px;margin-bottom:24px;line-height:1.6;}
+.modal-btn{background:#e50000;color:#fff;border:none;border-radius:12px;padding:13px 32px;font-size:15px;font-weight:700;cursor:pointer;display:none;}
+
+/* GIFT ANIM */
+#giftanim{position:fixed;inset:0;pointer-events:none;z-index:9000;}
+.gfly{position:absolute;font-size:52px;animation:gflyup 1.5s ease-out forwards;}
+@keyframes gflyup{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-65vh) scale(2.5);opacity:0;}}
+
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e1e1e;border:1px solid #333;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
 </style>
 </head>
 <body>
-
 <div class="header">
   <span class="back" onclick="history.back()">&#8592;</span>
-  <span class="htitle">💰 Creator Wallet</span>
+  <span class="htitle">💰 HOTVID Wallet</span>
 </div>
 
 <div class="container">
-  <div class="wallet-card">
-    <div class="wallet-label">Available Balance</div>
-    <div class="wallet-amount" id="balance">0</div>
-    <div class="wallet-usd" id="balance-usd">UGX</div>
-    <div class="wallet-actions">
-      <div class="waction" onclick="showTab('history')">History</div>
-      <div class="waction primary" onclick="showTab('withdraw')">Withdraw 💸</div>
-    </div>
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <div class="mtab active" onclick="switchTab('topup',this)">🪙 Top Up</div>
+    <div class="mtab" onclick="switchTab('wallet',this)">💰 Earnings</div>
+    <div class="mtab" onclick="switchTab('history',this)">📋 History</div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-box">
-      <div class="sv" id="total-earned">0</div>
-      <div class="sl">Total Earned</div>
+  <!-- TOP UP TAB -->
+  <div id="tab-topup">
+    <!-- Coin Balance -->
+    <div class="coin-card">
+      <div class="coin-label">Your Coin Balance</div>
+      <div class="coin-amount" id="coin-balance">0</div>
+      <div class="coin-sub">🪙 coins available to spend on gifts</div>
+      <div class="coin-actions">
+        <div class="caction secondary" onclick="switchTab('history',document.querySelectorAll('.mtab')[2])">History</div>
+        <div class="caction primary" onclick="document.getElementById('packages-section').scrollIntoView({behavior:'smooth'})">Buy Coins 🪙</div>
+      </div>
     </div>
-    <div class="stat-box">
-      <div class="sv" id="total-withdrawn">0</div>
-      <div class="sl">Withdrawn</div>
-    </div>
-    <div class="stat-box">
-      <div class="sv" id="pending-amount">0</div>
-      <div class="sl">Pending</div>
-    </div>
-  </div>
 
-  <!-- EARN BREAKDOWN -->
-  <div class="earning-breakdown">
-    <div class="section-title" style="margin-bottom:12px;">💎 Earnings Breakdown</div>
-    <div class="breakdown-row">
-      <span class="br-label">🌹 From Gifts</span>
-      <span class="br-value" id="gifts-earned">0 UGX</span>
+    <!-- Payment Method -->
+    <div class="section-title">Pay With</div>
+    <div class="pay-methods" id="pay-methods">
+      <div class="pm mtn sel" onclick="selectPayMethod('mtn',this)">
+        <div class="pmi">📱</div>
+        <div class="pmn">MTN MoMo</div>
+      </div>
+      <div class="pm airtel" onclick="selectPayMethod('airtel',this)">
+        <div class="pmi">📲</div>
+        <div class="pmn">Airtel Money</div>
+      </div>
+      <div class="pm donate" onclick="selectPayMethod('donate',this)">
+        <div class="pmi">❤️</div>
+        <div class="pmn">Donate</div>
+      </div>
     </div>
-    <div class="breakdown-row">
-      <span class="br-label">📢 From Ads</span>
-      <span class="br-value" id="ads-earned">0 UGX</span>
-    </div>
-    <div class="breakdown-row">
-      <span class="br-label">Platform Fee (30%)</span>
-      <span class="br-value" style="color:#e50000;" id="platform-fee">0 UGX</span>
-    </div>
-    <div class="breakdown-row">
-      <span class="br-label" style="font-weight:700;color:#fff;">Your Share (70%)</span>
-      <span class="br-value" style="color:#4caf50;" id="your-share">0 UGX</span>
-    </div>
-  </div>
 
-  <!-- TABS -->
-  <div id="tab-withdraw">
-    <div class="section-title">Withdraw to Mobile Money</div>
-    <div class="withdraw-form">
-      <div class="form-group">
-        <label>Select Provider</label>
-        <div class="provider-row">
-          <div class="provider-opt" onclick="selectProvider('mtn',this)">
-            <div class="pi">📱</div>
-            <div class="pn" style="color:#ffcc00;">MTN MoMo</div>
-          </div>
-          <div class="provider-opt" onclick="selectProvider('airtel',this)">
-            <div class="pi">📲</div>
-            <div class="pn" style="color:#e50000;">Airtel Money</div>
-          </div>
+    <!-- Coin Packages -->
+    <div id="packages-section">
+      <div class="section-title">Choose Coin Package</div>
+      <div class="packages-grid">
+        <div class="pkg" onclick="selectPkg(500,50,this)">
+          <div class="pcoins">50</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">500 UGX</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(1000,100,this)">
+          <div class="pcoins">100</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">1,000 UGX</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(2000,200,this)">
+          <div class="pcoins">200</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">2,000 UGX</div>
+        </div>
+        <div class="pkg popular" onclick="selectPkg(10000,1000,this)" style="padding-top:22px;">
+          <div class="pcoins">1,000</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">10,000 UGX</div>
+          <div class="pdiscount">Best value!</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(25000,1000000,this)">
+          <div class="pcoins" style="font-size:20px;">1M</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">25,000 UGX</div>
+          <div class="pdiscount">🔥 Mega pack!</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(50000,6000,this)">
+          <div class="pcoins">6,000</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">50,000 UGX</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(100000,15000,this)">
+          <div class="pcoins">15,000</div>
+          <div class="pcoins-label">🪙 coins</div>
+          <div class="pprice">100,000 UGX</div>
+          <div class="pdiscount">VIP pack 👑</div>
+        </div>
+        <div class="pkg" onclick="selectPkg(0,0,this)" id="pkg-custom-btn" style="border-style:dashed;border-color:#333;">
+          <div class="pcoins" style="font-size:22px;">∞</div>
+          <div class="pcoins-label">custom</div>
+          <div class="pprice">Any amount</div>
+          <div class="pdiscount">Donate ❤️</div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="phone" placeholder="07XXXXXXXX" maxlength="10">
+      <!-- Custom Amount -->
+      <div class="pkg-custom" id="custom-section" style="display:none;">
+        <div class="pc-title">Enter custom amount (UGX)</div>
+        <input type="number" id="custom-amount" placeholder="e.g. 15000" min="500" oninput="calcCustomCoins()">
+        <div class="pc-note" id="custom-coins-preview">You'll get: — coins</div>
       </div>
 
+      <!-- Phone for payment -->
       <div class="form-group">
-        <label>Amount (UGX)</label>
-        <div class="amount-opts">
-          <div class="amount-opt" onclick="selectAmt(5000,this)">5K</div>
-          <div class="amount-opt" onclick="selectAmt(10000,this)">10K</div>
-          <div class="amount-opt" onclick="selectAmt(20000,this)">20K</div>
-          <div class="amount-opt" onclick="selectAmt(50000,this)">50K</div>
-          <div class="amount-opt" onclick="selectAmt(100000,this)">100K</div>
-        </div>
-        <input type="number" id="withdraw-amount" placeholder="Or enter custom amount" min="5000">
+        <label>Your Phone Number (for MoMo prompt)</label>
+        <input type="tel" id="topup-phone" placeholder="07XXXXXXXX" maxlength="10">
       </div>
 
-      <button class="withdraw-btn" id="withdraw-btn" onclick="doWithdraw()">
-        Withdraw to MoMo 💸
+      <button class="buy-btn" onclick="doBuyCoins()">
+        Buy Coins 🪙 — Pay via MoMo
       </button>
-      <div class="min-note">Minimum withdrawal: 5,000 UGX · Processing: 1-24 hours</div>
+      <div class="min-note">You'll receive a MoMo prompt on your phone to confirm payment</div>
     </div>
   </div>
 
+  <!-- EARNINGS/WALLET TAB -->
+  <div id="tab-wallet" style="display:none;">
+    <!-- UGX Earned -->
+    <div class="ugx-card">
+      <div class="ugx-left">
+        <div class="ul">Withdrawable Balance</div>
+        <div class="uv" id="ugx-balance">0 UGX</div>
+      </div>
+      <button class="withdraw-btn-sm" onclick="switchTab('withdraw',null)">Withdraw 💸</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="sv" id="total-earned">0</div>
+        <div class="sl">Total Earned</div>
+      </div>
+      <div class="stat-box">
+        <div class="sv" id="total-withdrawn">0</div>
+        <div class="sl">Withdrawn</div>
+      </div>
+      <div class="stat-box">
+        <div class="sv" id="pending-amount">0</div>
+        <div class="sl">Pending</div>
+      </div>
+    </div>
+
+    <div class="earn-card">
+      <div class="section-title" style="margin-bottom:4px;">💎 Earnings Breakdown</div>
+      <div class="brow"><span class="bl">🌹 From Gifts</span><span class="bv" id="gifts-earned">0 UGX</span></div>
+      <div class="brow"><span class="bl">📢 From Ads</span><span class="bv" id="ads-earned">0 UGX</span></div>
+      <div class="brow"><span class="bl">Platform Fee (30%)</span><span class="bv" style="color:#e50000;" id="platform-fee">0 UGX</span></div>
+      <div class="brow"><span class="bl" style="color:#fff;font-weight:700;">Your Share (70%)</span><span class="bv" style="color:#4caf50;" id="your-share">0 UGX</span></div>
+    </div>
+
+    <!-- Withdraw Section -->
+    <div id="tab-withdraw">
+      <div class="section-title">Withdraw to Mobile Money</div>
+      <div class="withdraw-form">
+        <div class="form-group">
+          <label>Select Provider</label>
+          <div class="provider-row">
+            <div class="provider-opt" onclick="selectProvider('mtn',this)">
+              <div class="pi">📱</div>
+              <div class="pn" style="color:#ffcc00;">MTN MoMo</div>
+            </div>
+            <div class="provider-opt" onclick="selectProvider('airtel',this)">
+              <div class="pi">📲</div>
+              <div class="pn" style="color:#e50000;">Airtel Money</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="07XXXXXXXX" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label>Amount (UGX)</label>
+          <div class="amount-opts">
+            <div class="amount-opt" onclick="selectAmt(5000,this)">5K</div>
+            <div class="amount-opt" onclick="selectAmt(10000,this)">10K</div>
+            <div class="amount-opt" onclick="selectAmt(20000,this)">20K</div>
+            <div class="amount-opt" onclick="selectAmt(50000,this)">50K</div>
+            <div class="amount-opt" onclick="selectAmt(100000,this)">100K</div>
+          </div>
+          <input type="number" id="withdraw-amount" placeholder="Or enter custom amount" min="5000" style="margin-top:8px;">
+        </div>
+        <button class="wdraw-btn" onclick="doWithdraw()">Withdraw to MoMo 💸</button>
+        <div class="min-note">Minimum: 5,000 UGX · Processing: 1-24 hours</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
   <div id="tab-history" style="display:none;">
     <div class="section-title">Transaction History</div>
     <div id="history-list">
@@ -178,70 +331,132 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100
   </div>
 </div>
 
+<div id="giftanim"></div>
+<div id="toast"></div>
+
 <!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <div class="spinner" id="modal-spinner"></div>
-    <div class="modal-icon" id="modal-icon" style="display:none;"></div>
+    <div class="modal-icon" id="modal-icon"></div>
     <div class="modal-title" id="modal-title">Processing...</div>
     <div class="modal-msg" id="modal-msg">Please wait</div>
-    <button class="modal-btn" id="modal-btn" style="display:none;" onclick="closeModal()">Done</button>
+    <button class="modal-btn" id="modal-btn" onclick="closeModal()">Done</button>
   </div>
 </div>
 
 <script>
-const API = 'http://178.105.190.123:3000';
+const API = '';
 const token = localStorage.getItem('hvt');
-if(!token){ location.href='/'; }
+if(!token){ location.href='/?login=1'; }
 
+let selectedPkg = null; // {ugx, coins}
+let selectedPayMethod = 'mtn';
 let selectedProvider = '';
-let selectedAmount = 0;
+let selectedWithdrawAmt = 0;
+let coinBalance = 0;
+let ugxBalance = 0;
+
+// Coin packages map
+const COIN_RATE = 10; // 10 UGX per coin default
+
+const PACKAGES = [
+  {ugx:500, coins:50},
+  {ugx:1000, coins:100},
+  {ugx:2000, coins:200},
+  {ugx:10000, coins:1000},
+  {ugx:25000, coins:1000000},
+  {ugx:50000, coins:6000},
+  {ugx:100000, coins:15000},
+];
 
 async function loadWallet(){
   try{
     const r = await fetch(API+'/api/gifts/wallet',{headers:{Authorization:'Bearer '+token}});
     const d = await r.json();
-    const bal = d.balance||0;
-    document.getElementById('balance').textContent = bal.toLocaleString();
-    document.getElementById('total-earned').textContent = fmt(d.total_earned||bal);
+    coinBalance = d.coin_balance || d.coins || 0;
+    ugxBalance = d.balance || d.ugx_balance || 0;
+    document.getElementById('coin-balance').textContent = coinBalance.toLocaleString();
+    document.getElementById('ugx-balance').textContent = fmt(ugxBalance)+' UGX';
+    document.getElementById('total-earned').textContent = fmt(d.total_earned||0);
     document.getElementById('total-withdrawn').textContent = fmt(d.total_withdrawn||0);
     document.getElementById('pending-amount').textContent = fmt(d.pending||0);
     document.getElementById('gifts-earned').textContent = fmt(d.gifts_earned||0)+' UGX';
     document.getElementById('ads-earned').textContent = fmt(d.ads_earned||0)+' UGX';
-    const fee = Math.floor(bal*0.3);
-    const share = bal - fee;
+    const fee = Math.floor(ugxBalance*0.3);
     document.getElementById('platform-fee').textContent = fmt(fee)+' UGX';
-    document.getElementById('your-share').textContent = fmt(share)+' UGX';
+    document.getElementById('your-share').textContent = fmt(ugxBalance-fee)+' UGX';
   }catch(e){}
 }
 
-async function loadHistory(){
-  try{
-    const r = await fetch(API+'/api/wallet/history',{headers:{Authorization:'Bearer '+token}});
-    const d = await r.json();
-    const list = document.getElementById('history-list');
-    if(!d.transactions||!d.transactions.length){
-      list.innerHTML='<div style="text-align:center;padding:40px;color:#444;">No transactions yet</div>';
-      return;
-    }
-    list.innerHTML = d.transactions.map(t=>`
-      <div class="history-item">
-        <div class="hi-left">
-          <div class="hi-type">${t.type==='credit'?'💰 Gift Received':'💸 Withdrawal'}</div>
-          <div class="hi-date">${new Date(t.created_at).toLocaleDateString('en-UG')}</div>
-        </div>
-        <div class="hi-right">
-          <div class="hi-amount ${t.type}">${t.type==='credit'?'+':'-'}${fmt(t.amount)} UGX</div>
-          <div class="hi-status status-${t.status}">${t.status}</div>
-        </div>
-      </div>`).join('');
-  }catch(e){}
-}
-
-function showTab(tab){
-  document.getElementById('tab-withdraw').style.display = tab==='withdraw'?'block':'none';
-  document.getElementById('tab-history').style.display = tab==='history'?'block':'none';
+function switchTab(tab, el){
+  ['topup','wallet','history'].forEach(t=>{
+    const el2=document.getElementById('tab-'+t);
+    if(el2) el2.style.display='none';
+  });
+  const target = document.getElementById('tab-'+tab);
+  if(target) target.style.display='block';
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
   if(tab==='history') loadHistory();
+  if(tab==='wallet') loadWallet();
+}
+
+function selectPayMethod(method, el){
+  document.querySelectorAll('.pm').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedPayMethod = method;
+}
+
+function selectPkg(ugx, coins, el){
+  document.querySelectorAll('.pkg').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+  const customSec = document.getElementById('custom-section');
+  if(ugx === 0){
+    customSec.style.display='block';
+    selectedPkg = null;
+  } else {
+    customSec.style.display='none';
+    selectedPkg = {ugx, coins};
+  }
+}
+
+function calcCustomCoins(){
+  const amt = parseInt(document.getElementById('custom-amount').value)||0;
+  const coins = Math.floor(amt/10); // 10 UGX per coin
+  document.getElementById('custom-coins-preview').textContent = `You'll get: ${coins.toLocaleString()} coins`;
+  selectedPkg = {ugx: amt, coins};
+}
+
+async function doBuyCoins(){
+  const phone = document.getElementById('topup-phone').value.trim();
+  if(!phone){ toast('Enter your phone number'); return; }
+  if(!selectedPkg){ 
+    const custom = parseInt(document.getElementById('custom-amount')?.value)||0;
+    if(!custom||custom<500){ toast('Select a package or enter amount (min 500 UGX)'); return; }
+    selectedPkg = {ugx: custom, coins: Math.floor(custom/10)};
+  }
+  
+  showModal('','Processing Payment...', `Sending MoMo prompt to ${phone}. Check your phone and enter PIN to confirm.`);
+  
+  try{
+    const r = await fetch(API+'/api/wallet/topup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},
+      body:JSON.stringify({
+        phone,
+        amount: selectedPkg.ugx,
+        coins: selectedPkg.coins,
+        provider: selectedPayMethod
+      })
+    });
+    const d = await r.json();
+    if(d.error){ showResult('❌','Payment Failed', d.error); return; }
+    showResult('🪙','Payment Initiated!', `Check your phone for MoMo prompt. Once confirmed, ${selectedPkg.coins.toLocaleString()} coins will be added to your wallet automatically.`);
+    setTimeout(loadWallet, 5000);
+  }catch(e){
+    showResult('❌','Connection Error','Could not process. Try again later.');
+  }
 }
 
 function selectProvider(p, el){
@@ -253,19 +468,19 @@ function selectProvider(p, el){
 function selectAmt(amt, el){
   document.querySelectorAll('.amount-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel');
-  selectedAmount = amt;
+  selectedWithdrawAmt = amt;
   document.getElementById('withdraw-amount').value = amt;
 }
 
 async function doWithdraw(){
   const phone = document.getElementById('phone').value.trim();
-  const amt = parseInt(document.getElementById('withdraw-amount').value)||selectedAmount;
-  if(!selectedProvider){ alert('Select MTN or Airtel'); return; }
-  if(!phone){ alert('Enter phone number'); return; }
-  if(!amt||amt<5000){ alert('Minimum withdrawal is 5,000 UGX'); return; }
+  const amt = parseInt(document.getElementById('withdraw-amount').value)||selectedWithdrawAmt;
+  if(!selectedProvider){ toast('Select MTN or Airtel'); return; }
+  if(!phone){ toast('Enter phone number'); return; }
+  if(!amt||amt<5000){ toast('Minimum withdrawal is 5,000 UGX'); return; }
+  if(amt > ugxBalance){ toast('Insufficient balance'); return; }
 
   showModal('','Processing Withdrawal...','Sending to your mobile money. Please wait.');
-
   try{
     const r = await fetch(API+'/api/wallet/withdraw',{
       method:'POST',
@@ -273,13 +488,50 @@ async function doWithdraw(){
       body:JSON.stringify({phone,amount:amt,provider:selectedProvider})
     });
     const d = await r.json();
-    if(d.error){ showResult('❌','Withdrawal Failed',d.error); return; }
-    showResult('✅','Withdrawal Initiated!',`UGX ${amt.toLocaleString()} is being sent to ${phone}. You'll receive an SMS confirmation within 24 hours.`);
+    if(d.error){ showResult('❌','Failed',d.error); return; }
+    showResult('✅','Withdrawal Requested!',`UGX ${amt.toLocaleString()} will be sent to ${phone} within 1-24 hours.`);
     loadWallet();
   }catch(e){
-    showResult('❌','Connection Error','Could not process. Try again later.');
+    showResult('❌','Error','Connection failed. Try again.');
   }
 }
+
+async function loadHistory(){
+  try{
+    const r = await fetch(API+'/api/wallet/history',{headers:{Authorization:'Bearer '+token}});
+    const d = await r.json();
+    const list = document.getElementById('history-list');
+    const txs = d.transactions||d.data||[];
+    if(!txs.length){
+      list.innerHTML='<div style="text-align:center;padding:40px;color:#444;">No transactions yet 💳</div>';
+      return;
+    }
+    list.innerHTML = txs.map(t=>`
+      <div class="history-item">
+        <div class="hi-left">
+          <div class="hi-type">${txIcon(t.type)} ${txLabel(t.type)}</div>
+          <div class="hi-date">${new Date(t.created_at).toLocaleDateString('en-UG',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-amount ${t.type==='coin_purchase'?'coin-tx':t.type==='credit'?'credit':'debit'}">${txSign(t.type)}${txAmt(t)}</div>
+          <div class="hi-status status-${t.status||'success'}">${t.status||'success'}</div>
+        </div>
+      </div>`).join('');
+  }catch(e){
+    document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:#444;">Could not load history</div>';
+  }
+}
+
+function txIcon(type){
+  const m={coin_purchase:'🪙',credit:'💰',withdrawal:'💸',gift_sent:'🎁',gift_received:'🎁',donation:'❤️'};
+  return m[type]||'💳';
+}
+function txLabel(type){
+  const m={coin_purchase:'Coins Purchased',credit:'Gift Received',withdrawal:'Withdrawal',gift_sent:'Gift Sent',gift_received:'Gift Received',donation:'Donation'};
+  return m[type]||type;
+}
+function txSign(type){ return ['credit','gift_received','coin_purchase'].includes(type)?'+':'-'; }
+function txAmt(t){ return t.coins?t.coins.toLocaleString()+' 🪙':fmt(t.amount)+' UGX'; }
 
 function showModal(icon,title,msg){
   document.getElementById('modal').classList.add('show');
@@ -289,7 +541,6 @@ function showModal(icon,title,msg){
   document.getElementById('modal-msg').textContent=msg;
   document.getElementById('modal-btn').style.display='none';
 }
-
 function showResult(icon,title,msg){
   document.getElementById('modal-spinner').style.display='none';
   document.getElementById('modal-icon').style.display='block';
@@ -298,14 +549,11 @@ function showResult(icon,title,msg){
   document.getElementById('modal-msg').textContent=msg;
   document.getElementById('modal-btn').style.display='block';
 }
-
-function closeModal(){
-  document.getElementById('modal').classList.remove('show');
-}
-
-function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function fmt(n){n=parseInt(n)||0;return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);}
 
 loadWallet();
 </script>
 </body>
-    </html>
+</html>
