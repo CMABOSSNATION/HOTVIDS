@@ -1,16 +1,36 @@
-// HOTVID Service Worker - Push Notifications
+// HOTVID Service Worker - Push Notifications + PWA Install Support
 // File location: /frontend/sw.js
 
-const CACHE_NAME = 'hotvid-v1';
+const CACHE_NAME = 'hotvid-v2';
+const OFFLINE_URLS = ['/index.html'];
 
 // Install
 self.addEventListener('install', (e) => {
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(OFFLINE_URLS))
+  );
 });
 
 // Activate
 self.addEventListener('activate', (e) => {
-  e.waitUntil(clients.claim());
+  e.waitUntil(
+    Promise.all([
+      clients.claim(),
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      )
+    ])
+  );
+});
+
+// Fetch - network first, fallback to cache (only for navigation requests)
+self.addEventListener('fetch', (e) => {
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match('/index.html'))
+    );
+  }
 });
 
 // Push notification received
