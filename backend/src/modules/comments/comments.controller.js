@@ -1,4 +1,4 @@
-const db = require('../../config/db');
+const db = require('../../config/database');
 
 // GET /api/comments/:videoId — load existing comments
 const getComments = async (req, res) => {
