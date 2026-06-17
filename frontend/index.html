@@ -13,12 +13,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;overflow:hidden;}
-#splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
-#splash.hide{opacity:0;pointer-events:none;}
-.splash-logo{font-size:58px;font-weight:900;color:#ff2d55;letter-spacing:4px;text-shadow:0 0 30px rgba(255,45,85,.5);}
-.splash-tag{color:#444;font-size:14px;margin-top:8px;letter-spacing:1px;}
-.splash-dot{width:8px;height:8px;background:#ff2d55;border-radius:50%;margin-top:24px;animation:pulse 1s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 #app{position:fixed;inset:0;display:none;flex-direction:column;}
 #searchbar{position:absolute;top:0;left:0;right:0;z-index:50;padding:10px 14px 0;}
 .sb-inner{background:rgba(20,10,10,.75);border:1px solid rgba(255,255,255,.08);border-radius:22px;display:flex;align-items:center;gap:8px;padding:8px 14px;backdrop-filter:blur(10px);cursor:pointer;}
@@ -68,7 +62,7 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .upload-nb{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
 .upload-circle{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff2d55,#ff9f0a);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 14px rgba(255,45,85,.5);}
 .upload-nb .nl{font-size:9px;color:#888;font-weight:600;}
-#muteindicator{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:26px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100;}
+#mutebtn{position:fixed;top:54px;right:14px;z-index:50;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
 #authmodal{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
 #authmodal.open{display:flex;}
 .am-box{width:100%;max-width:400px;}
@@ -151,12 +145,6 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 </style>
 </head>
 <body>
-
-<div id="splash">
-  <div class="splash-logo">HOTVID</div>
-  <div class="splash-tag">Uganda's #1 Video Platform 🇺🇬</div>
-  <div class="splash-dot"></div>
-</div>
 
 <div id="app">
   <div id="feed-wrap">
@@ -251,7 +239,7 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 </div>
 
 <div id="giftanim"></div>
-<div id="muteindicator">🔇</div>
+<div id="mutebtn" onclick="toggleMute()">🔇</div>
 <div id="toast"></div>
 
 <script>
@@ -270,22 +258,15 @@ let progressTimer=null;
 const GIFTS={rose:{name:'Rose',emoji:'🌹',price:500},trophy:{name:'Trophy',emoji:'🏆',price:5000},rocket:{name:'Rocket',emoji:'🚀',price:25000},crown:{name:'Crown',emoji:'👑',price:100000},diamond:{name:'Diamond',emoji:'💎',price:500000}};
 
 window.addEventListener('DOMContentLoaded',()=>{
-  setTimeout(()=>{
-    const s=document.getElementById('splash');
-    s.classList.add('hide');
-    setTimeout(()=>{
-      s.style.display='none';
-      document.getElementById('app').style.display='flex';
-      loadFeed('trending');
-    },500);
-  },2000);
-  if(new URLSearchParams(location.search).get('login')) setTimeout(()=>openAuth(),2600);
+  document.getElementById('app').style.display='flex';
+  loadFeed('trending');
+  if(new URLSearchParams(location.search).get('login')) setTimeout(()=>openAuth(),300);
 });
 
 async function loadFeed(type='trending'){
   document.getElementById('loader').style.display='flex';
   try{
-    const url=type==='following'&&token?`${API}/api/feed`:`${API}/api/feed/trending`;
+    const url=type==='following'&&token?`${API}/api/feed`:`${API}/api/trending`;
     const h=token?{Authorization:'Bearer '+token}:{};
     const r=await fetch(url,{headers:h});
     const d=await r.json();
@@ -390,7 +371,7 @@ function setupSwipe(){
     const now=Date.now();
     if(Math.abs(dy)<12&&Math.abs(dx)<12){
       if(now-lastTap<280){doubleTapLike();lastTap=0;return;}
-      lastTap=now;toggleMute();return;
+      lastTap=now;return;
     }
     if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>45){
       if(dy>0&&curIdx<videos.length-1) goSlide(curIdx+1);
@@ -420,9 +401,8 @@ function toggleMute(){
   isMuted=!isMuted;
   const vid=document.getElementById('vid-'+curIdx);
   if(vid) vid.muted=isMuted;
-  const el=document.getElementById('muteindicator');
-  el.textContent=isMuted?'🔇':'🔊';el.style.opacity='1';
-  setTimeout(()=>el.style.opacity='0',800);
+  const btn=document.getElementById('mutebtn');
+  if(btn) btn.textContent=isMuted?'🔇':'🔊';
 }
 
 async function handleLike(videoId,slideIdx){
