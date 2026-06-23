@@ -385,6 +385,11 @@ const isOwnProfile = !params.get('id') || params.get('id') == myId;
 let isFollowing = false;
 let profileData = {};
 
+// If own profile but not logged in, redirect to login
+if (!profileUserId) {
+  window.location.href = 'index.html?login=1';
+}
+
 const fmt = n => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : (n || 0);
 const fmtUGX = n => n >= 1e6 ? (n/1e6).toFixed(2)+' M UGX' : n >= 1e3 ? (n/1e3).toFixed(0)+' K UGX' : (n || 0)+' UGX';
 
@@ -395,17 +400,27 @@ function toast(msg, duration=2500) {
   setTimeout(() => el.classList.remove('show'), duration);
 }
 
+function showProfileError(msg) {
+  document.getElementById('profileUsername').textContent = msg || 'User not found';
+  document.getElementById('profileHandle').textContent = '';
+  document.getElementById('avatarPlaceholder').textContent = '?';
+}
+
 async function loadProfile() {
   try {
     const res = await fetch(`${API}/api/users/${profileUserId}/profile`);
     const data = await res.json();
-    if (!data.success) return;
+    if (!data.success) {
+      showProfileError(data.message || 'Could not load profile');
+      return;
+    }
     profileData = data.data;
     renderProfile(profileData);
     loadVideos();
     if (isOwnProfile) loadWallet();
   } catch (err) {
     console.error('loadProfile error:', err);
+    showProfileError('Network error. Pull down to refresh.');
   }
 }
 
