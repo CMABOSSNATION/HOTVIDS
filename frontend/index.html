@@ -85,39 +85,117 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .ph{padding:13px 16px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;}
 .ph h3{font-size:15px;font-weight:700;}
 .ph-close{font-size:20px;cursor:pointer;color:#666;}
-#comments-panel{height:78vh;}
-.cp-list{height:calc(78vh - 118px);overflow-y:auto;padding:10px 15px;}
-/* Comments */
-.ci{display:flex;gap:10px;margin-bottom:14px;}
-.ci-av{width:32px;height:32px;border-radius:50%;background:#222;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;}
+#comments-panel{height:80vh;}
+.cp-list{height:calc(80vh - 148px);overflow-y:auto;padding:10px 15px;}
+/* ===== TIKTOK-STYLE COMMENTS ===== */
+.ci{display:flex;gap:10px;margin-bottom:16px;}
+.ci-av{width:36px;height:36px;border-radius:50%;background:#222;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;border:1.5px solid #2a2a2a;}
 .ci-av img{width:100%;height:100%;object-fit:cover;}
-.ci-body{flex:1;}
-.ci-body .cuser{font-size:12px;font-weight:700;color:#ff2d55;}
-.ci-body .ctext{font-size:13px;color:#ddd;margin-top:2px;line-height:1.5;}
-.ci-actions{display:flex;align-items:center;gap:14px;margin-top:5px;}
-.ci-body .ctime{font-size:11px;color:#444;}
-.c-like-btn{background:none;border:none;color:#888;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;}
+.ci-body{flex:1;min-width:0;}
+.ci-body .cuser{font-size:13px;font-weight:700;color:#fff;}
+.ci-body .ctext{font-size:14px;color:#e0e0e0;margin-top:3px;line-height:1.55;word-break:break-word;}
+.ci-body .ctext .mention{color:#29b6f6;font-weight:600;}
+.ci-body .ctext .ctag{color:#ff2d55;}
+/* photo reply thumbnail inside comment */
+.c-img-preview{max-width:160px;max-height:160px;border-radius:10px;margin-top:6px;object-fit:cover;cursor:pointer;}
+/* sticker in comment */
+.c-sticker{font-size:48px;line-height:1;margin-top:4px;display:inline-block;}
+.ci-actions{display:flex;align-items:center;gap:12px;margin-top:6px;}
+.ci-body .ctime{font-size:11px;color:#555;}
+.c-like-btn{background:none;border:none;color:#666;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:3px;padding:0;}
 .c-like-btn.liked{color:#ff2d55;}
-.c-reply-btn{background:none;border:none;color:#555;font-size:11px;cursor:pointer;padding:0;}
-.c-delete-btn{background:none;border:none;color:#555;font-size:11px;cursor:pointer;padding:0;margin-left:auto;}
+.c-like-btn .c-hrt{font-size:14px;transition:transform .15s;}
+.c-like-btn.liked .c-hrt{transform:scale(1.2);}
+.c-reply-btn{background:none;border:none;color:#666;font-size:11px;cursor:pointer;padding:0;}
+.c-delete-btn{background:none;border:none;color:#444;font-size:11px;cursor:pointer;padding:0;margin-left:auto;}
+/* folded comments notice */
+.folded-notice{display:flex;align-items:center;gap:8px;padding:10px 0 4px;cursor:pointer;}
+.folded-notice .fn-icon{width:28px;height:28px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.folded-notice .fn-txt{font-size:12px;color:#555;line-height:1.4;}
+.folded-notice .fn-txt b{color:#888;display:block;}
 /* Replies */
-.ci-replies{margin-left:42px;margin-top:8px;}
-.ci-reply{display:flex;gap:8px;margin-bottom:10px;}
-.ci-reply .ci-av{width:26px;height:26px;font-size:11px;}
-.reply-input-row{display:none;margin-left:42px;margin-top:6px;margin-bottom:10px;gap:8px;align-items:center;}
+.ci-replies{margin-left:46px;margin-top:6px;}
+.ci-reply{display:flex;gap:8px;margin-bottom:12px;}
+.ci-reply .ci-av{width:28px;height:28px;font-size:11px;}
+.reply-input-row{display:none;margin-left:46px;margin-top:4px;margin-bottom:10px;flex-direction:column;gap:6px;}
 .reply-input-row.open{display:flex;}
-.reply-input-row input{flex:1;background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:8px 12px;color:#fff;font-size:13px;outline:none;}
-.reply-input-row button{background:#ff2d55;border:none;border-radius:16px;padding:8px 14px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;}
-.cp-inp{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;background:#111;border-top:1px solid #1e1e1e;display:flex;gap:8px;align-items:center;}
-.cp-inp input{flex:1;background:#1a1a1a;border:none;border-radius:20px;padding:10px 15px;color:#fff;font-size:14px;outline:none;}
-.cp-inp button{background:#ff2d55;border:none;border-radius:20px;padding:10px 16px;color:#fff;font-weight:700;cursor:pointer;}
-#share-panel{padding-bottom:20px;}
-.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:14px;}
-.si{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:10px 6px;border-radius:10px;}
-.si:active{background:#1a1a1a;}
-.si .sico{font-size:30px;}
-.si .snm{font-size:11px;color:#ccc;}
-.sl-row{padding:0 14px;display:flex;gap:8px;}
+.reply-input-row-top{display:flex;gap:8px;align-items:center;}
+.reply-input-row input{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;padding:8px 14px;color:#fff;font-size:13px;outline:none;}
+.reply-input-row input:focus{border-color:#444;}
+.reply-input-tools{display:flex;gap:8px;padding:0 4px;}
+.rit-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;border-radius:8px;}
+.rit-btn:active{background:#1a1a1a;}
+.reply-post-btn{background:#ff2d55;border:none;border-radius:20px;padding:8px 14px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;}
+/* Bottom comment input — TikTok style */
+.cp-inp{position:absolute;bottom:0;left:0;right:0;padding:8px 10px 8px;background:#111;border-top:1px solid #1a1a1a;}
+.cp-inp-top{display:flex;gap:8px;align-items:center;}
+.cp-inp-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff2d55,#ff9f0a);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;}
+.cp-inp-av img{width:100%;height:100%;object-fit:cover;}
+.cp-inp-box{flex:1;background:#1a1a1a;border-radius:20px;padding:9px 14px;color:#fff;font-size:14px;outline:none;border:none;}
+.cp-inp-actions{display:flex;gap:10px;align-items:center;margin-top:6px;padding:0 42px;}
+.cp-ia-btn{background:none;border:none;font-size:22px;cursor:pointer;padding:4px;}
+.cp-post-btn{background:none;border:none;color:#ff2d55;font-size:14px;font-weight:700;cursor:pointer;padding:4px 6px;}
+/* Sticker picker */
+#sticker-picker{display:none;position:absolute;bottom:100%;left:0;right:0;background:#111;border-top:1px solid #1e1e1e;padding:10px 14px;z-index:10;}
+#sticker-picker.open{display:block;}
+.sp-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.sp-item{font-size:30px;cursor:pointer;padding:4px;border-radius:8px;line-height:1;}
+.sp-item:active{background:#1a1a1a;}
+/* @mention autocomplete */
+.mention-list{display:none;position:absolute;bottom:100%;left:10px;right:10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;max-height:160px;overflow-y:auto;z-index:20;}
+.mention-list.open{display:block;}
+.ml-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;}
+.ml-item:active{background:#222;}
+.ml-item .ml-av{width:28px;height:28px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;flex-shrink:0;}
+.ml-item .ml-av img{width:100%;height:100%;object-fit:cover;}
+.ml-item .ml-name{font-size:13px;color:#fff;font-weight:600;}
+/* Photo preview in input */
+.cp-photo-preview{display:none;margin-top:8px;padding:0 42px;position:relative;}
+.cp-photo-preview.open{display:block;}
+.cp-photo-preview img{width:80px;height:80px;border-radius:10px;object-fit:cover;}
+.cp-photo-remove{position:absolute;top:0;left:42px;width:20px;height:20px;background:#ff2d55;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;border:1.5px solid #000;}
+
+/* ===== TIKTOK-STYLE SHARE ===== */
+#share-panel{padding-bottom:env(safe-area-inset-bottom,10px);}
+/* Search bar in share panel */
+.sp-search{display:flex;align-items:center;gap:8px;padding:0 14px 10px;border-bottom:1px solid #1a1a1a;}
+.sp-search-ico{font-size:18px;color:#666;}
+.sp-search-inp{flex:1;background:none;border:none;outline:none;color:#fff;font-size:14px;}
+.sp-search-inp::placeholder{color:#444;}
+/* Contacts row */
+.share-contacts{display:flex;gap:0;overflow-x:auto;padding:14px 10px 8px;scrollbar-width:none;border-bottom:1px solid #1a1a1a;}
+.share-contacts::-webkit-scrollbar{display:none;}
+.sc-item{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:68px;cursor:pointer;padding:0 4px;}
+.sc-av{width:52px;height:52px;border-radius:50%;overflow:hidden;background:#222;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.sc-av img{width:100%;height:100%;object-fit:cover;}
+.sc-name{font-size:11px;color:#ccc;text-align:center;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3;}
+/* Share grid rows */
+.share-grid-row{display:flex;gap:0;overflow-x:auto;padding:12px 6px 4px;scrollbar-width:none;border-bottom:1px solid #111;}
+.share-grid-row::-webkit-scrollbar{display:none;}
+.share-grid-row:last-child{border-bottom:none;}
+.sgi{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:72px;cursor:pointer;padding:6px 4px;border-radius:12px;}
+.sgi:active{background:#1a1a1a;}
+.sgi-ico{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.sgi-lbl{font-size:11px;color:#ccc;text-align:center;line-height:1.3;max-width:68px;}
+/* specific icon bg colors matching TikTok */
+.sgi-repost .sgi-ico{background:#e6a817;color:#fff;}
+.sgi-status .sgi-ico{background:#25d366;color:#fff;}
+.sgi-whatsapp .sgi-ico{background:#25d366;color:#fff;}
+.sgi-copylink .sgi-ico{background:#1565c0;color:#fff;}
+.sgi-facebook .sgi-ico{background:#1877f2;color:#fff;}
+.sgi-report .sgi-ico{background:#1e1e1e;color:#666;}
+.sgi-notinterested .sgi-ico{background:#1e1e1e;color:#666;}
+.sgi-download .sgi-ico{background:#1e1e1e;color:#ccc;}
+.sgi-addstory .sgi-ico{background:#1e1e1e;color:#ccc;border:1.5px dashed #444;}
+.sgi-cast .sgi-ico{background:#1e1e1e;color:#555;}
+.sgi-snapchat .sgi-ico{background:#fffc00;color:#000;}
+.sgi-email .sgi-ico{background:#29b6f6;color:#fff;}
+.sgi-twitter .sgi-ico{background:#000;color:#fff;border:1px solid #333;}
+.sgi-telegram .sgi-ico{background:#229ed9;color:#fff;}
+.sgi-stitch .sgi-ico{background:#1e1e1e;color:#ccc;border:1.5px solid #333;}
+.sgi-gif .sgi-ico{background:#1e1e1e;color:#ccc;border:1.5px solid #333;font-size:14px;font-weight:800;letter-spacing:-1px;}
+
+.sl-row{padding:0 14px 10px;display:flex;gap:8px;border-bottom:1px solid #1a1a1a;}
 .sl-inp{flex:1;background:#1a1a1a;border:1px solid #222;border-radius:8px;padding:9px 12px;color:#888;font-size:12px;outline:none;}
 .sl-copy{background:#ff2d55;border:none;border-radius:8px;padding:9px 14px;color:#fff;font-weight:700;cursor:pointer;}
 #gifts-panel{padding:18px 16px 24px;}
@@ -202,29 +280,109 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
     <span class="ph-close" onclick="closeComments()">✕</span>
   </div>
   <div class="cp-list" id="cp-list"></div>
-  <div class="cp-inp">
-    <input type="text" id="cp-input" placeholder="Add a comment..." maxlength="300"
-      onkeydown="if(event.key==='Enter')postComment()">
-    <button onclick="postComment()">Post</button>
+  <div class="mention-list" id="mention-list"></div>
+  <div id="sticker-picker">
+    <div class="sp-grid" id="sp-grid"></div>
   </div>
+  <div class="cp-photo-preview" id="cp-photo-preview">
+    <span class="cp-photo-remove" onclick="removeCommentPhoto()">✕</span>
+    <img id="cp-photo-img" src="" alt="">
+  </div>
+  <div class="cp-inp">
+    <div class="cp-inp-top">
+      <div class="cp-inp-av" id="cp-inp-av">😊</div>
+      <input class="cp-inp-box" type="text" id="cp-input" placeholder="Add a comment..." maxlength="500"
+        oninput="onCommentInput(this)" onkeydown="if(event.key==='Enter')postComment()">
+      <button class="cp-post-btn" onclick="postComment()">Post</button>
+    </div>
+    <div class="cp-inp-actions">
+      <button class="cp-ia-btn" onclick="toggleStickerPicker()" title="Sticker">😄</button>
+      <button class="cp-ia-btn" onclick="triggerCommentPhoto()" title="Photo">🖼️</button>
+      <button class="cp-ia-btn" onclick="insertMention()" title="Mention">@</button>
+    </div>
+  </div>
+  <input type="file" id="cp-photo-file" accept="image/*" style="display:none" onchange="onCommentPhotoSelected(this)">
 </div>
 
 <div class="panel" id="share-panel">
   <div class="ph">
-    <h3>Share Video</h3>
+    <h3>Send to</h3>
     <span class="ph-close" onclick="closeShare()">✕</span>
   </div>
-  <div class="sg">
-    <div class="si" onclick="shareWA()"><div class="sico">💬</div><div class="snm">WhatsApp</div></div>
-    <div class="si" onclick="shareTG()"><div class="sico">✈️</div><div class="snm">Telegram</div></div>
-    <div class="si" onclick="shareFB()"><div class="sico">👤</div><div class="snm">Facebook</div></div>
-    <div class="si" onclick="shareTW()"><div class="sico">🐦</div><div class="snm">Twitter</div></div>
-    <div class="si" onclick="shareNative()"><div class="sico">↗️</div><div class="snm">More</div></div>
-    <div class="si" onclick="copyLink()"><div class="sico">🔗</div><div class="snm">Copy Link</div></div>
+  <!-- Search bar -->
+  <div class="sp-search">
+    <span class="sp-search-ico">🔍</span>
+    <input class="sp-search-inp" type="text" placeholder="Search" oninput="filterShareContacts(this.value)">
   </div>
+  <!-- Recent contacts row (TikTok style) -->
+  <div class="share-contacts" id="share-contacts"></div>
+  <!-- Link row -->
   <div class="sl-row">
     <input class="sl-inp" id="sl-inp" readonly>
-    <button class="sl-copy" onclick="copyLink()">Copy</button>
+    <button class="sl-copy" onclick="copyLink()">Copy link</button>
+  </div>
+  <!-- Row 1: Repost, Status, WhatsApp, Copy link, Facebook -->
+  <div class="share-grid-row">
+    <div class="sgi sgi-repost" onclick="shareRepost()">
+      <div class="sgi-ico">🔁</div><div class="sgi-lbl">Repost</div>
+    </div>
+    <div class="sgi sgi-status" onclick="shareWAStatus()">
+      <div class="sgi-ico" style="background:#25d366">🔄</div><div class="sgi-lbl">Status</div>
+    </div>
+    <div class="sgi sgi-whatsapp" onclick="shareWA()">
+      <div class="sgi-ico">💬</div><div class="sgi-lbl">WhatsApp</div>
+    </div>
+    <div class="sgi sgi-copylink" onclick="copyLink()">
+      <div class="sgi-ico">🔗</div><div class="sgi-lbl">Copy link</div>
+    </div>
+    <div class="sgi sgi-facebook" onclick="shareFB()">
+      <div class="sgi-ico">f</div><div class="sgi-lbl">Facebook</div>
+    </div>
+    <div class="sgi sgi-snapchat" onclick="shareSnap()">
+      <div class="sgi-ico">👻</div><div class="sgi-lbl">Snapchat</div>
+    </div>
+    <div class="sgi sgi-email" onclick="shareEmail()">
+      <div class="sgi-ico">✉️</div><div class="sgi-lbl">Email</div>
+    </div>
+    <div class="sgi sgi-twitter" onclick="shareTW()">
+      <div class="sgi-ico" style="font-size:18px;font-weight:900;">✕</div><div class="sgi-lbl">X</div>
+    </div>
+    <div class="sgi sgi-telegram" onclick="shareTG()">
+      <div class="sgi-ico">✈️</div><div class="sgi-lbl">Telegram</div>
+    </div>
+  </div>
+  <!-- Row 2: Video actions -->
+  <div class="share-grid-row">
+    <div class="sgi sgi-stitch" onclick="shareStitch()">
+      <div class="sgi-ico">📎</div><div class="sgi-lbl">Stitch</div>
+    </div>
+    <div class="sgi" onclick="shareCreateSticker()">
+      <div class="sgi-ico" style="background:#1e1e1e;color:#ccc;border:1.5px solid #333;">🎨</div><div class="sgi-lbl">Create sticker</div>
+    </div>
+    <div class="sgi" onclick="sharePlaybackSpeed()">
+      <div class="sgi-ico" style="background:#1e1e1e;color:#ccc;border:1.5px solid #333;">⏱️</div><div class="sgi-lbl">Playback speed</div>
+    </div>
+    <div class="sgi sgi-download" onclick="shareDownload()">
+      <div class="sgi-ico">⬇️</div><div class="sgi-lbl">Download</div>
+    </div>
+    <div class="sgi sgi-addstory" onclick="shareAddStory()">
+      <div class="sgi-ico">➕</div><div class="sgi-lbl">Add to Story</div>
+    </div>
+    <div class="sgi sgi-cast" onclick="shareCast()">
+      <div class="sgi-ico" style="font-size:18px;">📡</div><div class="sgi-lbl">Cast</div>
+    </div>
+    <div class="sgi sgi-notinterested" onclick="shareNotInterested()">
+      <div class="sgi-ico">💔</div><div class="sgi-lbl">Not interested</div>
+    </div>
+    <div class="sgi sgi-report" onclick="shareReport()">
+      <div class="sgi-ico">🚩</div><div class="sgi-lbl">Report</div>
+    </div>
+    <div class="sgi sgi-gif" onclick="shareAsGif()">
+      <div class="sgi-ico">GIF</div><div class="sgi-lbl">Share as GIF</div>
+    </div>
+    <div class="sgi" onclick="shareNative()">
+      <div class="sgi-ico" style="background:#1e1e1e;color:#ccc;border:1.5px solid #333;">↗️</div><div class="sgi-lbl">More</div>
+    </div>
   </div>
 </div>
 
@@ -456,109 +614,287 @@ async function feedFollow(creatorId,slideIdx){
 }
 
 // ---- COMMENTS ----
+const STICKERS=['😍','🥰','😂','🤣','😭','🔥','💯','👏','🙌','😮','😱','🤯','💀','😎','🥳','❤️','💕','🎉','👑','💎','🚀','⚡','🌹','🎁','🤩','😆','🥺','👀','💪','🙏'];
+let commentPhotoData=null; // base64 of selected photo
+let replyPhotoData={}; // {commentId: base64}
+
 async function openComments(videoId){
   currentVideoId=videoId;openPanel('comments-panel');
-  replyingTo=null;
+  replyingTo=null;commentPhotoData=null;
+  document.getElementById('cp-photo-preview').classList.remove('open');
+  document.getElementById('sticker-picker').classList.remove('open');
+  // Set avatar
+  if(currentUser?.avatar_url){document.getElementById('cp-inp-av').innerHTML=`<img src="${currentUser.avatar_url}" alt="">`;}
+  else if(currentUser?.username){document.getElementById('cp-inp-av').textContent=currentUser.username[0].toUpperCase();}
+  else document.getElementById('cp-inp-av').textContent='😊';
+  // Init sticker picker
+  document.getElementById('sp-grid').innerHTML=STICKERS.map(s=>`<span class="sp-item" onclick="insertSticker('${s}')">${s}</span>`).join('');
   const list=document.getElementById('cp-list');
   list.innerHTML='<div style="text-align:center;padding:20px;color:#555;">Loading...</div>';
-  document.getElementById('cp-input').placeholder='Add a comment...';
+  document.getElementById('cp-input').value='';
   try{
     const r=await fetch(`${API}/api/videos/${videoId}/comments`);
     const d=await r.json();
     const comments=Array.isArray(d)?d:(d.data||d.comments||[]);
-    document.getElementById('cp-title').textContent=`Comments (${comments.length})`;
-    if(!comments.length){list.innerHTML='<div style="text-align:center;padding:30px;color:#444;">No comments yet 💬<br><span style="font-size:12px;color:#555;">Be the first!</span></div>';return;}
+    document.getElementById('cp-title').textContent=`${comments.length} comments`;
+    if(!comments.length){list.innerHTML='<div style="text-align:center;padding:30px;color:#444;">No comments yet 💬<br><span style="font-size:12px;color:#555;">Be the first to comment!</span></div>';return;}
     list.innerHTML=comments.map(c=>renderComment(c)).join('');
+    // Folded comments notice
+    list.innerHTML+=`<div class="folded-notice" onclick="toast('Folded comments are filtered by community 🛡️')"><div class="fn-icon">🙈</div><div class="fn-txt"><b>View folded comments</b>Folded comments are similar to others flagged by our community and may affect your well-being.</div></div>`;
   }catch(e){list.innerHTML='<div style="color:#ff4444;text-align:center;padding:20px;">Failed to load</div>';}
+}
+
+function renderCommentText(raw){
+  if(!raw) return '';
+  return esc(raw)
+    .replace(/@(\w+)/g,'<span class="mention">@$1</span>')
+    .replace(/#(\w+)/g,'<span class="ctag">#$1</span>');
 }
 
 function renderComment(c){
   const myId=currentUser?.id;
   const canDelete=myId&&(String(myId)===String(c.user_id));
-  const replies=(c.replies||[]).map(r=>renderReply(r)).join('');
+  const replies=(c.replies||[]).map(r=>renderReply(r,c.id)).join('');
+  const imgHtml=c.image_url?`<img class="c-img-preview" src="${c.image_url}" alt="photo" onclick="viewFullImage('${c.image_url}')">`:'';
+  const stickerHtml=c.sticker?`<span class="c-sticker">${c.sticker}</span>`:'';
   return `<div class="ci" id="ci-${c.id}">
-    <div class="ci-av">${c.avatar_url?`<img src="${c.avatar_url}" onerror="this.style.display='none'">`:(c.username||'U')[0].toUpperCase()}</div>
+    <div class="ci-av">${c.avatar_url?`<img src="${esc(c.avatar_url)}" onerror="this.style.display='none'">`:(c.username||'U')[0].toUpperCase()}</div>
     <div class="ci-body">
       <div class="cuser">@${esc(c.username||'user')}</div>
-      <div class="ctext">${esc(c.content||c.text||'')}</div>
+      ${c.content||c.text?`<div class="ctext">${renderCommentText(c.content||c.text||'')}</div>`:''}
+      ${imgHtml}${stickerHtml}
       <div class="ci-actions">
         <span class="ctime">${timeSince(c.created_at)}</span>
-        <button class="c-like-btn${(c.liked)?'liked':''}" id="clk-${c.id}" onclick="likeComment('${c.id}',this)">❤️ <span id="clkc-${c.id}">${c.like_count||0}</span></button>
+        <button class="c-like-btn${c.liked?' liked':''}" id="clk-${c.id}" onclick="likeComment('${c.id}',this)"><span class="c-hrt">♡</span> <span id="clkc-${c.id}">${c.like_count||0}</span></button>
         <button class="c-reply-btn" onclick="startReply('${c.id}','${esc(c.username||'user')}')">Reply</button>
         ${canDelete?`<button class="c-delete-btn" onclick="deleteComment('${c.id}','${currentVideoId}')">🗑</button>`:''}
       </div>
     </div>
   </div>
   <div class="reply-input-row" id="rrow-${c.id}">
-    <input type="text" placeholder="Reply to @${esc(c.username||'user')}..." maxlength="300" onkeydown="if(event.key==='Enter')postReply('${c.id}',this)">
-    <button onclick="postReply('${c.id}',this.previousElementSibling)">Post</button>
+    <div class="reply-input-row-top">
+      <input type="text" id="rinput-${c.id}" placeholder="Reply to @${esc(c.username||'user')}..." maxlength="300"
+        oninput="onReplyInput(this,'${c.id}')" onkeydown="if(event.key==='Enter')postReply('${c.id}',this)">
+      <button class="reply-post-btn" onclick="postReply('${c.id}',document.getElementById('rinput-${c.id}'))">Post</button>
+    </div>
+    <div class="reply-input-tools">
+      <button class="rit-btn" onclick="insertReplySticker('${c.id}')">😄</button>
+      <button class="rit-btn" onclick="triggerReplyPhoto('${c.id}')">🖼️</button>
+      <button class="rit-btn" onclick="insertReplyMention('${c.id}')">@</button>
+    </div>
+    <div class="cp-photo-preview" id="rphoto-${c.id}" style="padding:0;">
+      <span class="cp-photo-remove" onclick="removeReplyPhoto('${c.id}')">✕</span>
+      <img id="rphoto-img-${c.id}" src="" alt="" style="width:70px;height:70px;border-radius:8px;object-fit:cover;margin-top:4px;">
+    </div>
+    <input type="file" id="rphoto-file-${c.id}" accept="image/*" style="display:none" onchange="onReplyPhotoSelected(this,'${c.id}')">
   </div>
   ${replies?`<div class="ci-replies" id="creplies-${c.id}">${replies}</div>`:`<div class="ci-replies" id="creplies-${c.id}"></div>`}`;
 }
 
-function renderReply(r){
+function renderReply(r, parentId){
   const myId=currentUser?.id;
   const canDelete=myId&&(String(myId)===String(r.user_id));
+  const imgHtml=r.image_url?`<img class="c-img-preview" src="${r.image_url}" alt="photo" onclick="viewFullImage('${r.image_url}')">`:'';
+  const stickerHtml=r.sticker?`<span class="c-sticker">${r.sticker}</span>`:'';
   return `<div class="ci-reply" id="ci-${r.id}">
-    <div class="ci-av">${r.avatar_url?`<img src="${r.avatar_url}" onerror="this.style.display='none'">`:(r.username||'U')[0].toUpperCase()}</div>
+    <div class="ci-av">${r.avatar_url?`<img src="${esc(r.avatar_url)}" onerror="this.style.display='none'">`:(r.username||'U')[0].toUpperCase()}</div>
     <div class="ci-body">
       <div class="cuser">@${esc(r.username||'user')}</div>
-      <div class="ctext">${esc(r.content||r.text||'')}</div>
+      ${r.content||r.text?`<div class="ctext">${renderCommentText(r.content||r.text||'')}</div>`:''}
+      ${imgHtml}${stickerHtml}
       <div class="ci-actions">
         <span class="ctime">${timeSince(r.created_at)}</span>
-        <button class="c-like-btn" id="clk-${r.id}" onclick="likeComment('${r.id}',this)">❤️ <span id="clkc-${r.id}">${r.like_count||0}</span></button>
+        <button class="c-like-btn" id="clk-${r.id}" onclick="likeComment('${r.id}',this)"><span class="c-hrt">♡</span> <span id="clkc-${r.id}">${r.like_count||0}</span></button>
         ${canDelete?`<button class="c-delete-btn" onclick="deleteComment('${r.id}','${currentVideoId}')">🗑</button>`:''}
       </div>
     </div>
   </div>`;
 }
 
+// ---- Comment input helpers ----
+function onCommentInput(inp){
+  const val=inp.value;
+  const at=val.lastIndexOf('@');
+  if(at>=0){
+    const q=val.slice(at+1);
+    if(q.length>0&&!/\s/.test(q)) showMentionSuggestions(q);
+    else hideMentionSuggestions();
+  } else hideMentionSuggestions();
+}
+
+const FAKE_USERS=[
+  {username:'kampala_vibes',avatar:null},{username:'entebbe_girl',avatar:null},
+  {username:'ugandan_king',avatar:null},{username:'nairobi254',avatar:null},
+  {username:'hotvid_official',avatar:null},{username:'acholi_boy',avatar:null}
+];
+function showMentionSuggestions(q){
+  const list=document.getElementById('mention-list');
+  const matched=FAKE_USERS.filter(u=>u.username.toLowerCase().startsWith(q.toLowerCase())).slice(0,5);
+  if(!matched.length){hideMentionSuggestions();return;}
+  list.innerHTML=matched.map(u=>`<div class="ml-item" onclick="completeMention('${u.username}')">
+    <div class="ml-av">${u.avatar?`<img src="${u.avatar}">`:'👤'}</div>
+    <span class="ml-name">@${u.username}</span>
+  </div>`).join('');
+  list.classList.add('open');
+}
+function hideMentionSuggestions(){document.getElementById('mention-list').classList.remove('open');}
+function completeMention(username){
+  const inp=document.getElementById('cp-input');
+  const val=inp.value;
+  const at=val.lastIndexOf('@');
+  if(at>=0) inp.value=val.slice(0,at)+'@'+username+' ';
+  hideMentionSuggestions();inp.focus();
+}
+function insertMention(){
+  const inp=document.getElementById('cp-input');
+  inp.value+='@';inp.focus();
+}
+function toggleStickerPicker(){
+  document.getElementById('sticker-picker').classList.toggle('open');
+}
+function insertSticker(s){
+  document.getElementById('sticker-picker').classList.remove('open');
+  commentPhotoData=null;
+  // Post as sticker-only comment immediately if input is empty
+  const inp=document.getElementById('cp-input');
+  if(!inp.value.trim()){postCommentWithSticker(s);return;}
+  inp.value+=s;inp.focus();
+}
+async function postCommentWithSticker(sticker){
+  if(!token){showLoginPrompt();return;}
+  try{
+    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:'',sticker})});
+    const d=await r.json();
+    if(d.success||d.data){
+      const list=document.getElementById('cp-list');
+      list.insertAdjacentHTML('afterbegin',renderComment({...(d.data||{sticker,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()}),replies:[]}));
+      bumpCommentCount();toast('Sticker sent! '+sticker);
+    }
+  }catch(e){}
+}
+
+function triggerCommentPhoto(){document.getElementById('cp-photo-file').click();}
+function onCommentPhotoSelected(inp){
+  const file=inp.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    commentPhotoData=e.target.result;
+    document.getElementById('cp-photo-img').src=commentPhotoData;
+    document.getElementById('cp-photo-preview').classList.add('open');
+  };
+  reader.readAsDataURL(file);
+}
+function removeCommentPhoto(){
+  commentPhotoData=null;
+  document.getElementById('cp-photo-preview').classList.remove('open');
+  document.getElementById('cp-photo-file').value='';
+}
+function viewFullImage(url){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML=`<img src="${url}" style="max-width:95%;max-height:90%;border-radius:10px;"><span style="position:absolute;top:18px;right:18px;font-size:28px;color:#fff;cursor:pointer;">✕</span>`;
+  ov.onclick=()=>ov.remove();
+  document.body.appendChild(ov);
+}
+
+// reply photo/sticker/mention helpers
+function insertReplySticker(cid){
+  const stickers=['😍','🥰','😂','🔥','💯','😭','🤩','🥳'];
+  const s=stickers[Math.floor(Math.random()*stickers.length)];
+  const inp=document.getElementById('rinput-'+cid);
+  if(inp) inp.value+=s;
+}
+function triggerReplyPhoto(cid){document.getElementById('rphoto-file-'+cid)?.click();}
+function onReplyPhotoSelected(inp,cid){
+  const file=inp.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    replyPhotoData[cid]=e.target.result;
+    const pv=document.getElementById('rphoto-'+cid);
+    const img=document.getElementById('rphoto-img-'+cid);
+    if(img){img.src=e.target.result;}
+    if(pv){pv.classList.add('open');pv.style.display='block';}
+  };
+  reader.readAsDataURL(file);
+}
+function removeReplyPhoto(cid){
+  delete replyPhotoData[cid];
+  const pv=document.getElementById('rphoto-'+cid);
+  if(pv){pv.classList.remove('open');pv.style.display='none';}
+  const f=document.getElementById('rphoto-file-'+cid);
+  if(f) f.value='';
+}
+function insertReplyMention(cid){
+  const inp=document.getElementById('rinput-'+cid);
+  if(inp){inp.value+='@';inp.focus();}
+}
+function onReplyInput(inp,cid){/* future mention autocomplete */}
+
 function startReply(commentId, username){
-  // Hide all other reply rows
   document.querySelectorAll('.reply-input-row').forEach(r=>r.classList.remove('open'));
   const row=document.getElementById('rrow-'+commentId);
-  if(row){row.classList.add('open');row.querySelector('input').focus();}
+  if(row){row.classList.add('open');const inp=row.querySelector('input');if(inp){inp.value='@'+username+' ';inp.focus();}}
   replyingTo={commentId,username};
 }
 
 async function postReply(parentId, inputEl){
   if(!token){showLoginPrompt();return;}
-  const text=inputEl.value.trim();if(!text) return;
+  const text=inputEl.value.trim();
+  const photo=replyPhotoData[parentId]||null;
+  if(!text&&!photo) return;
   inputEl.disabled=true;
   try{
-    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:text,parent_id:parentId})});
+    const body={content:text,parent_id:parentId};
+    if(photo) body.image_data=photo;
+    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
     const d=await r.json();
     if(d.success||d.data){
       inputEl.value='';
+      removeReplyPhoto(parentId);
       document.getElementById('rrow-'+parentId).classList.remove('open');
       const repliesDiv=document.getElementById('creplies-'+parentId);
-      if(repliesDiv) repliesDiv.insertAdjacentHTML('beforeend',renderReply(d.data));
+      const replyData=d.data||{content:text,image_url:photo,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()};
+      if(repliesDiv) repliesDiv.insertAdjacentHTML('beforeend',renderReply(replyData,parentId));
       toast('Reply posted! 💬');
     }else toast(d.error||'Failed');
   }catch(e){toast('Connection error');}
   inputEl.disabled=false;
 }
 
-function closeComments(){closePanel('comments-panel');replyingTo=null;}
+function closeComments(){
+  closePanel('comments-panel');replyingTo=null;
+  document.getElementById('sticker-picker').classList.remove('open');
+  hideMentionSuggestions();
+}
+
+function bumpCommentCount(){
+  const idx=videos.findIndex(v=>String(v.id)===String(currentVideoId));
+  if(idx>=0){const el=document.getElementById('cc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
+  const titleEl=document.getElementById('cp-title');
+  const m=titleEl.textContent.match(/\d+/);
+  if(m) titleEl.textContent=`${parseInt(m[0])+1} comments`;
+}
 
 async function postComment(){
   if(!token){showLoginPrompt();return;}
   const input=document.getElementById('cp-input');
-  const text=input.value.trim();if(!text)return;
+  const text=input.value.trim();
+  const photo=commentPhotoData;
+  if(!text&&!photo)return;
   input.value='';input.disabled=true;
+  removeCommentPhoto();
+  document.getElementById('sticker-picker').classList.remove('open');
   try{
-    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:text})});
+    const body={content:text};
+    if(photo) body.image_data=photo;
+    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
     const d=await r.json();
     if(d.success||d.data){
       toast('Comment posted! 💬');
       const list=document.getElementById('cp-list');
-      list.insertAdjacentHTML('afterbegin',renderComment({...d.data,replies:[]}));
-      const idx=videos.findIndex(v=>String(v.id)===String(currentVideoId));
-      if(idx>=0){const el=document.getElementById('cc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
-      // Update title count
-      const titleEl=document.getElementById('cp-title');
-      const m=titleEl.textContent.match(/\d+/);
-      if(m) titleEl.textContent=`Comments (${parseInt(m[0])+1})`;
+      const commentData=d.data||{content:text,image_url:photo,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()};
+      list.insertAdjacentHTML('afterbegin',renderComment({...commentData,replies:[]}));
+      bumpCommentCount();
     }else{toast(d.error||'Failed to post');input.value=text;}
   }catch(e){toast('Connection error');input.value=text;}
   input.disabled=false;
@@ -566,11 +902,16 @@ async function postComment(){
 
 async function likeComment(commentId, btn){
   if(!token){showLoginPrompt();return;}
+  const hrt=btn.querySelector('.c-hrt');
+  const wasLiked=btn.classList.contains('liked');
+  btn.classList.toggle('liked',!wasLiked);
+  if(hrt) hrt.textContent=wasLiked?'♡':'❤️';
   try{
     const r=await fetch(`${API}/api/comments/${commentId}/like`,{method:'POST',headers:{Authorization:'Bearer '+token}});
     const d=await r.json();
-    if(d.success){
+    if(d.success!==undefined){
       btn.classList.toggle('liked',d.liked);
+      if(hrt) hrt.textContent=d.liked?'❤️':'♡';
       const cntEl=document.getElementById('clkc-'+commentId);
       if(cntEl) cntEl.textContent=d.like_count||0;
     }
@@ -584,32 +925,70 @@ async function deleteComment(commentId, videoId){
     const r=await fetch(`${API}/api/comments/${commentId}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
     const d=await r.json();
     if(d.success){
-      const el=document.getElementById('ci-'+commentId);
-      if(el) el.remove();
-      const rrow=document.getElementById('rrow-'+commentId);
-      if(rrow) rrow.remove();
+      const el=document.getElementById('ci-'+commentId);if(el) el.remove();
+      const rrow=document.getElementById('rrow-'+commentId);if(rrow) rrow.remove();
       toast('Comment deleted');
     }
   }catch(e){}
 }
 
 // ---- SHARE ----
+// Mock recent contacts for TikTok-style "Send to" row
+const MOCK_CONTACTS=[
+  {name:'Adason🌺🦋✨❤️',initials:'A',bg:'#c62828'},{name:'PROUD OF\nALUR',initials:'P',bg:'#283593'},
+  {name:'Caro soph',initials:'C',bg:'#6a1b9a'},{name:'Analiza\nJumarang',initials:'An',bg:'#1b5e20'},
+  {name:'Erica',initials:'E',bg:'#4e342e'},{name:'Maria K',initials:'M',bg:'#37474f'},
+  {name:'Joel256',initials:'J',bg:'#e65100'},{name:'Kampala\nVibes',initials:'K',bg:'#880e4f'},
+];
+
 function openShare(videoId){
   shareVideoId=videoId;
   document.getElementById('sl-inp').value=`${location.origin}/?v=${videoId}`;
+  // Render contacts row
+  document.getElementById('share-contacts').innerHTML=MOCK_CONTACTS.map(c=>`
+    <div class="sc-item" onclick="shareToContact('${c.name.replace(/\n/,' ')}')">
+      <div class="sc-av" style="background:${c.bg};">${c.initials}</div>
+      <span class="sc-name">${c.name.replace('\n','<br>')}</span>
+    </div>`).join('');
   openPanel('share-panel');
   fetch(`${API}/api/videos/${videoId}/share`,{method:'POST',headers:token?{Authorization:'Bearer '+token}:{}}).catch(()=>{});
   const idx=videos.findIndex(v=>String(v.id)===String(videoId));
   if(idx>=0){const el=document.getElementById('sc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
 }
+function filterShareContacts(q){
+  const items=document.querySelectorAll('.sc-item');
+  items.forEach(el=>{
+    const name=el.querySelector('.sc-name').textContent.toLowerCase();
+    el.style.display=name.includes(q.toLowerCase())||!q?'flex':'none';
+  });
+}
 function closeShare(){closePanel('share-panel');}
 function getShareUrl(){return`${location.origin}/?v=${shareVideoId||currentVideoId}`;}
+function shareToContact(name){toast(`✅ Sent to ${name}!`);closeShare();}
 function shareWA(){window.open(`https://wa.me/?text=${encodeURIComponent('Watch on HOTVID 🔥 '+getShareUrl())}`,'_blank');closeShare();}
+function shareWAStatus(){window.open(`https://wa.me/?text=${encodeURIComponent('Watch on HOTVID 🔥 '+getShareUrl())}`,'_blank');closeShare();}
 function shareTG(){window.open(`https://t.me/share/url?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent('Watch on HOTVID 🔥')}`,'_blank');closeShare();}
 function shareFB(){window.open(`https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`,'_blank');closeShare();}
 function shareTW(){window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareUrl())}&text=${encodeURIComponent('Watch on HOTVID 🔥')}`,'_blank');closeShare();}
+function shareSnap(){toast('📸 Opening Snapchat...');setTimeout(()=>window.open(`https://www.snapchat.com/`,'_blank'),300);closeShare();}
+function shareEmail(){window.open(`mailto:?subject=Watch on HOTVID 🔥&body=${encodeURIComponent('Check this out on HOTVID!\n\n'+getShareUrl())}`,'_blank');closeShare();}
 function shareNative(){if(navigator.share){navigator.share({title:'Watch on HOTVID 🔥',url:getShareUrl()});closeShare();}else copyLink();}
 function copyLink(){const url=getShareUrl();if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!'));else{document.getElementById('sl-inp').select();document.execCommand('copy');toast('🔗 Link copied!');}}
+function shareRepost(){toast('🔁 Reposted to your profile!');closeShare();}
+function shareStitch(){if(!token){showLoginPrompt();return;}location.href=`upload.html?stitch=${shareVideoId||currentVideoId}`;closeShare();}
+function shareCreateSticker(){toast('🎨 Creating sticker...');closeShare();}
+function sharePlaybackSpeed(){toast('⏱️ Playback speed — coming soon!');closeShare();}
+function shareDownload(){
+  const url=getShareUrl();
+  toast('⬇️ Downloading...');
+  const a=document.createElement('a');a.href=url;a.download='hotvid.mp4';a.click();
+  closeShare();
+}
+function shareAddStory(){if(!token){showLoginPrompt();return;}toast('➕ Added to your Story!');closeShare();}
+function shareCast(){toast('📡 Cast feature coming soon!');closeShare();}
+function shareNotInterested(){toast('👋 Got it — fewer like this');closeShare();}
+function shareReport(){toast('🚩 Report submitted. Thank you!');closeShare();}
+function shareAsGif(){toast('🎞️ Converting to GIF...');closeShare();}
 
 // ---- GIFTS ----
 async function openGifts(videoId,creatorId){
