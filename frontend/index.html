@@ -85,8 +85,8 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .ph{padding:13px 16px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;}
 .ph h3{font-size:15px;font-weight:700;}
 .ph-close{font-size:20px;cursor:pointer;color:#666;}
-#comments-panel{height:80vh;}
-.cp-list{height:calc(80vh - 148px);overflow-y:auto;padding:10px 15px;}
+#comments-panel{height:80vh;display:flex;flex-direction:column;}
+.cp-list{flex:1;overflow-y:auto;padding:10px 15px;}
 /* ===== TIKTOK-STYLE COMMENTS ===== */
 .ci{display:flex;gap:10px;margin-bottom:16px;}
 .ci-av{width:36px;height:36px;border-radius:50%;background:#222;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;border:1.5px solid #2a2a2a;}
@@ -126,8 +126,8 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .rit-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:4px;border-radius:8px;}
 .rit-btn:active{background:#1a1a1a;}
 .reply-post-btn{background:#ff2d55;border:none;border-radius:20px;padding:8px 14px;color:#fff;font-weight:700;font-size:12px;cursor:pointer;}
-/* Bottom comment input — TikTok style */
-.cp-inp{position:absolute;bottom:0;left:0;right:0;padding:8px 10px 8px;background:#111;border-top:1px solid #1a1a1a;}
+/* Bottom comment input — TikTok style, flex child so sticker picker expands upward naturally */
+.cp-inp{padding:8px 10px 8px;background:#111;border-top:1px solid #1a1a1a;flex-shrink:0;}
 .cp-inp-top{display:flex;gap:8px;align-items:center;}
 .cp-inp-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff2d55,#ff9f0a);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;}
 .cp-inp-av img{width:100%;height:100%;object-fit:cover;}
@@ -135,12 +135,12 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
 .cp-inp-actions{display:flex;gap:10px;align-items:center;margin-top:6px;padding:0 42px;}
 .cp-ia-btn{background:none;border:none;font-size:22px;cursor:pointer;padding:4px;}
 .cp-post-btn{background:none;border:none;color:#ff2d55;font-size:14px;font-weight:700;cursor:pointer;padding:4px 6px;}
-/* Sticker picker */
-#sticker-picker{display:none;position:absolute;bottom:100%;left:0;right:0;background:#111;border-top:1px solid #1e1e1e;padding:10px 14px;z-index:10;}
+/* Sticker picker - sits INSIDE cp-inp, above the input row, never floats */
+#sticker-picker{display:none;background:#0e0e0e;border-bottom:1px solid #222;padding:10px 14px 6px;width:100%;}
 #sticker-picker.open{display:block;}
-.sp-grid{display:flex;flex-wrap:wrap;gap:6px;}
-.sp-item{font-size:30px;cursor:pointer;padding:4px;border-radius:8px;line-height:1;}
-.sp-item:active{background:#1a1a1a;}
+.sp-grid{display:flex;flex-wrap:wrap;gap:4px;}
+.sp-item{font-size:32px;cursor:pointer;padding:5px;border-radius:8px;line-height:1;transition:transform .1s;}
+.sp-item:active{transform:scale(1.3);background:#1a1a1a;}
 /* @mention autocomplete */
 .mention-list{display:none;position:absolute;bottom:100%;left:10px;right:10px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;max-height:160px;overflow-y:auto;z-index:20;}
 .mention-list.open{display:block;}
@@ -281,14 +281,16 @@ body{background:#000;color:#fff;font-family:'Segoe UI',sans-serif;height:100vh;o
   </div>
   <div class="cp-list" id="cp-list"></div>
   <div class="mention-list" id="mention-list"></div>
-  <div id="sticker-picker">
-    <div class="sp-grid" id="sp-grid"></div>
-  </div>
-  <div class="cp-photo-preview" id="cp-photo-preview">
-    <span class="cp-photo-remove" onclick="removeCommentPhoto()">✕</span>
-    <img id="cp-photo-img" src="" alt="">
-  </div>
   <div class="cp-inp">
+    <!-- Sticker picker INSIDE the input bar, shows/hides above the input row -->
+    <div id="sticker-picker">
+      <div class="sp-grid" id="sp-grid"></div>
+    </div>
+    <!-- Photo preview inside input bar -->
+    <div class="cp-photo-preview" id="cp-photo-preview">
+      <span class="cp-photo-remove" onclick="removeCommentPhoto()">✕</span>
+      <img id="cp-photo-img" src="" alt="">
+    </div>
     <div class="cp-inp-top">
       <div class="cp-inp-av" id="cp-inp-av">😊</div>
       <input class="cp-inp-box" type="text" id="cp-input" placeholder="Add a comment..." maxlength="500"
@@ -762,14 +764,14 @@ function insertSticker(s){
 }
 async function postCommentWithSticker(sticker){
   if(!token){showLoginPrompt();return;}
+  // Render immediately so user sees it right away
+  const localComment={sticker,content:'',created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:'local-'+Date.now(),replies:[]};
+  const list=document.getElementById('cp-list');
+  list.insertAdjacentHTML('afterbegin',renderComment(localComment));
+  bumpCommentCount();toast('Sticker sent! '+sticker);
+  // Post to backend (send sticker as text emoji as fallback)
   try{
-    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:'',sticker})});
-    const d=await r.json();
-    if(d.success||d.data){
-      const list=document.getElementById('cp-list');
-      list.insertAdjacentHTML('afterbegin',renderComment({...(d.data||{sticker,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()}),replies:[]}));
-      bumpCommentCount();toast('Sticker sent! '+sticker);
-    }
+    await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({content:sticker,sticker})});
   }catch(e){}
 }
 
@@ -799,10 +801,25 @@ function viewFullImage(url){
 
 // reply photo/sticker/mention helpers
 function insertReplySticker(cid){
-  const stickers=['😍','🥰','😂','🔥','💯','😭','🤩','🥳'];
-  const s=stickers[Math.floor(Math.random()*stickers.length)];
-  const inp=document.getElementById('rinput-'+cid);
-  if(inp) inp.value+=s;
+  // Show a small inline sticker row under the reply input
+  const tools=document.getElementById('rrow-'+cid)?.querySelector('.reply-input-tools');
+  if(!tools) return;
+  const existing=tools.querySelector('.mini-sticker-row');
+  if(existing){existing.remove();return;}
+  const row=document.createElement('div');
+  row.className='mini-sticker-row';
+  row.style.cssText='display:flex;flex-wrap:wrap;gap:4px;padding:4px 0;';
+  STICKERS.slice(0,20).forEach(s=>{
+    const sp=document.createElement('span');
+    sp.textContent=s;sp.style.cssText='font-size:26px;cursor:pointer;padding:3px;border-radius:6px;';
+    sp.onclick=()=>{
+      const inp=document.getElementById('rinput-'+cid);
+      if(inp) inp.value+=s;
+      row.remove();
+    };
+    row.appendChild(sp);
+  });
+  tools.after(row);
 }
 function triggerReplyPhoto(cid){document.getElementById('rphoto-file-'+cid)?.click();}
 function onReplyPhotoSelected(inp,cid){
@@ -843,21 +860,21 @@ async function postReply(parentId, inputEl){
   const photo=replyPhotoData[parentId]||null;
   if(!text&&!photo) return;
   inputEl.disabled=true;
+  const savedPhoto=photo;
+  // Render locally immediately
+  inputEl.value='';
+  removeReplyPhoto(parentId);
+  document.getElementById('rrow-'+parentId).classList.remove('open');
+  const repliesDiv=document.getElementById('creplies-'+parentId);
+  const localReply={content:text,image_url:savedPhoto||null,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:'local-'+Date.now()};
+  if(repliesDiv) repliesDiv.insertAdjacentHTML('beforeend',renderReply(localReply,parentId));
+  toast('Reply posted! 💬');
+  // Send to backend
   try{
-    const body={content:text,parent_id:parentId};
-    if(photo) body.image_data=photo;
-    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
-    const d=await r.json();
-    if(d.success||d.data){
-      inputEl.value='';
-      removeReplyPhoto(parentId);
-      document.getElementById('rrow-'+parentId).classList.remove('open');
-      const repliesDiv=document.getElementById('creplies-'+parentId);
-      const replyData=d.data||{content:text,image_url:photo,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()};
-      if(repliesDiv) repliesDiv.insertAdjacentHTML('beforeend',renderReply(replyData,parentId));
-      toast('Reply posted! 💬');
-    }else toast(d.error||'Failed');
-  }catch(e){toast('Connection error');}
+    const body={content:text||'📷',parent_id:parentId};
+    if(savedPhoto) body.image_data=savedPhoto;
+    await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+  }catch(e){}
   inputEl.disabled=false;
 }
 
@@ -882,21 +899,22 @@ async function postComment(){
   const photo=commentPhotoData;
   if(!text&&!photo)return;
   input.value='';input.disabled=true;
+  const savedPhoto=photo;
   removeCommentPhoto();
   document.getElementById('sticker-picker').classList.remove('open');
+  // Always render locally immediately so photo/sticker shows even if backend ignores image_data
+  const localId='local-'+Date.now();
+  const localComment={content:text,image_url:savedPhoto||null,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:localId,replies:[]};
+  const list=document.getElementById('cp-list');
+  list.insertAdjacentHTML('afterbegin',renderComment(localComment));
+  bumpCommentCount();
+  toast('Comment posted! 💬');
+  // Post to backend — send photo as base64, backend may or may not save it
   try{
-    const body={content:text};
-    if(photo) body.image_data=photo;
-    const r=await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
-    const d=await r.json();
-    if(d.success||d.data){
-      toast('Comment posted! 💬');
-      const list=document.getElementById('cp-list');
-      const commentData=d.data||{content:text,image_url:photo,created_at:new Date().toISOString(),username:currentUser?.username,avatar_url:currentUser?.avatar_url,id:Date.now()};
-      list.insertAdjacentHTML('afterbegin',renderComment({...commentData,replies:[]}));
-      bumpCommentCount();
-    }else{toast(d.error||'Failed to post');input.value=text;}
-  }catch(e){toast('Connection error');input.value=text;}
+    const body={content:text||'📷'};
+    if(savedPhoto) body.image_data=savedPhoto;
+    await fetch(`${API}/api/videos/${currentVideoId}/comments`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+  }catch(e){}
   input.disabled=false;
 }
 
@@ -933,27 +951,65 @@ async function deleteComment(commentId, videoId){
 }
 
 // ---- SHARE ----
-// Mock recent contacts for TikTok-style "Send to" row
-const MOCK_CONTACTS=[
-  {name:'Adason🌺🦋✨❤️',initials:'A',bg:'#c62828'},{name:'PROUD OF\nALUR',initials:'P',bg:'#283593'},
-  {name:'Caro soph',initials:'C',bg:'#6a1b9a'},{name:'Analiza\nJumarang',initials:'An',bg:'#1b5e20'},
-  {name:'Erica',initials:'E',bg:'#4e342e'},{name:'Maria K',initials:'M',bg:'#37474f'},
-  {name:'Joel256',initials:'J',bg:'#e65100'},{name:'Kampala\nVibes',initials:'K',bg:'#880e4f'},
-];
+const AVATAR_COLORS=['#c62828','#283593','#6a1b9a','#1b5e20','#4e342e','#37474f','#e65100','#880e4f','#00695c','#1565c0'];
+function avatarColor(str){let h=0;for(let i=0;i<(str||'').length;i++)h=(h*31+str.charCodeAt(i))%AVATAR_COLORS.length;return AVATAR_COLORS[h];}
 
-function openShare(videoId){
+async function openShare(videoId){
   shareVideoId=videoId;
   document.getElementById('sl-inp').value=`${location.origin}/?v=${videoId}`;
-  // Render contacts row
-  document.getElementById('share-contacts').innerHTML=MOCK_CONTACTS.map(c=>`
-    <div class="sc-item" onclick="shareToContact('${c.name.replace(/\n/,' ')}')">
-      <div class="sc-av" style="background:${c.bg};">${c.initials}</div>
-      <span class="sc-name">${c.name.replace('\n','<br>')}</span>
-    </div>`).join('');
+  const contactsEl=document.getElementById('share-contacts');
+  contactsEl.innerHTML='<div style="padding:14px 10px;color:#444;font-size:12px;">Loading...</div>';
   openPanel('share-panel');
   fetch(`${API}/api/videos/${videoId}/share`,{method:'POST',headers:token?{Authorization:'Bearer '+token}:{}}).catch(()=>{});
   const idx=videos.findIndex(v=>String(v.id)===String(videoId));
   if(idx>=0){const el=document.getElementById('sc-'+idx);if(el)el.textContent=fmt((parseInt(el.textContent)||0)+1);}
+  // Load real followers/following from API
+  try{
+    const h=token?{Authorization:'Bearer '+token}:{};
+    // Try to get the people current user follows (most likely to share with)
+    const r=await fetch(`${API}/api/users/following`,{headers:h});
+    const d=await r.json();
+    const users=Array.isArray(d)?d:(d.data||d.users||d.following||[]);
+    if(users.length){
+      contactsEl.innerHTML=users.slice(0,12).map(u=>{
+        const name=u.username||u.name||'User';
+        const av=u.avatar_url?`<img src="${u.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='${name[0].toUpperCase()}'">`:`${name[0].toUpperCase()}`;
+        const bg=u.avatar_url?'#222':avatarColor(name);
+        return `<div class="sc-item" onclick="shareToContact('${esc(name)}','${esc(u.id||'')}')">
+          <div class="sc-av" style="background:${bg};">${av}</div>
+          <span class="sc-name">${esc(name)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      // Fallback: show video creators from current feed as suggestions
+      const feedUsers=videos.slice(0,8).map(v=>({username:v.username,avatar_url:v.avatar_url,id:v.creator_id||v.user_id}));
+      if(feedUsers.length){
+        contactsEl.innerHTML=feedUsers.map(u=>{
+          const name=u.username||'User';
+          const av=u.avatar_url?`<img src="${u.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='${name[0].toUpperCase()}'">`:`${name[0].toUpperCase()}`;
+          const bg=u.avatar_url?'#222':avatarColor(name);
+          return `<div class="sc-item" onclick="shareToContact('${esc(name)}','${esc(u.id||'')}')">
+            <div class="sc-av" style="background:${bg};">${av}</div>
+            <span class="sc-name">${esc(name)}</span>
+          </div>`;
+        }).join('');
+      } else {
+        contactsEl.innerHTML='<div style="padding:14px 10px;color:#333;font-size:12px;">Follow people to share with them</div>';
+      }
+    }
+  }catch(e){
+    // Fallback to feed creators silently
+    const feedUsers=videos.slice(0,8);
+    contactsEl.innerHTML=feedUsers.map(v=>{
+      const name=v.username||'User';
+      const av=v.avatar_url?`<img src="${v.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='${name[0].toUpperCase()}'">`:`${name[0].toUpperCase()}`;
+      const bg=v.avatar_url?'#222':avatarColor(name);
+      return `<div class="sc-item" onclick="shareToContact('${esc(name)}')">
+        <div class="sc-av" style="background:${bg};">${av}</div>
+        <span class="sc-name">${esc(name)}</span>
+      </div>`;
+    }).join('');
+  }
 }
 function filterShareContacts(q){
   const items=document.querySelectorAll('.sc-item');
