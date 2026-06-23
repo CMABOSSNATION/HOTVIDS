@@ -541,31 +541,36 @@ async function handleAvatarChange(event) {
   const file = event.target.files[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) { toast('Image too large (max 5MB)'); return; }
+  // Show preview immediately
   const reader = new FileReader();
-  reader.onload = async e => {
-    const dataUrl = e.target.result;
-    // Show locally immediately
+  reader.onload = e => {
     const img = document.getElementById('avatarImg');
-    img.src = dataUrl;
+    img.src = e.target.result;
     img.style.display = 'block';
     document.getElementById('avatarPlaceholder').style.display = 'none';
-    // Save to server as base64 URL (server should handle or use direct URL)
-    await saveAvatarUrl(dataUrl);
   };
   reader.readAsDataURL(file);
-}
-
-async function saveAvatarUrl(url) {
+  // Upload as real file via FormData
   const token = localStorage.getItem('hvt');
-  if (!token) return;
+  if (!token) { toast('Login required'); return; }
   try {
-    await fetch(`${API}/api/users/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify({ avatar_url: url })
+    toast('Uploading photo...');
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await fetch(`${API}/api/users/avatar`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token },
+      body: formData
     });
-    toast('✅ Profile photo updated');
-  } catch(e) { toast('Failed to update photo'); }
+    const data = await res.json();
+    if (data.success) {
+      toast('Profile photo updated!');
+      document.getElementById('avatarImg').src = data.avatar_url;
+      if (profileData) profileData.avatar_url = data.avatar_url;
+    } else {
+      toast(data.message || 'Upload failed');
+    }
+  } catch(e) { toast('Failed to upload photo'); }
 }
 
 // ---- EDIT MODAL ----
